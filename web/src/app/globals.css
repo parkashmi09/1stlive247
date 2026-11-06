@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* Design tokens v2 — mirrors design/tokens.json and the Figma "Theme" variables. */
+:root {
+  --bg: #eff5fb;
+  --surface: #ffffff;
+  --surface-solid: #ffffff;
+  --surface-2: rgb(0 0 0 / 0.1);
+  --text: #1c1c1e;
+  --text-2: #8e8e93;
+  --border: #eeeeee;
+  --primary: #012c78;
+  --accent: #d9ab4b;
+  --nav-bg: #ffffff;
+  --icon-muted: #9d9d9d;
+  --live: #d80612;
+
+  --gold-light: #fbea99;
+  --gold-mid: #d9ab4b;
+  --gold-dark: #945d0a;
+  --cyan: #34c4ee;
+  --deep: #012c78;
+
+  --grad-gold: linear-gradient(180deg, var(--gold-light) 0%, var(--gold-mid) 49%, var(--gold-dark) 100%);
+  --grad-gold-h: linear-gradient(90deg, var(--gold-dark) 0%, var(--gold-light) 50%, var(--gold-mid) 100%);
+  --grad-brand: linear-gradient(90deg, var(--cyan) 0%, var(--deep) 100%);
+  --grad-brand-diag: linear-gradient(135deg, var(--cyan) 0%, var(--deep) 92%);
+
+  --shadow-card: 0 1px 2px rgb(10 31 74 / 0.06), 0 4px 16px rgb(10 31 74 / 0.08);
+  --shadow-raised: 0 1px 14px rgb(0 0 0 / 0.35);
+  color-scheme: light;
+}
+
+/* Light is the default. Dark only when the user turns it on (More → Dark mode). */
+[data-theme="dark"] {
+  --bg: #010f1c;
+  --surface: rgb(0 0 0 / 0.2);
+  --surface-solid: #010c16;
+  --surface-2: rgb(255 255 255 / 0.1);
+  --text: #ffffff;
+  --text-2: rgb(255 255 255 / 0.55);
+  --border: rgb(255 255 255 / 0.1);
+  --primary: #34c4ee;
+  --accent: #fbea99;
+  --nav-bg: #010c16;
+  --icon-muted: #5e6b78;
+  color-scheme: dark;
+}
+
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-line: var(--border);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-nav: var(--nav-bg);
+  --color-muted: var(--icon-muted);
+  --color-live: var(--live);
+  --color-cyan: var(--cyan);
+  --color-deep: var(--deep);
+  --color-boundary: #1e9e4a;
+  --color-boundary-soft: #e3f5ea;
+  --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+}
+
+@utility bg-brand { background-image: var(--grad-brand); }
+@utility bg-brand-diag { background-image: var(--grad-brand-diag); }
+@utility bg-gold { background-image: var(--grad-gold); }
+@utility bg-gold-h { background-image: var(--grad-gold-h); }
+@utility text-gold {
+  background-image: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* gold metal 1px border on a solid surface */
+@utility border-gold {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface-solid), var(--surface-solid)) padding-box,
+    var(--grad-gold) border-box;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ---- premium touches ---- */
+/* score changed live: brief gold glow (re-runs because the element is keyed by the score) */
+@keyframes score-pop {
+  0% { transform: scale(1); text-shadow: 0 0 0 transparent; }
+  30% { transform: scale(1.06); text-shadow: 0 0 18px rgb(242 210 122 / 0.9); color: var(--gold-mid); }
+  100% { transform: scale(1); text-shadow: 0 0 0 transparent; }
+}
+@utility score-pop { animation: score-pop 900ms cubic-bezier(.2,.8,.2,1); display: inline-block; }
+
+/* live badge ping ring */
+@keyframes live-ping { 0% { box-shadow: 0 0 0 0 rgb(216 6 18 / 0.45); } 100% { box-shadow: 0 0 0 7px rgb(216 6 18 / 0); } }
+@utility live-ping { animation: live-ping 1.6s ease-out infinite; }
+
+/* hero: soft gold glow top-right + gold hairline at the bottom */
+@utility hero-glow {
+  background-image:
+    radial-gradient(120% 80% at 100% 0%, rgb(242 210 122 / 0.22), transparent 55%),
+    radial-gradient(80% 60% at 0% 100%, rgb(52 196 238 / 0.25), transparent 60%),
+    var(--grad-brand-diag);
+  box-shadow: inset 0 -1px 0 rgb(217 171 75 / 0.6);
+}
+
+/* elevated card: soft shadow, faint gold edge on hover/press */
+@utility card-premium {
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 200ms, border-color 200ms, transform 150ms;
+  &:hover { border-color: rgb(217 171 75 / 0.45); box-shadow: 0 8px 28px rgb(10 31 74 / 0.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score-pop, .live-ping { animation: none; }
+}

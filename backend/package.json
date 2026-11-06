@@ -1,0 +1,37 @@
+{
+  "name": "score247-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.ts",
+    "start": "node --env-file-if-exists=.env src/server.ts",
+    "db:migrate": "node --env-file-if-exists=.env src/db/migrate.ts",
+    "db:seed": "node --env-file-if-exists=.env src/db/seed.ts",
+    "db:reset": "npm run db:migrate -- --reset && npm run db:seed",
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_ENV=test LIVE_PROVIDER=none LOG_LEVEL=warn DATABASE_URL=postgres://apple@localhost:5432/score247_test node --env-file-if-exists=.env --test \"src/**/*.test.ts\"",
+    "feed:probe": "node --env-file-if-exists=.env src/feed/probe.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "pg": "^8.23.1",
+    "pino": "^10.4.0",
+    "socket.io": "^4.8.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/pg": "^8.23.1",
+    "pino-pretty": "^13.2.0",
+    "socket.io-client": "^4.8.4",
+    "typescript": "^7.0.2"
+  }
+}

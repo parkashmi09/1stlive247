@@ -1,0 +1,17 @@
+# secrets — API keys live only in local .env files
+.env
+.env.*
+!.env.example
+
+# deps / builds
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# raw payloads saved by `npm run feed:probe` (third-party data)
+backend/samples/
+
+# local machine
+.DS_Store
+.claude/settings.local.json
