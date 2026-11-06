@@ -48,7 +48,7 @@ const BALL: Record<Ball["kind"], string> = {
 };
 export function BallChip({ ball }: { ball: Ball }) {
   return (
-    <span className={cx("inline-flex size-8 items-center justify-center rounded-full text-sm font-semibold", BALL[ball.kind])}>
+    <span className={cx("inline-flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold", BALL[ball.kind])}>
       {ball.value}
     </span>
   );

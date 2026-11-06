@@ -8,7 +8,7 @@ import { logger } from "../logger.ts";
 import { getNews, listNews, listSports } from "../repo/read.ts";
 import { pickFeatured } from "../featured.ts";
 import type { MatchSource } from "../source.ts";
-import type { StatGroup } from "../types.ts";
+import type { MatchInsights } from "../types.ts";
 
 const Slug = z.string().regex(/^[a-z0-9-]{1,80}$/);
 // feed ids are mixed-case (e.g. "08oviIGO"); same charset the Sports API accepts
@@ -20,9 +20,9 @@ const NewsQuery = z.object({ sport: SportId.optional(), limit: z.coerce.number()
 class NotFound extends Error {}
 const found = <T>(v: T | undefined): T => { if (v === undefined) throw new NotFound(); return v; };
 
-export function createApp(source: MatchSource, opts: { stats?: (id: string) => Promise<StatGroup[]> } = {}) {
-  // stats change slowly: cache each match's stats for 10s so many viewers cost one upstream call
-  const statsCache = new Map<string, { at: number; data: Promise<StatGroup[]> }>();
+export function createApp(source: MatchSource, opts: { insights?: (id: string) => Promise<MatchInsights> } = {}) {
+  // insights change slowly: cache each match's for 10s so many viewers cost one upstream call
+  const insightsCache = new Map<string, { at: number; data: Promise<MatchInsights> }>();
   const app = express();
   app.disable("x-powered-by");
   app.use(helmet());
@@ -40,18 +40,20 @@ export function createApp(source: MatchSource, opts: { stats?: (id: string) => P
   v1.get("/featured", async (_req, res) => { res.json({ data: pickFeatured(await source.list({ status: "upcoming" })) }); });
   v1.get("/matches", async (req, res) => { res.json({ data: await source.list(MatchQuery.parse(req.query)) }); });
   v1.get("/matches/:id", async (req, res) => { res.json({ data: found(await source.get(EventId.parse(req.params.id))) }); });
-  v1.get("/matches/:id/stats", async (req, res) => {
-    const id = EventId.parse(req.params.id);
-    if (!opts.stats) throw new NotFound();
-    let hit = statsCache.get(id);
+  const insights = async (id: string) => {
+    if (!opts.insights) throw new NotFound();
+    let hit = insightsCache.get(id);
     if (!hit || Date.now() - hit.at > 10_000) {
-      hit = { at: Date.now(), data: opts.stats(id).catch((err) => { statsCache.delete(id); throw err; }) };
-      statsCache.set(id, hit);
-      if (statsCache.size > 500) statsCache.delete(statsCache.keys().next().value!);
+      hit = { at: Date.now(), data: opts.insights(id).catch((err) => { insightsCache.delete(id); throw err; }) };
+      insightsCache.set(id, hit);
+      if (insightsCache.size > 500) insightsCache.delete(insightsCache.keys().next().value!);
     }
-    try { res.json({ data: await hit.data }); }
+    try { return await hit.data; }
     catch (err) { if ((err as { status?: number }).status === 404) throw new NotFound(); throw err; }
-  });
+  };
+  v1.get("/matches/:id/insights", async (req, res) => { res.json({ data: await insights(EventId.parse(req.params.id)) }); });
+  // older clients: just the full-match stat groups
+  v1.get("/matches/:id/stats", async (req, res) => { res.json({ data: (await insights(EventId.parse(req.params.id))).periods[0]?.groups ?? [] }); });
   v1.get("/matches/:id/centre", async (req, res) => { res.json({ data: found(await source.centre(EventId.parse(req.params.id))) }); });
   v1.get("/news", async (req, res) => { res.json({ data: await listNews(NewsQuery.parse(req.query)) }); });
   v1.get("/news/:slug", async (req, res) => { res.json({ data: found(await getNews(Slug.parse(req.params.slug))) }); });

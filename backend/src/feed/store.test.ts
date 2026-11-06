@@ -25,6 +25,7 @@ test("tennis doubles: array short codes, stage text as clock", () => {
     { ...clock, mode: "none", running: false, anchor_ts: null, display: "Set 2", minute_label: "" })!;
   assert.equal(m.home.team.code, "CAR/PAP");
   assert.equal(m.clock, "Set 2");
+  assert.equal(m.home.team.logo, undefined); // blank placeholder dropped
 });
 
 test("upcoming hides scores; finished marks the loser; unsupported sports are dropped", () => {

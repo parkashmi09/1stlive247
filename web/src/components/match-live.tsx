@@ -1,20 +1,21 @@
 "use client";
 // Match Centre live state: one socket subscription in the layout, shared by the header and every tab.
 import { createContext, use, type ReactNode } from "react";
-import type { Match, MatchCentre, StatGroup } from "@/data/types";
+import type { Match, MatchCentre, MatchInsights } from "@/data/types";
 import { useMatchFeed } from "@/lib/live";
-import { Commentary, LatestUpdate, MatchStats, RecentBalls, ScoreHeader, Scorecard } from "./match-centre";
+import { FootballInsights } from "./football-insights";
+import { Commentary, LatestUpdate, RecentBalls, ScoreHeader, Scorecard } from "./match-centre";
 import { AtTheCrease, InningsScorecard } from "./scorecard";
 
-const Ctx = createContext<{ match: Match; centre?: MatchCentre; stats?: StatGroup[] } | null>(null);
+const Ctx = createContext<{ match: Match; centre?: MatchCentre; insights?: MatchInsights } | null>(null);
 const useFeed = () => {
   const v = use(Ctx);
   if (!v) throw new Error("useFeed must be used inside <MatchLive>");
   return v;
 };
 
-export function MatchLive({ match, centre, stats, children }: { match: Match; centre?: MatchCentre; stats?: StatGroup[]; children: ReactNode }) {
-  return <Ctx value={{ ...useMatchFeed(match, centre), stats }}>{children}</Ctx>;
+export function MatchLive({ match, centre, insights, children }: { match: Match; centre?: MatchCentre; insights?: MatchInsights; children: ReactNode }) {
+  return <Ctx value={{ ...useMatchFeed(match, centre), insights }}>{children}</Ctx>;
 }
 
 export function LiveScoreHeader() {
@@ -25,8 +26,8 @@ export function LiveScoreHeader() {
 const NoCoverage = () => <p className="py-8 text-center text-sm text-text-2">Detailed coverage for this match is coming soon.</p>;
 
 export function OverviewTab() {
-  const { centre: c, stats } = useFeed();
-  if (!c) return stats?.length ? <MatchStats groups={stats} /> : <NoCoverage />;
+  const { match, centre: c, insights } = useFeed();
+  if (!c) return insights ? <FootballInsights match={match} insights={insights} /> : <NoCoverage />;
   return (
     <>
       {c.crease && <AtTheCrease crease={c.crease} />}

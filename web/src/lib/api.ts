@@ -1,7 +1,7 @@
 // REST client for the 1stLive247 backend. Responses are uncached: live data is read at request time.
 import { cacheLife } from "next/cache";
 import { API_URL } from "./config";
-import type { Featured, Match, MatchCentre, MatchStatus, NewsArticle, SportId, StatGroup } from "@/data/types";
+import type { Featured, Match, MatchCentre, MatchInsights, MatchStatus, NewsArticle, SportId, StatGroup } from "@/data/types";
 
 
 async function get<T>(path: string): Promise<T>;
@@ -23,7 +23,12 @@ export const api = {
   matches: (f: { status?: MatchStatus; sport?: SportId } = {}) => get<Match[]>(`/matches${qs(f)}`),
   match: (id: string) => get<Match>(`/matches/${encodeURIComponent(id)}`, { allow404: true }),
   centre: (id: string) => get<MatchCentre>(`/matches/${encodeURIComponent(id)}/centre`, { allow404: true }),
-  stats: (id: string) => get<StatGroup[]>(`/matches/${encodeURIComponent(id)}/stats`, { allow404: true }),
+  insights: async (id: string) => {
+    const path = `/matches/${encodeURIComponent(id)}`;
+    // shortcut: falls back to the old /stats endpoint until the /insights backend is deployed; delete after deploy
+    return (await get<MatchInsights>(`${path}/insights`, { allow404: true }))
+      ?? (await get<StatGroup[]>(`${path}/stats`, { allow404: true }).then((g) => g && { periods: [{ name: "Match", groups: g }], timeline: [], momentum: [], info: [] }));
+  },
   news: (f: { sport?: SportId } = {}) => get<NewsArticle[]>(`/news${qs(f)}`),
   article: (slug: string) => get<NewsArticle>(`/news/${encodeURIComponent(slug)}`, { allow404: true }),
 };

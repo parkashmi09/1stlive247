@@ -36,6 +36,19 @@ export type Featured = { matchId: string; sport: SportId; league: string; home: 
 
 export type StatGroup = { title: string; stats: { name: string; home: string; away: string }[] };
 
+/** Football match insights (mirrors backend/src/types.ts). */
+export type IncidentKind = "goal" | "penalty" | "penalty-missed" | "own-goal" | "yellow" | "red" | "sub" | "other";
+export type Incident =
+  | { type: "period"; name: string; score?: string }
+  | { type: "event"; side: "home" | "away"; minute: string; kind: IncidentKind; player: string; assist?: string; playerOut?: string; note?: string; score?: string };
+export type MatchInsights = {
+  periods: { name: string; groups: StatGroup[] }[];
+  timeline: Incident[];
+  /** one point per minute, value -1..1: positive = home pressure */
+  momentum: { minute: number; value: number }[];
+  info: { label: string; value: string }[];
+};
+
 export type Match = {
   id: string;
   sport: SportId;

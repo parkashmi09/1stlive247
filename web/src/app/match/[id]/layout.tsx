@@ -17,9 +17,9 @@ async function Feed({ params, children }: { params: Params; children: ReactNode 
   const { id } = await params;
   const [match, centre] = await Promise.all([api.match(id), api.centre(id)]);
   if (!match) notFound();
-  const stats = centre ? undefined : await api.stats(id).catch(() => undefined);
+  const insights = centre ? undefined : await api.insights(id).catch(() => undefined);
   return (
-    <MatchLive match={match} centre={centre} stats={stats}>
+    <MatchLive match={match} centre={centre} insights={insights}>
       {centre && <MatchTabs id={id} />}
       <LiveScoreHeader />
       <div className="flex flex-col gap-3 px-4 pt-3">{children}</div>

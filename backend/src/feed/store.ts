@@ -47,7 +47,8 @@ export function toMatch(sb: Scoreboard, timer?: ApiTimer): Match | undefined {
     : timer ? (timer.mode === "none" ? timer.display : timer.minute_label || timer.display) || minute
     : minute;
   const side = (name: string, code: string | string[] | undefined, score: string | undefined, logo: string | undefined): Side => ({
-    team: { code: short(code, name), name, tone: toneOf(name), ...(logo && { logo }) },
+    // tennis "logos" are all Flashscore's blank 30×30 player placeholder, so initials badges are shown instead
+    team: { code: short(code, name), name, tone: toneOf(name), ...(logo && sport !== "tennis" && { logo }) },
     ...(st !== "upcoming" && score !== undefined && score !== "" && { score }),
   });
   const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo);
@@ -180,16 +181,3 @@ export function createFeedStore(onChange: (m: Match) => void, onOther?: (sb: Sco
 }
 export type FeedStore = ReturnType<typeof createFeedStore>;
 
-/** Match statistics (the "Match" section of /slice/stats), grouped. */
-export async function fetchStats(id: string) {
-  const rows = await sportsApi<Record<string, string>[]>(ENDPOINTS.slice(id, "stats"));
-  const groups: { title: string; stats: { name: string; home: string; away: string }[] }[] = [];
-  let section = "";
-  for (const r of rows) {
-    if (r.SE) { section = r.SE; continue; }
-    if (section !== "Match") continue;
-    if (r.SF) groups.push({ title: r.SF, stats: [] });
-    else if (r.SG && groups.length) groups.at(-1)!.stats.push({ name: r.SG, home: r.SH ?? "", away: r.SI ?? "" });
-  }
-  return groups.filter((g) => g.stats.length);
-}

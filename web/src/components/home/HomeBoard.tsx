@@ -34,9 +34,9 @@ export function HomeBoard({ sports, initial, featured }: { sports: Sport[]; init
           return (
             <button key={s.id} role="tab" aria-selected={on} aria-label={s.label} onClick={() => setSport(s.id)}
               className={cx("flex h-12 shrink-0 items-center justify-center rounded-full transition-all",
-                on ? "border-gold gap-3 pl-[23px] pr-6" : "w-12 border border-line bg-surface text-[#98A3A6]")}>
-              <SportIcon sport={s.id} active={on} />
-              {on && <span className="text-gold text-lg font-semibold">{s.label}</span>}
+                on ? "bg-brand gap-3 pl-[23px] pr-6 text-white shadow-[0_4px_14px_rgb(1_44_120/0.28)]" : "w-12 border border-line bg-surface text-[#98A3A6]")}>
+              <SportIcon sport={s.id} />
+              {on && <span className="text-lg font-semibold">{s.label}</span>}
             </button>
           );
         })}

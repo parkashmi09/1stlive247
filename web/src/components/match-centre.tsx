@@ -1,4 +1,4 @@
-import type { CommentaryEntry, Match, MatchCentre, StatGroup } from "@/data/types";
+import type { BallKind, CommentaryEntry, Match, MatchCentre } from "@/data/types";
 import { econ, sr } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
 import { LiveClock } from "./LiveClock";
@@ -33,35 +33,6 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   );
 }
 
-/** Two-sided stat bars (possession, shots…) from the feed's match statistics. */
-export function MatchStats({ groups }: { groups: StatGroup[] }) {
-  const num = (v: string) => parseFloat(v) || 0;
-  return (
-    <div className="flex flex-col gap-3">
-      {groups.map((g) => (
-        <Card key={g.title} className="px-4 py-3">
-          <h3 className="mb-2 text-xs font-bold uppercase text-primary">{g.title}</h3>
-          <ul className="flex flex-col gap-3">
-            {g.stats.map((s) => {
-              const total = num(s.home) + num(s.away) || 1;
-              const home = (num(s.home) / total) * 100;
-              return (
-                <li key={s.name}>
-                  <div className="flex gap-2 text-sm"><b className="min-w-10 whitespace-nowrap tabular-nums">{s.home}</b><span className="min-w-0 flex-1 truncate text-center text-text-2">{s.name}</span><b className="min-w-10 whitespace-nowrap text-right tabular-nums">{s.away}</b></div>
-                  <div className="mt-1 flex h-1.5 gap-1" aria-hidden>
-                    <span className="flex flex-1 justify-end overflow-hidden rounded-full bg-surface-2"><span className="bg-brand rounded-full" style={{ width: `${home}%` }} /></span>
-                    <span className="flex-1 overflow-hidden rounded-full bg-surface-2"><span className="bg-gold-h block h-full rounded-full" style={{ width: `${100 - home}%` }} /></span>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
 export function RecentBalls({ c }: { c: MatchCentre }) {
   return (
     <Card className="flex items-center gap-2 px-3.5 py-3">
@@ -80,29 +51,60 @@ export function LatestUpdate({ c }: { c: MatchCentre }) {
   );
 }
 
-const EVENT_COLOR = { four: "text-boundary", six: "text-boundary", wicket: "text-live" } as const;
+/** Cricbuzz ball lines read "Bowler to Batter, result, description"; anything else is shown as plain text. */
+function splitBall(text: string) {
+  const [who, result = "", ...rest] = text.split(", ");
+  return / to /.test(who) && result ? { who, result, desc: rest.join(", ") } : { who: "", result: "", desc: text };
+}
+
+function ballValue(kind: BallKind, result: string) {
+  if (kind === "wicket") return "W";
+  if (kind === "four") return "4";
+  if (kind === "six") return "6";
+  if (kind === "dot") return "0";
+  if (kind === "extra") return /wide/i.test(result) ? "wd" : /no ball/i.test(result) ? "nb" : /leg bye/i.test(result) ? "lb" : /bye/i.test(result) ? "b" : "+";
+  return result.match(/\d+/)?.[0] ?? "•";
+}
+
+const RESULT_TONE: Partial<Record<BallKind, string>> = { four: "font-bold uppercase text-boundary", six: "font-bold uppercase text-boundary", wicket: "font-bold uppercase text-live", extra: "font-semibold text-[#8F6619]" };
+const ROW_TINT: Partial<Record<BallKind, string>> = { four: "bg-boundary/8", six: "bg-boundary/8", wicket: "bg-live/8" };
+
+function OverSummary({ title, summary }: { title: string; summary: string }) {
+  const [over, runs] = title.split(" · ");
+  const [score, ...players] = summary.split(" · ");
+  return (
+    <li className="bg-brand-diag px-4 py-3 text-white">
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-bold uppercase tracking-wide">{over}</span>
+        {runs && <span className="rounded-full bg-white/15 px-2 py-0.5 text-[11px] font-semibold uppercase">{runs}</span>}
+        <span className="ml-auto text-sm font-bold tabular-nums">{score}</span>
+      </div>
+      {players.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-white/75">{players.map((p) => <span key={p}>{p}</span>)}</div>
+      )}
+    </li>
+  );
+}
 
 export function Commentary({ items }: { items: CommentaryEntry[] }) {
   return (
     <ol className="overflow-hidden rounded-2xl border border-line bg-surface">
-      {items.map((e, i) =>
-        e.type === "over" ? (
-          <li key={i} className="bg-surface-2 px-4 py-2.5">
-            <p className="text-xs font-bold uppercase text-primary">{e.title}</p>
-            <p className="text-xs text-text-2">{e.summary}</p>
+      {items.map((e, i) => {
+        if (e.type === "over") return <OverSummary key={i} title={e.title} summary={e.summary} />;
+        const { who, result, desc } = splitBall(e.text);
+        return (
+          <li key={i} className={cx("flex gap-3 border-b border-line px-4 py-3.5 last:border-0", ROW_TINT[e.kind])}>
+            <div className="flex w-10 shrink-0 flex-col items-center gap-1.5">
+              <span className="text-xs font-bold tabular-nums text-text-2">{e.over}</span>
+              <BallChip ball={{ value: ballValue(e.kind, result), kind: e.kind }} />
+            </div>
+            <div className="min-w-0 flex-1 pt-0.5">
+              {who && <p className="text-[13px] font-semibold">{who}, <span className={RESULT_TONE[e.kind] ?? "font-medium text-text-2"}>{result}</span></p>}
+              {desc && <p className={cx("text-sm leading-snug", who ? "mt-1 text-text/70" : "text-text")}>{desc}</p>}
+            </div>
           </li>
-        ) : (
-          <li key={i} className="flex gap-3 border-b border-line px-4 py-3 last:border-0">
-            <span className="w-9 shrink-0 font-semibold tabular-nums">{e.over}</span>
-            {e.kind in EVENT_COLOR && <BallChip ball={{ value: e.kind === "wicket" ? "W" : e.kind === "six" ? "6" : "4", kind: e.kind }} />}
-            <p className="text-sm">
-              {e.kind in EVENT_COLOR ? (
-                <><b className={EVENT_COLOR[e.kind as keyof typeof EVENT_COLOR]}>{e.text.split(" ")[0]}</b>{e.text.slice(e.text.indexOf(" "))}</>
-              ) : e.text}
-            </p>
-          </li>
-        ),
-      )}
+        );
+      })}
     </ol>
   );
 }

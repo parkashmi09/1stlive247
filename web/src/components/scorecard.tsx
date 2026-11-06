@@ -49,10 +49,10 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
             return (
               <li key={b.name} className={cx("flex items-center gap-1 border-b border-line px-3.5 py-2.5 last:border-0", best && "border-l-[3px] border-l-[#D9AB4B] pl-[11px]")}>
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1.5 truncate text-sm font-semibold">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold">
                     {notOut && <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-boundary" aria-label="batting" />}
-                    {b.name}
-                    {best && <span className="text-gold text-[10px] font-bold uppercase">Top</span>}
+                    <span className="truncate">{b.name}</span>
+                    {best && <span className="text-gold shrink-0 text-[10px] font-bold uppercase">Top</span>}
                   </p>
                   <p className={cx("truncate text-xs", notOut ? "font-medium text-boundary" : "text-text-2")}>{b.dismissal}</p>
                 </div>

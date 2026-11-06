@@ -75,13 +75,17 @@ function TeamMark({ team }: { team: Side["team"] }) {
 export function MatchCard({ m }: { m: Match }) {
   const live = m.status === "live", done = m.status === "finished";
   const scored = Boolean(m.home.score || m.away.score);
+  const third = scored || Boolean(m.home.record || m.away.record);
   const team = (s: Side) => (
     <div className="flex w-[90px] shrink-0 flex-col items-center gap-1 text-center">
       <TeamMark team={s.team} />
       <span className="text-[15px] font-semibold leading-tight">{s.team.code}</span>
-      {scored && s.score
-        ? <ScorePop value={s.score} className={cx("font-bold leading-tight tabular-nums", s.score.length > 7 ? "text-[13px]" : "text-lg", s.lost && "text-text-2")} />
-        : s.record ? <span className="text-xs text-text-2">{s.record}</span> : scored ? <span className="text-xs text-text-2">Yet to bat</span> : null}
+      {/* same-height slot on both sides so logos line up even when one side is a 2-line score and the other "Yet to bat" */}
+      {third && <div className="flex min-h-9 items-start justify-center">
+        {scored && s.score
+          ? <ScorePop value={s.score} className={cx("font-bold leading-tight tabular-nums", s.score.length > 7 ? "text-[13px]" : "text-lg", s.lost && "text-text-2")} />
+          : s.record ? <span className="text-xs text-text-2">{s.record}</span> : scored ? <span className="text-xs text-text-2">Yet to bat</span> : null}
+      </div>}
     </div>
   );
   return (
