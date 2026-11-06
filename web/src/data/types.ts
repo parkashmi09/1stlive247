@@ -47,6 +47,12 @@ export type MatchInsights = {
   /** one point per minute, value -1..1: positive = home pressure */
   momentum: { minute: number; value: number }[];
   info: { label: string; value: string }[];
+  h2h: { name: string; sections: { title: string; matches: H2hMatch[] }[] }[];
+  odds?: Record<"home" | "draw" | "away", { value: string; opening?: string; change?: "up" | "down" }>;
+};
+export type H2hMatch = {
+  id: string; start: string; league: string; home: string; away: string; homeLogo?: string; awayLogo?: string;
+  score: string; winner?: "home" | "away"; result?: "w" | "d" | "l";
 };
 
 export type Match = {

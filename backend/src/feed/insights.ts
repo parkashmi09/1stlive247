@@ -1,5 +1,5 @@
 // Match insights for Flashscore events: raw slice codes -> clean JSON. Mapped from real samples (backend/samples/q9/).
-import type { Incident, IncidentKind, MatchInsights, StatGroup } from "../types.ts";
+import type { H2hMatch, Incident, IncidentKind, MatchInsights, StatGroup } from "../types.ts";
 import { ENDPOINTS, sportsApi } from "./sports-api.ts";
 
 type Row = Record<string, string | string[]>;
@@ -72,19 +72,64 @@ export function parseMomentum(body: MomentumBody | null): MatchInsights["momentu
   return entries.map((e) => ({ minute: e.timeFrame.elapsedMinute + 1, value: Math.max(-1, Math.min(1, Number(e.momentumValue) || 0)) }));
 }
 
-/** All three slices in parallel; a missing slice just leaves its part empty. Throws only when all three fail. */
+const LOGO = "https://static.flashscore.com/res/image/data/";
+const RESULT: Record<string, H2hMatch["result"]> = { w: "w", wo: "w", d: "d", l: "l", lo: "l" }; // wo/lo = won/lost after extra time or penalties
+
+/** h2h slice: KA = tab, KB = section, rows: KC start, KJ/KK home/away ("*" marks the winner), KL score, EC/ED logo files, WIS result. */
+export function parseH2h(rows: Row[], perSection = 10): MatchInsights["h2h"] {
+  const tabs: MatchInsights["h2h"] = [];
+  for (const r of rows) {
+    if (r.KA) tabs.push({ name: str(r.KA), sections: [] });
+    else if (r.KB) tabs.at(-1)?.sections.push({ title: str(r.KB), matches: [] });
+    else if (r.KC) {
+      const sec = tabs.at(-1)?.sections.at(-1);
+      if (!sec || sec.matches.length >= perSection) continue;
+      const h = str(r.KJ), a = str(r.KK);
+      sec.matches.push({
+        id: str(r.KP), start: new Date(Number(str(r.KC)) * 1000).toISOString(), league: str(r.KF),
+        home: h.replace(/^\*/, ""), away: a.replace(/^\*/, ""),
+        ...(r.EC && { homeLogo: LOGO + str(r.EC) }), ...(r.ED && { awayLogo: LOGO + str(r.ED) }),
+        score: str(r.KL),
+        ...(h.startsWith("*") ? { winner: "home" as const } : a.startsWith("*") ? { winner: "away" as const } : {}),
+        ...(RESULT[str(r.WIS)] && { result: RESULT[str(r.WIS)] }),
+      });
+    }
+  }
+  return tabs.map((t) => ({ ...t, sections: t.sections.filter((x) => x.matches.length) })).filter((t) => t.sections.length);
+}
+
+type OddsItem = { value?: string; opening?: string; change?: { type?: string } | null };
+type OddsBody = { findEventById?: { updateLiveOddsOverview?: Partial<Record<"home" | "draw" | "away", OddsItem>> | null } };
+
+export function parseOdds(body: OddsBody | null): MatchInsights["odds"] {
+  const o = body?.findEventById?.updateLiveOddsOverview;
+  if (!o?.home?.value || !o.draw?.value || !o.away?.value) return undefined;
+  const item = (i: OddsItem) => ({
+    value: i.value!, ...(i.opening && { opening: i.opening }),
+    ...(i.change?.type === "UP" ? { change: "up" as const } : i.change?.type === "DOWN" ? { change: "down" as const } : {}),
+  });
+  return { home: item(o.home), draw: item(o.draw), away: item(o.away) };
+}
+
+/** All slices in parallel; a missing slice just leaves its part empty. Throws only when every slice fails. */
 export async function fetchInsights(id: string): Promise<MatchInsights> {
-  const [stats, incidents, momentum] = await Promise.allSettled([
+  const settled = await Promise.allSettled([
     sportsApi<Row[]>(ENDPOINTS.slice(id, "stats")),
     sportsApi<Row[]>(ENDPOINTS.slice(id, "incidents")),
     sportsApi<MomentumBody>(ENDPOINTS.slice(id, "momentum")),
+    sportsApi<Row[]>(ENDPOINTS.slice(id, "h2h"), { timeoutMs: 15_000 }),
+    sportsApi<OddsBody>(ENDPOINTS.slice(id, "odds")),
   ]);
-  if (stats.status === "rejected" && incidents.status === "rejected" && momentum.status === "rejected") throw stats.reason;
+  if (settled.every((r) => r.status === "rejected")) throw (settled[0] as PromiseRejectedResult).reason;
+  const [stats, incidents, momentum, h2h, oddsRes] = settled;
   const ok = <T>(r: PromiseSettledResult<T>) => (r.status === "fulfilled" ? r.value : null);
+  const odds = parseOdds(ok(oddsRes) as OddsBody | null);
   const rows = (v: unknown) => (Array.isArray(v) ? (v as Row[]) : []);
   return {
     periods: parseStats(rows(ok(stats))),
     ...parseIncidents(rows(ok(incidents))),
-    momentum: parseMomentum(ok(momentum)),
+    momentum: parseMomentum(ok(momentum) as MomentumBody | null),
+    h2h: parseH2h(rows(ok(h2h))),
+    ...(odds && { odds }),
   };
 }

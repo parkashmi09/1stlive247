@@ -1,7 +1,9 @@
 "use client";
-// Football Match Centre: momentum graph, possession donut + key duels, events timeline, period stats, match info.
+// Football Match Centre (Sofascore-style tabs): Details (momentum, win probability, events, info),
+// Statistics (possession donut + key duels, period stats) and H2H (head-to-head summary, form, last matches).
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import type { Incident, Match, MatchInsights, StatGroup } from "@/data/types";
+import type { H2hMatch, Incident, Match, MatchInsights, StatGroup } from "@/data/types";
 import { API_URL } from "@/lib/config";
 import { Icon } from "./icons/Icon";
 import { Card, TeamBadge, cx } from "./ui";
@@ -26,16 +28,43 @@ function useInsights(match: Match, initial: MatchInsights) {
   return data;
 }
 
+type TabId = "details" | "stats" | "h2h";
+
 export function FootballInsights({ match, insights }: { match: Match; insights: MatchInsights }) {
   const d = useInsights(match, insights);
   const top = d.periods[0]?.groups ?? [];
+  const hasEvents = d.timeline.some((e) => e.type === "event");
+  const tabs = ([
+    ["details", "Details", d.momentum.length > 2 || hasEvents || !!d.odds || d.info.length > 0],
+    ["stats", "Statistics", d.periods.length > 0],
+    ["h2h", "H2H", d.h2h?.length > 0],
+  ] as const).filter((t) => t[2]);
+  const [tab, setTab] = useState<TabId | undefined>();
+  const active = tabs.find((t) => t[0] === tab)?.[0] ?? tabs[0]?.[0];
+  if (!active) return <p className="py-8 text-center text-sm text-text-2">Detailed coverage for this match is coming soon.</p>;
   return (
     <>
-      {d.momentum.length > 2 && <Momentum match={match} points={d.momentum} timeline={d.timeline} />}
-      {findStat(top, "Ball possession") && <KeyStats match={match} groups={top} />}
-      {d.timeline.some((e) => e.type === "event") && <Timeline match={match} items={d.timeline} />}
-      {d.periods.length > 0 && <PeriodStats periods={d.periods} />}
-      {d.info.length > 0 && <MatchInfo info={d.info} />}
+      {tabs.length > 1 && (
+        <div role="tablist" aria-label="Match sections" className="sticky top-16 z-20 -mx-4 flex gap-1 bg-bg/85 px-4 py-2 backdrop-blur">
+          {tabs.map(([id, label]) => (
+            <button key={id} role="tab" aria-selected={id === active} onClick={() => setTab(id)}
+              className={cx("h-9 flex-1 rounded-full text-sm font-semibold transition", id === active ? "bg-brand text-white shadow-[0_4px_14px_rgb(1_44_120/0.25)]" : "border border-line bg-surface text-text-2")}>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+      {active === "details" && <>
+        {d.momentum.length > 2 && <Momentum match={match} points={d.momentum} timeline={d.timeline} />}
+        {d.odds && <WinProbability match={match} odds={d.odds} />}
+        {hasEvents && <Timeline match={match} items={d.timeline} />}
+        {d.info.length > 0 && <MatchInfo info={d.info} />}
+      </>}
+      {active === "stats" && <>
+        {findStat(top, "Ball possession") && <KeyStats match={match} groups={top} />}
+        <PeriodStats periods={d.periods} />
+      </>}
+      {active === "h2h" && <HeadToHead match={match} tabs={d.h2h} />}
     </>
   );
 }
@@ -90,7 +119,7 @@ function Momentum({ match, points, timeline }: { match: Match; points: MatchInsi
       </div>
       <TeamTag s={match.away} color="bg-[#D9AB4B]" />
       <div className="mt-2 flex justify-between text-[10px] font-semibold text-text-2 tabular-nums">
-        <span>0'</span><span>15'</span><span>30'</span><span className="text-text">HT</span><span>60'</span><span>75'</span><span>{span}'</span>
+        {["0'", "15'", "30'", "HT", "60'", "75'", `${span}'`].map((l) => <span key={l} className={l === "HT" ? "text-text" : undefined}>{l}</span>)}
       </div>
     </Card>
   );
@@ -293,5 +322,165 @@ function MatchInfo({ info }: { info: MatchInsights["info"] }) {
         ))}
       </dl>
     </Card>
+  );
+}
+
+/* ---------- win probability (implied from live 1X2 odds) ---------- */
+
+function WinProbability({ match, odds }: { match: Match; odds: NonNullable<MatchInsights["odds"]> }) {
+  const inv = (["home", "draw", "away"] as const).map((k) => 1 / (num(odds[k].value) || 1));
+  const sum = inv.reduce((a, b) => a + b, 0) || 1;
+  const pct = inv.map((v) => Math.round((v / sum) * 100));
+  const cols = [
+    { k: "home" as const, label: match.home.team.code, bar: "bg-brand", text: "text-[#2F80ED]" },
+    { k: "draw" as const, label: "Draw", bar: "bg-text-2/40", text: "text-text-2" },
+    { k: "away" as const, label: match.away.team.code, bar: "bg-gold-h", text: "text-[#C9962E]" },
+  ];
+  return (
+    <Card className="px-4 py-3.5">
+      <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">from live odds</span>}>Win probability</SectionTitle>
+      <div className="flex justify-between">
+        {cols.map((c, i) => (
+          <div key={c.k} className={cx("flex flex-col", i === 1 ? "items-center" : i === 2 ? "items-end" : "items-start")}>
+            <span className={cx("text-2xl font-bold tabular-nums", c.text)}>{pct[i]}%</span>
+            <span className="text-xs font-semibold text-text-2">{c.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 flex h-2.5 gap-1 overflow-hidden rounded-full">
+        {cols.map((c, i) => <span key={c.k} className={cx("h-full rounded-full", c.bar)} style={{ width: `${Math.max(pct[i]!, 2)}%` }} />)}
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {cols.map((c, i) => {
+          const o = odds[c.k];
+          return (
+            <div key={c.k} className="flex flex-col items-center rounded-xl border border-line bg-surface-2/50 py-2">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-text-2">{["1", "X", "2"][i]}</span>
+              <span className="flex items-center gap-1 text-sm font-bold tabular-nums">
+                {o.value}
+                {o.change && <span className={o.change === "up" ? "text-boundary" : "text-live"} aria-label={o.change === "up" ? "rising" : "falling"}>{o.change === "up" ? "▲" : "▼"}</span>}
+              </span>
+              {o.opening && <span className="text-[10px] text-text-2 tabular-nums">Open {o.opening}</span>}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+/* ---------- head to head ---------- */
+
+const RESULT_CHIP = { w: ["W", "bg-boundary"], d: ["D", "bg-text-2/60"], l: ["L", "bg-live"] } as const;
+
+const FormChip = ({ r }: { r: NonNullable<H2hMatch["result"]> }) => (
+  <span className={cx("flex size-6 items-center justify-center rounded-md text-[11px] font-bold text-white", RESULT_CHIP[r][1])}>{RESULT_CHIP[r][0]}</span>
+);
+
+const day = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" });
+
+function H2hRow({ m }: { m: H2hMatch }) {
+  const [hs, as] = m.score.split(":");
+  const line = (name: string, logo: string | undefined, goals: string | undefined, win: boolean) => (
+    <span className="flex items-center gap-2">
+      {logo ? <Image src={logo} alt="" width={18} height={18} unoptimized className="size-[18px] shrink-0 object-contain" /> : <span className="size-[18px] shrink-0 rounded-full bg-surface-2" />}
+      <span className={cx("min-w-0 flex-1 truncate text-[13px]", win ? "font-bold" : "text-text/75")}>{name}</span>
+      <span className={cx("w-5 text-right text-sm tabular-nums", win ? "font-bold" : "text-text/75")}>{goals}</span>
+    </span>
+  );
+  return (
+    <li className="flex items-center gap-3 py-2.5">
+      <div className="flex w-[52px] shrink-0 flex-col text-[10px] leading-tight text-text-2">
+        <span className="font-semibold text-text/70">{day(m.start)}</span>
+        <span className="truncate">{m.league}</span>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-1 border-l border-line pl-3">
+        {line(m.home, m.homeLogo, hs, m.winner === "home")}
+        {line(m.away, m.awayLogo, as, m.winner === "away")}
+      </div>
+      {m.result ? <FormChip r={m.result} /> : <span className="w-6 shrink-0" />}
+    </li>
+  );
+}
+
+function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] }) {
+  const [ti, setTi] = useState(0);
+  const tab = tabs[Math.min(ti, tabs.length - 1)]!;
+  const h2h = tab.sections.find((s) => /head-to-head/i.test(s.title));
+  const forms = tab.sections.filter((s) => s !== h2h);
+  const label = (n: string) => n.endsWith(" - Home") ? `${n.slice(0, -7)} · Home` : n.endsWith(" - Away") ? `${n.slice(0, -7)} · Away` : n;
+  // head-to-head tally from the home team's point of view
+  const homeName = match.home.team.name;
+  const tally = { home: 0, draw: 0, away: 0 };
+  for (const m of h2h?.matches ?? []) {
+    if (!m.winner) tally.draw++;
+    else if ((m.winner === "home" ? m.home : m.away) === homeName) tally.home++;
+    else tally.away++;
+  }
+  const n = tally.home + tally.draw + tally.away || 1;
+  return (
+    <>
+      {tabs.length > 1 && (
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+          {tabs.map((t, i) => (
+            <button key={t.name} onClick={() => setTi(i)}
+              className={cx("shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition", i === ti ? "border-transparent bg-brand text-white" : "border-line bg-surface text-text-2")}>
+              {label(t.name)}
+            </button>
+          ))}
+        </div>
+      )}
+      {h2h && (
+        <Card className="px-4 py-3.5">
+          <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">last {h2h.matches.length}</span>}>Head-to-head</SectionTitle>
+          <div className="flex items-end justify-between">
+            <div className="flex flex-col items-start gap-1">
+              <TeamBadge code={match.home.team.code} tone={match.home.team.tone} logo={match.home.team.logo} size={40} />
+              <span className="text-3xl font-bold leading-none text-[#2F80ED] tabular-nums">{tally.home}</span>
+              <span className="text-[11px] font-semibold text-text-2">{match.home.team.code} wins</span>
+            </div>
+            <div className="flex flex-col items-center gap-1 pb-0.5">
+              <span className="text-3xl font-bold leading-none text-text-2 tabular-nums">{tally.draw}</span>
+              <span className="text-[11px] font-semibold text-text-2">Draws</span>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <TeamBadge code={match.away.team.code} tone={match.away.team.tone} logo={match.away.team.logo} size={40} />
+              <span className="text-3xl font-bold leading-none text-[#C9962E] tabular-nums">{tally.away}</span>
+              <span className="text-[11px] font-semibold text-text-2">{match.away.team.code} wins</span>
+            </div>
+          </div>
+          <div className="mt-3 flex h-2.5 gap-1 overflow-hidden rounded-full">
+            <span className="bg-brand h-full rounded-full" style={{ width: `${(tally.home / n) * 100}%` }} />
+            <span className="h-full rounded-full bg-text-2/40" style={{ width: `${(tally.draw / n) * 100}%` }} />
+            <span className="bg-gold-h h-full rounded-full" style={{ width: `${(tally.away / n) * 100}%` }} />
+          </div>
+          <ul className="mt-2 divide-y divide-line">{h2h.matches.map((m) => <H2hRow key={m.id} m={m} />)}</ul>
+        </Card>
+      )}
+      {forms.map((s) => {
+        const team = s.title.replace(/^Last matches:\s*/, "");
+        const isHome = team === homeName;
+        const results = s.matches.map((m) => m.result).filter((r): r is NonNullable<typeof r> => Boolean(r));
+        const wins = results.filter((r) => r === "w").length;
+        return (
+          <Card key={s.title} className="px-4 py-3.5">
+            <SectionTitle>
+              <span className="flex items-center gap-2">
+                <TeamBadge {...(isHome ? match.home.team : team === match.away.team.name ? match.away.team : { code: team.slice(0, 3).toUpperCase(), tone: "navy" as const })} size={22} />
+                <span className="truncate">{team} form</span>
+              </span>
+            </SectionTitle>
+            {results.length > 0 && (
+              <div className="-mt-1 mb-1 flex items-center gap-1">
+                {/* oldest -> newest, newest highlighted */}
+                {results.slice(0, 5).reverse().map((r, i, arr) => <span key={i} className={cx(i === arr.length - 1 && "rounded-lg ring-2 ring-[#D9AB4B] ring-offset-1 ring-offset-surface")}><FormChip r={r} /></span>)}
+                <span className="ml-auto text-xs text-text-2"><b className="text-boundary">{wins}W</b> · <b>{results.filter((r) => r === "d").length}D</b> · <b className="text-live">{results.filter((r) => r === "l").length}L</b> <span className="text-[10px]">last {results.length}</span></span>
+              </div>
+            )}
+            <ul className="divide-y divide-line">{s.matches.map((m) => <H2hRow key={m.id} m={m} />)}</ul>
+          </Card>
+        );
+      })}
+    </>
   );
 }

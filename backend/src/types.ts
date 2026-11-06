@@ -38,6 +38,16 @@ export type MatchInsights = {
   /** one point per minute, value -1..1: positive = home pressure */
   momentum: { minute: number; value: number }[];
   info: { label: string; value: string }[];
+  /** "Overall" / "<home> - Home" / "<away> - Away", each with last-matches and head-to-head lists */
+  h2h: { name: string; sections: { title: string; matches: H2hMatch[] }[] }[];
+  odds?: Record<"home" | "draw" | "away", { value: string; opening?: string; change?: "up" | "down" }>;
+};
+export type H2hMatch = {
+  id: string; start: string; league: string; home: string; away: string; homeLogo?: string; awayLogo?: string;
+  /** "2:1" */
+  score: string; winner?: "home" | "away";
+  /** the section team's result (last-matches lists only) */
+  result?: "w" | "d" | "l";
 };
 
 export type Match = {

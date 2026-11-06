@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseIncidents, parseMomentum, parseStats } from "./insights.ts";
+import { parseH2h, parseIncidents, parseMomentum, parseOdds, parseStats } from "./insights.ts";
 
 // Rows trimmed from real slices of event Q9XxIJ2F (Adelaide W 0-1 Wellington Phoenix W) and two other live matches.
 test("stats: every period, empty groups dropped", () => {
@@ -41,4 +41,32 @@ test("momentum: minute = elapsed + 1, values clamped; missing slice -> []", () =
   ] } } });
   assert.deepEqual(m, [{ minute: 1, value: -0.45 }, { minute: 2, value: 1 }]);
   assert.deepEqual(parseMomentum(null), []);
+});
+
+test("h2h: tabs/sections, winner star stripped, result codes, logo urls, per-section cap", () => {
+  const row = { KC: "1793541600", KP: "GnxSGsUI", KF: "ISL", KJ: "Inter Kashi", KK: "*Goa", KL: "1:2", EC: "a.png", ED: "b.png", WIS: "w", KS: "away" };
+  const t = parseH2h([
+    { SA: "1" }, { KA: "Overall", IS: "" }, { KB: "Last matches: Goa" },
+    row, { ...row, KP: "x2", KJ: "Goa", KK: "SC Delhi", KL: "1:1", WIS: "d" }, { ...row, KP: "x3", WIS: "lo" },
+    { KB: "Head-to-head matches" }, { ...row, KP: "x4", WIS: undefined as unknown as string },
+    { KA: "Goa - Home", IS: "" }, { KB: "Empty" },
+  ], 2);
+  assert.deepEqual(t.map((x) => x.name), ["Overall"]);
+  assert.deepEqual(t[0]!.sections.map((s) => s.matches.length), [2, 1]);
+  assert.deepEqual(t[0]!.sections[0]!.matches[0], {
+    id: "GnxSGsUI", start: "2026-11-01T14:00:00.000Z", league: "ISL", home: "Inter Kashi", away: "Goa",
+    homeLogo: "https://static.flashscore.com/res/image/data/a.png", awayLogo: "https://static.flashscore.com/res/image/data/b.png",
+    score: "1:2", winner: "away", result: "w",
+  });
+  assert.equal(t[0]!.sections[0]!.matches[1]!.result, "d");
+  assert.equal(t[0]!.sections[1]!.matches[0]!.result, undefined);
+});
+
+test("odds: 1X2 with opening + direction; incomplete -> undefined", () => {
+  const item = (value: string, type: string) => ({ value, opening: "2.0", change: { type } });
+  assert.deepEqual(parseOdds({ findEventById: { updateLiveOddsOverview: { home: item("1.5", "DOWN"), draw: item("4.0", "UP"), away: item("6.0", "NONE") } } }), {
+    home: { value: "1.5", opening: "2.0", change: "down" }, draw: { value: "4.0", opening: "2.0", change: "up" }, away: { value: "6.0", opening: "2.0" },
+  });
+  assert.equal(parseOdds({ findEventById: { updateLiveOddsOverview: null } }), undefined);
+  assert.equal(parseOdds(null), undefined);
 });
