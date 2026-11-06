@@ -71,7 +71,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
 
 const SectionTitle = ({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) => (
   <div className="mb-3 flex items-center gap-2">
-    <span className="bg-gold h-4 w-1 rounded-full" />
+    <span className="bg-brand h-4 w-1 rounded-full" />
     <h3 className="flex-1 text-sm font-bold">{children}</h3>
     {right}
   </div>
@@ -96,13 +96,13 @@ function Momentum({ match, points, timeline }: { match: Match; points: MatchInsi
   const homeShare = Math.round((points.filter((p) => p.value > 0).length / points.length) * 100);
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle right={<span className="text-[11px] font-semibold tabular-nums"><span className="text-[#2F80ED]">{match.home.team.code} {homeShare}%</span><span className="text-text-2"> · </span><span className="text-[#C9962E]">{100 - homeShare}% {match.away.team.code}</span></span>}>Match momentum</SectionTitle>
+      <SectionTitle right={<span className="text-[11px] font-semibold tabular-nums"><span className="text-[#2F80ED]">{match.home.team.code} {homeShare}%</span><span className="text-text-2"> · </span><span className="text-[#14B8A6]">{100 - homeShare}% {match.away.team.code}</span></span>}>Match momentum</SectionTitle>
       <TeamTag s={match.home} color="bg-[#2F80ED]" />
       <div className="relative my-1.5">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-[132px] w-full" aria-label="Match momentum graph" role="img">
           <defs>
             <linearGradient id="mo-home" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#34C4EE" /><stop offset="1" stopColor="#1C4594" /></linearGradient>
-            <linearGradient id="mo-away" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#D9AB4B" /><stop offset="1" stopColor="#FBEA99" /></linearGradient>
+            <linearGradient id="mo-away" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0D9488" /><stop offset="1" stopColor="#5EEAD4" /></linearGradient>
           </defs>
           {[0.25, 0.5, 0.75].map((f) => <line key={f} x1={0} x2={W} y1={H * f} y2={H * f} className="stroke-line" strokeWidth={f === 0.5 ? 1 : 0.5} strokeDasharray={f === 0.5 ? undefined : "3 3"} vectorEffect="non-scaling-stroke" />)}
           <line x1={x(46)} x2={x(46)} y1={0} y2={H} className="stroke-text-2/40" strokeDasharray="4 3" vectorEffect="non-scaling-stroke" />
@@ -117,7 +117,7 @@ function Momentum({ match, points, timeline }: { match: Match; points: MatchInsi
           </span>
         ))}
       </div>
-      <TeamTag s={match.away} color="bg-[#D9AB4B]" />
+      <TeamTag s={match.away} color="bg-[#14B8A6]" />
       <div className="mt-2 flex justify-between text-[10px] font-semibold text-text-2 tabular-nums">
         {["0'", "15'", "30'", "HT", "60'", "75'", `${span}'`].map((l) => <span key={l} className={l === "HT" ? "text-text" : undefined}>{l}</span>)}
       </div>
@@ -134,7 +134,7 @@ function Donut({ home }: { home: number }) {
     <svg viewBox="0 0 100 100" className="size-[112px] shrink-0 -rotate-90" aria-hidden>
       <defs>
         <linearGradient id="do-home" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#34C4EE" /><stop offset="1" stopColor="#1C4594" /></linearGradient>
-        <linearGradient id="do-away" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#FBEA99" /><stop offset="1" stopColor="#B8862B" /></linearGradient>
+        <linearGradient id="do-away" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#5EEAD4" /><stop offset="1" stopColor="#0D9488" /></linearGradient>
       </defs>
       <circle cx="50" cy="50" r={r} fill="none" stroke="url(#do-home)" strokeWidth="11" strokeLinecap="round" strokeDasharray={`${Math.max(0, h - gap)} ${c}`} />
       <circle cx="50" cy="50" r={r} fill="none" stroke="url(#do-away)" strokeWidth="11" strokeLinecap="round" strokeDasharray={`${Math.max(0, c - h - gap)} ${c}`} strokeDashoffset={-h} />
@@ -155,7 +155,7 @@ function KeyStats({ match, groups }: { match: Match; groups: StatGroup[] }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-lg font-bold leading-none tabular-nums">{poss}%</span>
             <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-2">Possession</span>
-            <span className="text-[#C9962E] text-[11px] font-bold tabular-nums">{100 - poss}%</span>
+            <span className="text-[#14B8A6] text-[11px] font-bold tabular-nums">{100 - poss}%</span>
           </div>
         </div>
         <ul className="flex min-w-0 flex-1 flex-col gap-2.5">
@@ -166,11 +166,11 @@ function KeyStats({ match, groups }: { match: Match; groups: StatGroup[] }) {
                 <div className="flex items-baseline justify-between text-xs">
                   <b className={cx("text-[15px] tabular-nums", a > b && "text-[#2F80ED]")}>{s.home}</b>
                   <span className="truncate px-1 text-text-2">{s.name.replace("Expected goals (xG)", "xG")}</span>
-                  <b className={cx("text-[15px] tabular-nums", b > a && "text-[#C9962E]")}>{s.away}</b>
+                  <b className={cx("text-[15px] tabular-nums", b > a && "text-[#14B8A6]")}>{s.away}</b>
                 </div>
                 <div className="mt-1 flex h-1.5 overflow-hidden rounded-full bg-surface-2">
                   <span className="bg-brand h-full" style={{ width: `${(a / t) * 100}%` }} />
-                  <span className="bg-gold-h ml-auto h-full" style={{ width: `${(b / t) * 100}%` }} />
+                  <span className="bg-[#14B8A6] ml-auto h-full" style={{ width: `${(b / t) * 100}%` }} />
                 </div>
               </li>
             );
@@ -178,7 +178,7 @@ function KeyStats({ match, groups }: { match: Match; groups: StatGroup[] }) {
         </ul>
       </div>
       <div className="mt-3 flex justify-between border-t border-line pt-2.5">
-        <TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#D9AB4B]" />
+        <TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#14B8A6]" />
       </div>
     </Card>
   );
@@ -225,7 +225,7 @@ function Timeline({ match, items }: { match: Match; items: Incident[] }) {
   }
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle right={<span className="flex gap-3"><TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#D9AB4B]" /></span>}>Key events</SectionTitle>
+      <SectionTitle right={<span className="flex gap-3"><TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#14B8A6]" /></span>}>Key events</SectionTitle>
       <div className="relative">
         <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-line" aria-hidden />
         {[...periods].reverse().map((p, i) => (
@@ -277,7 +277,7 @@ function PeriodStats({ periods }: { periods: MatchInsights["periods"] }) {
       <div className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
         {groups.map((x, i) => (
           <button key={x.title} onClick={() => setGi(i)}
-            className={cx("shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition", i === gi ? "border-[#D9AB4B] bg-[#FBF3DE] text-[#8F6619]" : "border-line text-text-2")}>
+            className={cx("shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition", i === gi ? "border-[#2F80ED]/40 bg-[#2F80ED]/10 text-[#2F80ED]" : "border-line text-text-2")}>
             {x.title}
           </button>
         ))}
@@ -293,11 +293,11 @@ function PeriodStats({ periods }: { periods: MatchInsights["periods"] }) {
               <div className="flex items-center gap-2 text-sm">
                 <span className={cx("min-w-11 rounded-md px-1.5 py-0.5 text-center text-[13px] font-bold tabular-nums whitespace-nowrap", lead === "home" ? "bg-brand text-white" : "")}>{s.home}</span>
                 <span className="min-w-0 flex-1 truncate text-center text-[13px] text-text-2">{s.name}</span>
-                <span className={cx("min-w-11 rounded-md px-1.5 py-0.5 text-center text-[13px] font-bold tabular-nums whitespace-nowrap", lead === "away" ? "bg-gold text-[#3A2A05]" : "")}>{s.away}</span>
+                <span className={cx("min-w-11 rounded-md px-1.5 py-0.5 text-center text-[13px] font-bold tabular-nums whitespace-nowrap", lead === "away" ? "bg-[#14B8A6] text-white" : "")}>{s.away}</span>
               </div>
               <div className="mt-1.5 flex h-1.5 gap-1" aria-hidden>
                 <span className="flex flex-1 justify-end overflow-hidden rounded-full bg-surface-2"><span className={cx("rounded-full", lead === "home" ? "bg-brand" : "bg-[#1C4594]/35")} style={{ width: `${(pa / t) * 100}%` }} /></span>
-                <span className="flex-1 overflow-hidden rounded-full bg-surface-2"><span className={cx("block h-full rounded-full", lead === "away" ? "bg-gold-h" : "bg-[#D9AB4B]/40")} style={{ width: `${(pb / t) * 100}%` }} /></span>
+                <span className="flex-1 overflow-hidden rounded-full bg-surface-2"><span className={cx("block h-full rounded-full", lead === "away" ? "bg-[#14B8A6]" : "bg-[#14B8A6]/40")} style={{ width: `${(pb / t) * 100}%` }} /></span>
               </div>
             </li>
           );
@@ -334,7 +334,7 @@ function WinProbability({ match, odds }: { match: Match; odds: NonNullable<Match
   const cols = [
     { k: "home" as const, label: match.home.team.code, bar: "bg-brand", text: "text-[#2F80ED]" },
     { k: "draw" as const, label: "Draw", bar: "bg-text-2/40", text: "text-text-2" },
-    { k: "away" as const, label: match.away.team.code, bar: "bg-gold-h", text: "text-[#C9962E]" },
+    { k: "away" as const, label: match.away.team.code, bar: "bg-[#14B8A6]", text: "text-[#14B8A6]" },
   ];
   return (
     <Card className="px-4 py-3.5">
@@ -445,14 +445,14 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
             </div>
             <div className="flex flex-col items-end gap-1">
               <TeamBadge code={match.away.team.code} tone={match.away.team.tone} logo={match.away.team.logo} size={40} />
-              <span className="text-3xl font-bold leading-none text-[#C9962E] tabular-nums">{tally.away}</span>
+              <span className="text-3xl font-bold leading-none text-[#14B8A6] tabular-nums">{tally.away}</span>
               <span className="text-[11px] font-semibold text-text-2">{match.away.team.code} wins</span>
             </div>
           </div>
           <div className="mt-3 flex h-2.5 gap-1 overflow-hidden rounded-full">
             <span className="bg-brand h-full rounded-full" style={{ width: `${(tally.home / n) * 100}%` }} />
             <span className="h-full rounded-full bg-text-2/40" style={{ width: `${(tally.draw / n) * 100}%` }} />
-            <span className="bg-gold-h h-full rounded-full" style={{ width: `${(tally.away / n) * 100}%` }} />
+            <span className="bg-[#14B8A6] h-full rounded-full" style={{ width: `${(tally.away / n) * 100}%` }} />
           </div>
           <ul className="mt-2 divide-y divide-line">{h2h.matches.map((m) => <H2hRow key={m.id} m={m} />)}</ul>
         </Card>
@@ -473,7 +473,7 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
             {results.length > 0 && (
               <div className="-mt-1 mb-1 flex items-center gap-1">
                 {/* oldest -> newest, newest highlighted */}
-                {results.slice(0, 5).reverse().map((r, i, arr) => <span key={i} className={cx(i === arr.length - 1 && "rounded-lg ring-2 ring-[#D9AB4B] ring-offset-1 ring-offset-surface")}><FormChip r={r} /></span>)}
+                {results.slice(0, 5).reverse().map((r, i, arr) => <span key={i} className={cx(i === arr.length - 1 && "rounded-lg ring-2 ring-[#2F80ED] ring-offset-1 ring-offset-surface")}><FormChip r={r} /></span>)}
                 <span className="ml-auto text-xs text-text-2"><b className="text-boundary">{wins}W</b> · <b>{results.filter((r) => r === "d").length}D</b> · <b className="text-live">{results.filter((r) => r === "l").length}L</b> <span className="text-[10px]">last {results.length}</span></span>
               </div>
             )}
