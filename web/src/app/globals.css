@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* dark: follows the in-app theme toggle (data-theme), not the OS setting */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Design tokens v2 — mirrors design/tokens.json and the Figma "Theme" variables. */
 :root {
   --bg: #eff5fb;

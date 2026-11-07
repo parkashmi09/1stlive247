@@ -99,7 +99,6 @@ export default function MorePage() {
         </nav>
 
         <Section title="Preferences">
-          <Row icon={<Icon name="star" size={20} />} tint="gold" title="My Teams" sub="Follow the teams you love" />
           <Row icon={<Icon name="bell" size={20} />} tint="red" title="Notifications" sub="Goals, wickets and full-time alerts" />
           <Row icon={<Icon name="globe" size={20} />} tint="blue" title="Language"
             trailing={<span className="flex items-center gap-1 text-sm text-text-2">English <Chevron size={16} /></span>} />

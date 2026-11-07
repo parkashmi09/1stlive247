@@ -26,7 +26,7 @@ export function NavBar({ path }: { path?: string }) {
             <li key={t.href} className="flex-1">
               <Link href={t.href} aria-current={on ? "page" : undefined}
                 className={`flex flex-col items-center gap-1 font-[family-name:var(--font-inter)] text-xs ${on ? "font-semibold text-text" : "font-medium text-muted"}`}>
-                <Icon name={t.icon} active={on && t.icon !== "more"} className={on ? "text-accent" : undefined} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+                <Icon name={t.icon} active={on && t.icon !== "more"} className={on ? "text-[var(--gold-mid)]" : undefined} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
                 {t.label}
                 <span className={`h-[3px] w-6 rounded-sm ${on ? "bg-gold-h" : ""}`} />
               </Link>
