@@ -1,44 +1,12 @@
 import Link from "next/link";
-import type { Match, Side } from "@/data/types";
+import type { Match, Side, SportId } from "@/data/types";
 import { formatDay, formatTime } from "@/lib/format";
-import { Icon } from "./icons/Icon";
 import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
 import Image from "next/image";
+import { SportIcon } from "./icons/SportIcon";
 import { LiveBadge, TeamBadge, cx } from "./ui";
 
-const cardBase = "card-premium block rounded-2xl border border-line bg-surface active:scale-[0.99]";
-
-/** Dense list row used on Live: header, two team lines, note (Flashscore-style density). */
-export function MatchRow({ m }: { m: Match }) {
-  const line = (s: Side) => (
-    <div className="flex items-center gap-2.5">
-      <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} />
-      <span className="flex-1 text-sm font-semibold">{s.team.name}</span>
-      {s.detail && <span className="text-xs text-text-2">{s.detail}</span>}
-      {/^\d|\//.test(s.score ?? "")
-        ? <ScorePop value={s.score!} className="text-xl font-semibold tabular-nums" />
-        : <span className="text-xs text-text-2">{s.score}</span>}
-    </div>
-  );
-  return (
-    <Link href={`/match/${m.id}`} className={cx(cardBase, "flex flex-col gap-2.5 px-3.5 py-3")}>
-      <div className="flex items-center gap-2">
-        {m.status === "live" ? <LiveBadge /> : <span className="text-xs font-semibold text-text-2">{formatTime(m.start)}</span>}
-        <span className="flex-1 truncate text-xs text-text-2">{m.competition}</span>
-        {m.status === "live" && (m.clock || m.timer) && <span className="text-xs font-bold text-live"><LiveClock timer={m.timer} fallback={m.clock} /></span>}
-      </div>
-      {line(m.home)}
-      {line(m.away)}
-      {m.note && (
-        <div className="flex items-center gap-2 border-t border-line pt-2.5">
-          <span className="flex-1 text-xs font-medium text-accent">{m.note}</span>
-          <Icon name="star" size={18} className="text-text-2" />
-        </div>
-      )}
-    </Link>
-  );
-}
 
 /** Carousel slide: live match on the brand gradient (designer dark Home). */
 export function LiveHeroCard({ m }: { m: Match }) {
@@ -99,9 +67,39 @@ export function MatchCard({ m }: { m: Match }) {
           : <span className="text-[15px] text-text-2">{formatDay(m.start)}</span>}
         {!live && !done
           ? <span className="text-[17px] font-bold">{formatTime(m.start)}</span>
-          : <span className="line-clamp-2 text-xs text-text-2">{m.note ?? m.competition}</span>}
+          : m.note && <span className="line-clamp-2 text-xs text-text-2">{m.note}</span>}
       </div>
       {team(m.away)}
     </Link>
+  );
+}
+
+/** Matches grouped by competition, first-seen order kept (the feed already sorts by start). */
+export function groupByLeague(list: Match[]) {
+  const groups = new Map<string, { name: string; logo?: string; matches: Match[] }>();
+  for (const m of list) {
+    // cricket competition is "<match desc> · <series>": the series is the group
+    const key = m.sport === "cricket" ? m.competition.split(" · ").at(-1)! : m.competition;
+    const g = groups.get(key) ?? { name: key, logo: m.leagueLogo, matches: [] };
+    g.matches.push(m);
+    groups.set(key, g);
+  }
+  return [...groups.values()];
+}
+
+/** Sofascore-style competition header: crest/flag, "League · Country", match count. */
+export function LeagueHeader({ name, logo, sport, count, className }: { name: string; logo?: string; sport?: SportId; count: number; className?: string }) {
+  const [league, country] = name.split(" · ");
+  return (
+    <h3 className={cx("flex items-center gap-2.5 px-1 pt-1", className)}>
+      {logo
+        ? <Image src={logo} alt="" width={22} height={22} unoptimized className="size-[22px] shrink-0 rounded object-contain" />
+        : <span className="flex size-[22px] shrink-0 items-center justify-center rounded-md bg-cyan/15 text-deep dark:text-cyan" aria-hidden>{sport && <SportIcon sport={sport} size={13} />}</span>}
+      <span className="min-w-0 flex-1 leading-tight">
+        <span className="block truncate text-[13px] font-bold">{league}</span>
+        {country && <span className="block truncate text-[11px] text-text-2">{country}</span>}
+      </span>
+      <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-text-2 ring-1 ring-line">{count}</span>
+    </h3>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
+import { AdSlot } from "@/components/AdSlot";
 import { TopBar } from "@/components/chrome";
 import { LiveScoreHeader, MatchLive } from "@/components/match-live";
 import { MatchTabs } from "@/components/MatchTabs";
@@ -22,6 +23,7 @@ async function Feed({ params, children }: { params: Params; children: ReactNode 
     <MatchLive match={match} centre={centre} insights={insights}>
       {centre && <MatchTabs id={id} />}
       <LiveScoreHeader />
+      <AdSlot placement="match" className="mt-3" />
       <div className="flex flex-col gap-3 px-4 pt-3">{children}</div>
     </MatchLive>
   );
@@ -30,7 +32,7 @@ async function Feed({ params, children }: { params: Params; children: ReactNode 
 export default function MatchLayout({ params, children }: LayoutProps<"/match/[id]">) {
   return (
     <>
-      <TopBar variant="back" title="Match Centre" backHref="/live" />
+      <TopBar variant="back" title="Match Centre" backHref="/live" className="lg:mx-auto lg:max-w-[880px]" />
       <main className="lg:mx-auto lg:max-w-[880px]">
         <Suspense fallback={<div className="flex flex-col gap-3"><Skeleton className="mx-4 h-72" /><div className="px-4"><ListSkeleton /></div></div>}>
           <Feed params={params}>{children}</Feed>

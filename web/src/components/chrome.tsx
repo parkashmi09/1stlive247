@@ -7,9 +7,9 @@ type TopBarProps =
   | { variant: "title"; title: string }
   | { variant: "back"; title: string; backHref: string };
 
-export function TopBar(props: TopBarProps) {
+export function TopBar(props: TopBarProps & { className?: string }) {
   return (
-    <header className={`sticky top-0 z-20 flex h-16 items-center gap-3 bg-bg/85 px-4 backdrop-blur-md lg:top-16 lg:px-0 ${props.variant === "brand" ? "lg:hidden" : ""}`}>
+    <header className={`sticky top-0 z-20 flex h-16 items-center gap-3 bg-bg/85 px-4 backdrop-blur-md md:px-0 lg:top-16 ${props.variant === "brand" ? "lg:hidden" : ""} ${props.className ?? ""}`}>
       {props.variant === "brand" && (
         <Link href="/" aria-label="1stLive247 home" className="mr-auto"><Logo className="h-10 w-auto" /></Link>
       )}

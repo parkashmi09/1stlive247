@@ -65,6 +65,19 @@ export function parseIncidents(rows: Row[]): Pick<MatchInsights, "timeline" | "i
   return { timeline, info };
 }
 
+/** periods slice: BA/BB = period 1 home/away, BC/BD = period 2, … (pairs of letters), spread over several rows. */
+export function parsePeriods(rows: Row[]): MatchInsights["scores"] {
+  const cell: Record<string, string> = {};
+  for (const r of rows) for (const [k, v] of Object.entries(r)) if (/^B[A-Z]$/.test(k)) cell[k] = str(v);
+  const out: MatchInsights["scores"] = [];
+  for (let i = 0; i < 13; i++) {
+    const h = cell["B" + String.fromCharCode(65 + 2 * i)], a = cell["B" + String.fromCharCode(66 + 2 * i)];
+    if (h === undefined && a === undefined) break;
+    out.push({ home: h ?? "", away: a ?? "" });
+  }
+  return out;
+}
+
 type MomentumBody = { findMatchMomentumStatsByMatchId?: { momentum?: { entries?: { timeFrame: { elapsedMinute: number }; momentumValue: number }[] } } };
 
 export function parseMomentum(body: MomentumBody | null): MatchInsights["momentum"] {
@@ -119,14 +132,16 @@ export async function fetchInsights(id: string): Promise<MatchInsights> {
     sportsApi<MomentumBody>(ENDPOINTS.slice(id, "momentum")),
     sportsApi<Row[]>(ENDPOINTS.slice(id, "h2h"), { timeoutMs: 15_000 }),
     sportsApi<OddsBody>(ENDPOINTS.slice(id, "odds")),
+    sportsApi<Row[]>(ENDPOINTS.slice(id, "periods")),
   ]);
   if (settled.every((r) => r.status === "rejected")) throw (settled[0] as PromiseRejectedResult).reason;
-  const [stats, incidents, momentum, h2h, oddsRes] = settled;
+  const [stats, incidents, momentum, h2h, oddsRes, periods] = settled;
   const ok = <T>(r: PromiseSettledResult<T>) => (r.status === "fulfilled" ? r.value : null);
   const odds = parseOdds(ok(oddsRes) as OddsBody | null);
   const rows = (v: unknown) => (Array.isArray(v) ? (v as Row[]) : []);
   return {
     periods: parseStats(rows(ok(stats))),
+    scores: parsePeriods(rows(ok(periods))),
     ...parseIncidents(rows(ok(incidents))),
     momentum: parseMomentum(ok(momentum) as MomentumBody | null),
     h2h: parseH2h(rows(ok(h2h))),

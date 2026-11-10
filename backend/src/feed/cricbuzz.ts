@@ -48,7 +48,9 @@ export function teamScore(innings: Innings[], short: string): string | undefined
 }
 
 export function cbToMatch(sb: CbScoreboard, logoOf: (name: string) => string | undefined = () => undefined): Match {
-  const status = sb.complete ? "finished" : sb.innings.length || sb.state === "In Progress" ? "live" : "upcoming";
+  // the feed sometimes keeps complete=false after the result is in ("India won by 5 wkts"), so the result text counts too
+  const done = sb.complete || /\bwon by\b|\bwin by\b|match tied|no result|abandoned|match drawn/i.test(sb.status ?? "");
+  const status = done ? "finished" : sb.innings.length || sb.state === "In Progress" ? "live" : "upcoming";
   const cur = sb.innings.at(-1);
   const side = (name: string, short: string): Side => {
     const score = teamScore(sb.innings, short);

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseH2h, parseIncidents, parseMomentum, parseOdds, parseStats } from "./insights.ts";
+import { parseH2h, parseIncidents, parseMomentum, parseOdds, parsePeriods, parseStats } from "./insights.ts";
 
 // Rows trimmed from real slices of event Q9XxIJ2F (Adelaide W 0-1 Wellington Phoenix W) and two other live matches.
 test("stats: every period, empty groups dropped", () => {
@@ -69,4 +69,11 @@ test("odds: 1X2 with opening + direction; incomplete -> undefined", () => {
   });
   assert.equal(parseOdds({ findEventById: { updateLiveOddsOverview: null } }), undefined);
   assert.equal(parseOdds(null), undefined);
+});
+
+test("periods: letter pairs across rows -> per-period scores, in order", () => {
+  // real tennis sample shape (backend/samples/event-tennis-periods.json)
+  assert.deepEqual(parsePeriods([{ AC: "18", BA: "6", BB: "4", RC: "0:37" }, { BC: "2", BD: "1", RD: "0:11" }, { RB: "0:48" }, { TVB: "x" }]),
+    [{ home: "6", away: "4" }, { home: "2", away: "1" }]);
+  assert.deepEqual(parsePeriods([]), []);
 });

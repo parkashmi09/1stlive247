@@ -68,7 +68,7 @@ const QUICK: { label: string; icon: IconName; tint: Tint; href: string }[] = [
 export default function MorePage() {
   return (
     <>
-      <TopBar variant="title" title="More" />
+      <TopBar variant="title" title="More" className="lg:mx-auto lg:max-w-[720px]" />
       <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
         {/* hero: welcome card (client theme 2) */}
         <Link href="/" className="hero-glow relative flex items-center gap-4 overflow-hidden rounded-[20px] p-5 text-white shadow-raised">
@@ -80,7 +80,7 @@ export default function MorePage() {
           </span>
           <span className="relative min-w-0 flex-1">
             <span className="text-gold block text-xs font-semibold uppercase tracking-[0.12em]">Welcome to</span>
-            <Logo className="my-0.5 h-9 w-auto" />
+            <Logo className="mb-1 mt-2 h-9 w-auto" />
             <span className="block text-xs text-white/75">Stay updated. Stay ahead.</span>
           </span>
           <span className="relative flex size-9 items-center justify-center rounded-full bg-white/15 backdrop-blur">

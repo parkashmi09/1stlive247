@@ -18,7 +18,7 @@ export type Scoreboard = {
   event_id: string; sport: string; status: string; start_ts: number;
   home: string; away: string; home_short?: string | string[]; away_short?: string | string[];
   home_score?: string; away_score?: string; minute?: string; info?: string; league?: string; country?: string;
-  home_logo?: string; away_logo?: string;
+  home_logo?: string; away_logo?: string; league_logo?: string; country_flag?: string; home_flag?: string; away_flag?: string;
 };
 export type ApiTimer = {
   mode: "clock" | "minute" | "none"; running: boolean; anchor_ts: number | null; base_s: number; period_len_s: number | null;
@@ -46,13 +46,13 @@ export function toMatch(sb: Scoreboard, timer?: ApiTimer): Match | undefined {
   const clock = st !== "live" ? undefined
     : timer ? (timer.mode === "none" ? timer.display : timer.minute_label || timer.display) || minute
     : minute;
-  const side = (name: string, code: string | string[] | undefined, score: string | undefined, logo: string | undefined): Side => ({
-    // tennis "logos" are all Flashscore's blank 30×30 player placeholder, so initials badges are shown instead
-    team: { code: short(code, name), name, tone: toneOf(name), ...(logo && sport !== "tennis" && { logo }) },
+  const side = (name: string, code: string | string[] | undefined, score: string | undefined, logo: string | undefined, flag: string | undefined): Side => ({
+    // tennis "logos" are all Flashscore's blank player placeholder; the player's nationality flag stands in
+    team: { code: short(code, name), name, tone: toneOf(name), ...(sport === "tennis" ? flag && { logo: flag } : logo && { logo }) },
     ...(st !== "upcoming" && score !== undefined && score !== "" && { score }),
   });
-  const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo);
-  const away = side(sb.away, sb.away_short, sb.away_score, sb.away_logo);
+  const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo, sb.home_flag);
+  const away = side(sb.away, sb.away_short, sb.away_score, sb.away_logo, sb.away_flag);
   if (st === "finished" && home.score && away.score && Number(home.score) !== Number(away.score)) {
     (Number(home.score) < Number(away.score) ? home : away).lost = true;
   }
@@ -65,6 +65,7 @@ export function toMatch(sb: Scoreboard, timer?: ApiTimer): Match | undefined {
     home, away,
     ...(clock && { clock }),
     ...(sb.info && { note: sb.info }),
+    ...((sb.league_logo || sb.country_flag) && { leagueLogo: sb.league_logo || sb.country_flag }),
     ...(st === "finished" && { stage: "Final" }),
     ...(timer && st === "live" && { timer: toTimer(timer) }),
   };

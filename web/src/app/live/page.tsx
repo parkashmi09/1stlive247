@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AdSlot } from "@/components/AdSlot";
 import { TopBar } from "@/components/chrome";
 import { LiveList } from "@/components/LiveList";
 import { ListSkeleton } from "@/components/Skeleton";
@@ -14,8 +15,9 @@ async function Live() {
 export default function LivePage() {
   return (
     <>
-      <TopBar variant="title" title="Live Scores" />
-      <main className="flex flex-col gap-3 px-4 pt-2 lg:px-0">
+      <TopBar variant="title" title="Live Scores" className="lg:hidden" />
+      <main className="flex flex-col gap-3 px-4 pt-2 md:px-0">
+        <AdSlot placement="top" />
         <Suspense fallback={<ListSkeleton rows={4} />}><Live /></Suspense>
       </main>
     </>

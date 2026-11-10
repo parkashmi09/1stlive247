@@ -35,7 +35,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
   const top = d.periods[0]?.groups ?? [];
   const hasEvents = d.timeline.some((e) => e.type === "event");
   const tabs = ([
-    ["details", "Details", d.momentum.length > 2 || hasEvents || !!d.odds || d.info.length > 0],
+    ["details", "Details", !!d.scores?.length || d.momentum.length > 2 || hasEvents || !!d.odds || d.info.length > 0],
     ["stats", "Statistics", d.periods.length > 0],
     ["h2h", "H2H", d.h2h?.length > 0],
   ] as const).filter((t) => t[2]);
@@ -55,6 +55,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
         </div>
       )}
       {active === "details" && <>
+        {!!d.scores?.length && <PeriodScores match={match} scores={d.scores} />}
         {d.momentum.length > 2 && <Momentum match={match} points={d.momentum} timeline={d.timeline} />}
         {d.odds && <WinProbability match={match} odds={d.odds} />}
         {hasEvents && <Timeline match={match} items={d.timeline} />}
@@ -84,6 +85,42 @@ const TeamTag = ({ s, color }: { s: Match["home"]; color: string }) => (
     {s.team.code}
   </span>
 );
+
+/* ---------- score by period ---------- */
+
+const periodLabel = (sport: Match["sport"], i: number) =>
+  sport === "tennis" ? `S${i + 1}` : sport === "basketball" ? (i < 4 ? `Q${i + 1}` : `OT${i > 4 ? i - 3 : ""}`) : ["1st", "2nd", "ET", "Pen"][i] ?? `P${i + 1}`;
+
+/** Sofascore-style box score: one column per half / set / quarter, total on the right. */
+function PeriodScores({ match, scores }: { match: Match; scores: NonNullable<MatchInsights["scores"]> }) {
+  const row = (s: Match["home"], side: "home" | "away") => (
+    <tr className="border-t border-line">
+      <th scope="row" className="py-2 pr-2 text-left font-semibold">
+        <span className="flex items-center gap-2"><TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={20} /><span className="truncate">{s.team.name}</span></span>
+      </th>
+      {scores.map((p, i) => {
+        const mine = num(p[side]), theirs = num(p[side === "home" ? "away" : "home"]);
+        return <td key={i} className={cx("w-9 py-2 text-center tabular-nums", mine > theirs ? "font-bold" : "text-text-2")}>{p[side]}</td>;
+      })}
+      <td className="w-10 py-2 text-center text-base font-bold tabular-nums">{s.score ?? "–"}</td>
+    </tr>
+  );
+  return (
+    <Card className="px-4 py-3.5">
+      <SectionTitle>{match.sport === "tennis" ? "Sets" : match.sport === "basketball" ? "Quarters" : "Score by half"}</SectionTitle>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead><tr className="text-[11px] font-semibold uppercase text-text-2">
+            <th className="pb-1.5 text-left font-semibold">Team</th>
+            {scores.map((_, i) => <th key={i} className="pb-1.5 text-center font-semibold">{periodLabel(match.sport, i)}</th>)}
+            <th className="pb-1.5 text-center font-semibold">{match.sport === "tennis" ? "Sets" : "T"}</th>
+          </tr></thead>
+          <tbody>{row(match.home, "home")}{row(match.away, "away")}</tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
 
 /* ---------- momentum ---------- */
 
@@ -292,7 +329,8 @@ function PeriodStats({ periods }: { periods: MatchInsights["periods"] }) {
             <li key={s.name}>
               <div className="flex items-center gap-2 text-sm">
                 <span className={cx("min-w-11 rounded-md px-1.5 py-0.5 text-center text-[13px] font-bold tabular-nums whitespace-nowrap", lead === "home" ? "bg-brand text-white" : "")}>{s.home}</span>
-                <span className="min-w-0 flex-1 truncate text-center text-[13px] text-text-2">{s.name}</span>
+                {/* the feed labels tennis rallies "balls" */}
+                <span className="min-w-0 flex-1 truncate text-center text-[13px] text-text-2">{s.name.replace("Last 10 balls", "Last 10 points")}</span>
                 <span className={cx("min-w-11 rounded-md px-1.5 py-0.5 text-center text-[13px] font-bold tabular-nums whitespace-nowrap", lead === "away" ? "bg-[#14B8A6] text-white" : "")}>{s.away}</span>
               </div>
               <div className="mt-1.5 flex h-1.5 gap-1" aria-hidden>

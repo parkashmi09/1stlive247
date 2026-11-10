@@ -43,6 +43,8 @@ export type Incident =
   | { type: "event"; side: "home" | "away"; minute: string; kind: IncidentKind; player: string; assist?: string; playerOut?: string; note?: string; score?: string };
 export type MatchInsights = {
   periods: { name: string; groups: StatGroup[] }[];
+  /** score per period: halves / sets / quarters (+OT). Optional until every backend serves it. */
+  scores?: { home: string; away: string }[];
   timeline: Incident[];
   /** one point per minute, value -1..1: positive = home pressure */
   momentum: { minute: number; value: number }[];
@@ -71,6 +73,8 @@ export type Match = {
   /** label above the flags on result cards: "Final" */
   stage?: string;
   timer?: Timer;
+  /** competition crest (or country flag) */
+  leagueLogo?: string;
 };
 
 export type BallKind = "dot" | "run" | "four" | "six" | "wicket" | "extra";

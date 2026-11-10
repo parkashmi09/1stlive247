@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps<"/news/[slug]">): P
 export default function ArticlePage({ params }: PageProps<"/news/[slug]">) {
   return (
     <>
-      <TopBar variant="back" title="News" backHref="/news" />
+      <TopBar variant="back" title="News" backHref="/news" className="lg:mx-auto lg:max-w-[760px]" />
       <Suspense fallback={<div className="mx-4 h-96 animate-pulse rounded-2xl bg-surface-2" />}>
         <Article params={params} />
       </Suspense>

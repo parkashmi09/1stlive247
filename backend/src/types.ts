@@ -34,6 +34,8 @@ export type Incident =
 export type MatchInsights = {
   /** "Match", "1st Half", "2nd Half" */
   periods: { name: string; groups: StatGroup[] }[];
+  /** score per period in order: halves (football), sets (tennis), quarters + OT (basketball) */
+  scores: { home: string; away: string }[];
   timeline: Incident[];
   /** one point per minute, value -1..1: positive = home pressure */
   momentum: { minute: number; value: number }[];
@@ -62,6 +64,8 @@ export type Match = {
   note?: string;
   stage?: string;
   timer?: Timer;
+  /** competition crest (or the country flag when there is none) */
+  leagueLogo?: string;
 };
 
 export type BallKind = "dot" | "run" | "four" | "six" | "wicket" | "extra";

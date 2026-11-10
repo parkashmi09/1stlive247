@@ -28,8 +28,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<DesktopNav />}>
           <DesktopNav live />
         </Suspense>
-        {/* phone: one 480px column; desktop (lg): full-width board, Sofascore-style */}
-        <div className="relative mx-auto min-h-dvh max-w-[480px] overflow-x-clip pb-28 lg:max-w-[1280px] lg:px-6 lg:pb-12 lg:pt-4">
+        {/* phone 480 column · tablet (md) 960 · desktop (lg) 1280 board — see .claude/skills/responsive-views */}
+        <div className="relative mx-auto min-h-dvh max-w-[480px] overflow-x-clip pb-28 md:max-w-[960px] md:px-6 lg:max-w-[1280px] lg:pb-12 lg:pt-4">
           {/* brand glow behind the nav, as in the designer's mockup */}
           <div aria-hidden className="pointer-events-none fixed bottom-0 left-1/2 h-24 w-72 -translate-x-1/2 translate-y-1/2 rounded-full bg-cyan opacity-25 blur-[100px]" />
           {children}

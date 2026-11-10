@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { AdSlot } from "@/components/AdSlot";
 import { TopBar } from "@/components/chrome";
 import { HomeBoard } from "@/components/home/HomeBoard";
 import { NewsRow } from "@/components/news";
@@ -30,6 +31,7 @@ export default function Home() {
     <>
       <TopBar variant="brand" />
       <main>
+        <AdSlot placement="top" className="mb-4" />
         <Suspense fallback={<div className="flex flex-col gap-4 px-4 pt-2"><Skeleton className="h-48" /><Skeleton className="h-12" /><ListSkeleton /></div>}>
           <Board />
         </Suspense>

@@ -82,3 +82,8 @@ test("logos: h2h rows become name -> full Flashscore logo URL", async () => {
     ["India", "https://static.flashscore.com/res/image/data/norj22Ea-2ur67bOJ.png"],
   ]);
 });
+
+test("status: a result line finishes the match even when complete is still false", () => {
+  assert.equal(cbToMatch({ ...sb, complete: false, status: "England won by 92 runs" }).status, "finished");
+  assert.equal(cbToMatch({ ...sb, complete: false, status: "Day 2: Stumps - Sri Lanka lead by 193 runs" }).status, "live");
+});

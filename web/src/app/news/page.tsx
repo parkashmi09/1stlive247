@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AdSlot } from "@/components/AdSlot";
 import { TopBar } from "@/components/chrome";
 import { NewsHero, NewsRow } from "@/components/news";
 import { ListSkeleton, Skeleton } from "@/components/Skeleton";
@@ -17,7 +18,8 @@ export default function NewsPage() {
   return (
     <>
       <TopBar variant="title" title="News" />
-      <main className="flex flex-col gap-3 px-4 pt-2 lg:px-0">
+      <main className="flex flex-col gap-3 px-4 pt-2 md:px-0">
+        <AdSlot placement="top" />
         <Suspense fallback={<><Skeleton className="h-60" /><ListSkeleton rows={4} h="h-20" /></>}><Feed /></Suspense>
       </main>
     </>

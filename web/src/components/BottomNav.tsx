@@ -19,7 +19,7 @@ export function BottomNav() {
 
 export function NavBar({ path }: { path?: string }) {
   return (
-    <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] lg:hidden border-t border-line bg-nav pb-[max(12px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-4px_16px_rgb(10_31_74/0.06)]">
+    <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] md:max-w-none lg:hidden border-t border-line bg-nav pb-[max(12px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-4px_16px_rgb(10_31_74/0.06)]">
       <ul className="flex">
         {TABS.map((t) => {
           const on = path !== undefined && t.match(path);
