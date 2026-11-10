@@ -28,7 +28,7 @@ async function Article({ params }: { params: PageProps<"/news/[slug]">["params"]
   if (!a) notFound();
   const related = all.filter((n) => n.slug !== a.slug).slice(0, 2);
   return (
-      <main>
+      <main className="lg:mx-auto lg:max-w-[760px]">
         <ImagePlaceholder sport={a.sport} className="h-56 w-full" iconSize={110} />
         <article className="flex flex-col gap-3.5 px-4 pt-4">
           <span className="bg-gold w-fit rounded-md px-2 py-0.5 text-xs font-bold uppercase text-[#06121C]">

@@ -15,7 +15,7 @@ export function ImagePlaceholder({ sport, className, iconSize, corner }: { sport
 
 export function NewsHero({ a }: { a: NewsArticle }) {
   return (
-    <Link href={`/news/${a.slug}`} className="relative flex h-60 flex-col justify-end gap-2 overflow-hidden rounded-[20px] p-4 text-white">
+    <Link href={`/news/${a.slug}`} className="relative flex h-60 flex-col lg:h-[420px] justify-end gap-2 overflow-hidden rounded-[20px] p-4 text-white">
       <ImagePlaceholder sport={a.sport} className="absolute inset-0" iconSize={96} corner />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent from-35% to-[#051530]/90" />
       <span className="bg-gold relative w-fit rounded-md px-2 py-0.5 text-xs font-bold uppercase text-[#06121C]">{sportOf(a.sport).label}</span>

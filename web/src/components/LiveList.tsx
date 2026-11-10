@@ -13,8 +13,8 @@ export function LiveList({ initial }: { initial: Match[] }) {
     const list = live.filter((m) => m.sport === s.id);
     if (!list.length) return null;
     return (
-      <section key={s.id} aria-labelledby={`h-${s.id}`} className="flex flex-col gap-2">
-        <h2 id={`h-${s.id}`} className="flex items-center gap-2 pt-1.5 text-xs font-bold uppercase text-primary">
+      <section key={s.id} aria-labelledby={`h-${s.id}`} className="grid gap-2 lg:grid-cols-2 lg:gap-3">
+        <h2 id={`h-${s.id}`} className="flex items-center gap-2 pt-1.5 text-xs font-bold uppercase text-primary lg:col-span-2">
           <SportIcon sport={s.id} size={18} />
           <span className="flex-1">{s.label}</span>
           <span className="font-normal normal-case text-text-2">{list.length} live</span>

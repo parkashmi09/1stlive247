@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { Featured, Match, Sport, SportId } from "@/data/types";
 import { useLiveMatches } from "@/lib/live";
 import { SportIcon } from "../icons/SportIcon";
@@ -15,7 +15,7 @@ const TABS = [
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
-export function HomeBoard({ sports, initial, featured }: { sports: Sport[]; initial: Match[]; featured: Featured[] }) {
+export function HomeBoard({ sports, initial, featured, children }: { sports: Sport[]; initial: Match[]; featured: Featured[]; children?: ReactNode }) {
   const matches = useLiveMatches(initial);
   const [sport, setSport] = useState<SportId>("football"); // Home always opens on football
   const [tab, setTab] = useState<TabId>("top");
@@ -25,10 +25,16 @@ export function HomeBoard({ sports, initial, featured }: { sports: Sport[]; init
   ).slice(0, 30);
 
   return (
-    <div className="flex flex-col gap-4 px-4 pt-2">
-      <FeaturedSlider initial={featured} />
+    // phone: one column; desktop: match board left, banner + side widgets right
+    <div className="flex flex-col gap-4 px-4 pt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-6 lg:px-0 lg:pt-0">
+      <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:col-start-2 lg:row-start-1">
+        <FeaturedSlider initial={featured} />
+        {children}
+      </aside>
 
-      <div role="tablist" aria-label="Sport" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+      <section className="flex min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
+
+      <div role="tablist" aria-label="Sport" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         {sports.map((s) => {
           const on = s.id === sport;
           return (
@@ -53,10 +59,11 @@ export function HomeBoard({ sports, initial, featured }: { sports: Sport[]; init
         ))}
       </div>
 
-      <div className="flex flex-col gap-2">
-        {list.length === 0 && <p className="py-10 text-center text-sm text-text-2">No events right now.</p>}
+      <div className="grid gap-2 lg:grid-cols-2 lg:gap-3">
+        {list.length === 0 && <p className="py-10 text-center text-sm text-text-2 lg:col-span-2">No events right now.</p>}
         {list.map((m) => <MatchCard key={m.id} m={m} />)}
       </div>
+      </section>
     </div>
   );
 }

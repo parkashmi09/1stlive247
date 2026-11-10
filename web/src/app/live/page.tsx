@@ -15,7 +15,7 @@ export default function LivePage() {
   return (
     <>
       <TopBar variant="title" title="Live Scores" />
-      <main className="flex flex-col gap-3 px-4 pt-2">
+      <main className="flex flex-col gap-3 px-4 pt-2 lg:px-0">
         <Suspense fallback={<ListSkeleton rows={4} />}><Live /></Suspense>
       </main>
     </>

@@ -10,14 +10,14 @@ export const metadata: Metadata = { title: "News" };
 async function Feed() {
   const [hero, ...rest] = await api.news();
   if (!hero) return <p className="py-10 text-center text-sm text-text-2">No stories yet.</p>;
-  return (<><NewsHero a={hero} /><div>{rest.map((a) => <NewsRow key={a.slug} a={a} />)}</div></>);
+  return (<div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-6"><div className="lg:sticky lg:top-36"><NewsHero a={hero} /></div><div>{rest.map((a) => <NewsRow key={a.slug} a={a} />)}</div></div>);
 }
 
 export default function NewsPage() {
   return (
     <>
       <TopBar variant="title" title="News" />
-      <main className="flex flex-col gap-3 px-4 pt-2">
+      <main className="flex flex-col gap-3 px-4 pt-2 lg:px-0">
         <Suspense fallback={<><Skeleton className="h-60" /><ListSkeleton rows={4} h="h-20" /></>}><Feed /></Suspense>
       </main>
     </>

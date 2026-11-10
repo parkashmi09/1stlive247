@@ -31,7 +31,7 @@ export default function MatchLayout({ params, children }: LayoutProps<"/match/[i
   return (
     <>
       <TopBar variant="back" title="Match Centre" backHref="/live" />
-      <main>
+      <main className="lg:mx-auto lg:max-w-[880px]">
         <Suspense fallback={<div className="flex flex-col gap-3"><Skeleton className="mx-4 h-72" /><div className="px-4"><ListSkeleton /></div></div>}>
           <Feed params={params}>{children}</Feed>
         </Suspense>

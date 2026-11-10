@@ -69,7 +69,7 @@ export default function MorePage() {
   return (
     <>
       <TopBar variant="title" title="More" />
-      <main className="flex flex-col gap-5 px-4 pt-2">
+      <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
         {/* hero: welcome card (client theme 2) */}
         <Link href="/" className="hero-glow relative flex items-center gap-4 overflow-hidden rounded-[20px] p-5 text-white shadow-raised">
           <SportIcon sport="cricket" size={130} className="pointer-events-none absolute -right-6 -top-6 text-white opacity-[0.07]" />
