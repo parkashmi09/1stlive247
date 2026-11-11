@@ -15,33 +15,38 @@ import { TeamBadge, cx } from "./ui";
 
 const lead = (a?: string, b?: string) => (parseFloat(a ?? "") || 0) > (parseFloat(b ?? "") || 0);
 
-/** Scoreboard row: red live bar on the left, two team lines with large tabular scores, clock + note underneath. */
+/** Scoreboard row: red live bar, crests, names, fixed score column; status + note in a tinted footer line. */
 function LiveRow({ m }: { m: Match }) {
   const team = (s: Side, other: Side) => {
     const ahead = lead(s.score, other.score);
     return (
       <div className="flex items-center gap-2.5">
-        <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={24} />
-        <span className={cx("min-w-0 flex-1 truncate text-[15px]", ahead ? "font-bold text-text" : "font-medium text-text")}>{s.team.name}</span>
+        <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={26} />
+        <span className={cx("min-w-0 flex-1 truncate text-[15px]", ahead ? "font-bold" : "font-medium")}>{s.team.name}</span>
         {s.detail && <span className="text-[11px] text-text-2 tabular-nums">{s.detail}</span>}
-        {/^\d|\//.test(s.score ?? "")
-          ? <ScorePop value={s.score!} className={cx("min-w-9 text-right text-[19px] leading-none tabular-nums", ahead ? "font-black text-deep dark:text-white" : "font-bold text-text-2")} />
-          : <span className="text-xs font-semibold text-text-2">{s.score}</span>}
+        <span className="flex w-[72px] items-center justify-end gap-1.5">
+          {ahead && <span className="size-1.5 rounded-full bg-[var(--gold-mid)]" aria-hidden />}
+          {/^\d|\//.test(s.score ?? "")
+            ? <ScorePop value={s.score!} className={cx("text-right text-[19px] leading-none tabular-nums", ahead ? "font-black text-deep dark:text-white" : "font-bold text-text-2")} />
+            : <span className="text-xs font-semibold text-text-2">{s.score}</span>}
+        </span>
       </div>
     );
   };
   return (
     <li>
-      <Link href={`/match/${m.id}`} className="group relative flex flex-col gap-2 py-3 pl-5 pr-4 transition hover:bg-[rgb(52_196_238/0.06)]">
+      <Link href={`/match/${m.id}`} className="group relative block transition hover:bg-[rgb(52_196_238/0.06)]">
         <span aria-hidden className="absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-live shadow-[0_0_8px_rgb(216_6_18/0.6)]" />
-        {team(m.home, m.away)}
-        {team(m.away, m.home)}
-        <p className="flex items-center gap-2 text-[11px]">
-          <span className="flex items-center gap-1 font-bold uppercase tracking-wide text-live">
-            <span className="size-1.5 rounded-full bg-live motion-safe:animate-pulse" />
+        <div className="flex flex-col gap-2 py-3 pl-5 pr-4">
+          {team(m.home, m.away)}
+          {team(m.away, m.home)}
+        </div>
+        <p className="flex items-center gap-2 bg-live/[0.05] py-1.5 pl-5 pr-4 text-[11px] dark:bg-live/10">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-live px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            <span className="size-1.5 rounded-full bg-white motion-safe:animate-pulse" />
             {m.timer || m.clock ? <LiveClock timer={m.timer} fallback={m.clock} /> : "Live"}
           </span>
-          {m.note && <span className="truncate font-medium text-accent">· {m.note}</span>}
+          {m.note && <span className="truncate font-semibold text-[#8F6619] dark:text-[var(--gold-light)]">{m.note}</span>}
         </p>
       </Link>
     </li>
@@ -50,8 +55,8 @@ function LiveRow({ m }: { m: Match }) {
 
 function LeagueCard({ name, logo, sport, matches }: { name: string; logo?: string; sport: SportId; matches: Match[] }) {
   return (
-    <section className="card-premium mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-line bg-surface">
-      <LeagueHeader name={name} logo={logo} sport={sport} count={matches.length} className="bg-brand-diag px-4 py-2 text-white [&_span]:text-white [&>span:last-child]:bg-white/20 [&>span:last-child]:ring-0" />
+    <section className="card-premium mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_4px_16px_rgb(10_31_74/0.06)]">
+      <LeagueHeader name={name} logo={logo} sport={sport} count={matches.length} className="border-b border-line border-l-[3px] border-l-[var(--gold-mid)] bg-surface px-4 py-2.5" />
       <ul className="divide-y divide-line">{matches.map((m) => <LiveRow key={m.id} m={m} />)}</ul>
     </section>
   );
