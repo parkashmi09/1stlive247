@@ -45,13 +45,13 @@ function Flag({ src }: { src: string }) {
 
 function Slide({ f, priority }: { f: Featured; priority: boolean }) {
   return (
-    // 155px card; the player box (132×155, same ratio as the designer's 153×180) sits flush with the card bottom
-    <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative block h-[155px] w-full shrink-0 snap-center">
+    // 155px card; the player box (148×174, designer's 153×180 ratio) rises 19px above the card top and sits flush with its bottom
+    <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
-      <div className="absolute bottom-0 right-0 h-[155px] w-[132px]" aria-hidden>
-        <Image src={ART[f.sport]!} alt="" fill sizes="132px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
+      <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
+        <Image src={ART[f.sport]!} alt="" fill sizes="148px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
       </div>
-      <div className="absolute left-4 right-[128px] top-4">
+      <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
         <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{f.league}</p>
       </div>
@@ -73,12 +73,12 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
 
 function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
   return (
-    <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative block h-[155px] w-full shrink-0 snap-center">
+    <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
-      <div className="absolute bottom-0 right-0 h-[155px] w-[132px]" aria-hidden>
-        <Image src={p.art} alt="" fill sizes="132px" loading="lazy" className="object-cover" />
+      <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
+        <Image src={p.art} alt="" fill sizes="148px" loading="lazy" className="object-cover" />
       </div>
-      <div className="absolute left-4 right-[128px] top-4">
+      <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
         <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{p.sub}</p>
       </div>
