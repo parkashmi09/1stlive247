@@ -1,6 +1,7 @@
 "use client";
 // Live page, broadcast-scoreboard style: compact hero with per-sport live counts (filter), navy competition strips, rows with a red live bar and large tabular scores.
 
+import Image from "next/image";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 import { SPORTS } from "@/data/sports";
@@ -70,14 +71,9 @@ export function LiveList({ initial }: { initial: Match[] }) {
 
   return (
     <>
-      <div className="hero-glow relative overflow-hidden rounded-2xl px-4 pb-3 pt-3.5 text-white shadow-raised">
-        {/* faint sport marks in the background, one per sport that is live */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          {counts.slice(0, 5).map(({ s }, i) => (
-            <SportIcon key={s.id} sport={s.id} size={64 + (i % 2) * 24}
-              className={cx("absolute text-white opacity-[0.08]", ["-right-3 -top-4 rotate-12", "left-[38%] -bottom-6 -rotate-12", "right-[26%] -top-5 rotate-6", "-left-4 -bottom-5 rotate-[20deg]", "right-[52%] -top-7 -rotate-6"][i])} />
-          ))}
-        </div>
+      <div className="relative overflow-hidden rounded-2xl bg-deep px-4 pb-3 pt-3.5 text-white shadow-raised">
+        {/* user-supplied hero artwork (public/banners/live-hero.webp): navy/cyan gradient with faint sport line-art */}
+        <Image src="/banners/live-hero.webp" alt="" fill sizes="(min-width: 1024px) 860px, 100vw" priority className="object-cover object-left" />
         <div className="relative flex items-baseline gap-2">
           <span className="relative mb-[3px] flex size-2.5 self-center"><span className="absolute inline-flex size-full animate-ping rounded-full bg-[#ff4d57] opacity-70" /><span className="relative inline-flex size-2.5 rounded-full bg-[#ff3341]" /></span>
           <h2 className="text-[17px] font-extrabold tracking-tight">Live now</h2>
