@@ -24,7 +24,7 @@ export function NavBar({ path }: { path?: string }) {
     // shadow 0 4px 32px 8%; 88×54 pill, radius 46, flat tint, slides on transform; icon 20, label 10/12 bold uppercase, muted #858FA6.
     <nav aria-label="Primary"
       className="pointer-events-none fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,transparent_14%,var(--bg)_52%)] px-4 pb-[max(14px,env(safe-area-inset-bottom))] pt-1 lg:hidden">
-      <div className="pointer-events-auto relative mx-auto grid h-[62px] max-w-[448px] grid-cols-4 rounded-[64px] bg-nav/70 px-3.5 py-1 shadow-[0_4px_32px_rgb(0_0_0/0.08)] backdrop-blur-[20px] md:max-w-[640px] dark:bg-nav/70 dark:shadow-[0_4px_32px_rgb(0_0_0/0.4)]">
+      <div className="pointer-events-auto relative mx-auto grid h-[62px] w-full max-w-[448px] grid-cols-4 overflow-hidden rounded-[64px] bg-nav/70 px-3.5 py-1 shadow-[0_4px_32px_rgb(0_0_0/0.08)] backdrop-blur-[20px] md:max-w-[640px] dark:bg-nav/70 dark:shadow-[0_4px_32px_rgb(0_0_0/0.4)]">
         {active >= 0 && (
           // centred under the active column: left = inner padding + column centre - half the pill
           <div aria-hidden className="bg-brand pointer-events-none absolute top-1 h-[54px] w-[88px] rounded-[46px] opacity-90 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
