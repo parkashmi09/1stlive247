@@ -97,7 +97,8 @@ export function LiveList({ initial }: { initial: Match[] }) {
             return (
               // chip spec from the user's zip: 36pt, fully rounded; active = white + navy text + navy count pill;
               // inactive = 12% white fill, 25% white border, 20% white count pill
-              <button key={c.id} role="tab" aria-selected={on} onClick={() => setOnly(c.id)}
+              <button key={c.id} role="tab" aria-selected={on}
+                onClick={(e) => { setOnly(c.id); e.currentTarget.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }}
                 className={cx("flex h-9 shrink-0 items-center gap-2 rounded-full border pl-3 pr-1.5 text-[12px] font-bold transition",
                   on ? "border-white bg-white text-deep" : "border-white/25 bg-white/12 text-white hover:bg-white/20")}>
                 {CHIP_ICON[c.id] ? <ChipIcon id={c.id} /> : <SportIcon sport={c.id as SportId} size={16} />}
