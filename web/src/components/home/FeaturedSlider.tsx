@@ -27,10 +27,10 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
     // 180px tall: the 155px card plus the 25px the player runs past its bottom edge
     <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative block h-[180px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
-      <div className="absolute left-[217px] top-0 h-[180px] w-[153px]" aria-hidden>
+      <div className="absolute right-0 top-0 h-[180px] w-[153px]" aria-hidden>
         <Image src={ART[f.sport]!} alt="" fill sizes="153px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-contain object-right-bottom" />
       </div>
-      <div className="absolute left-4 top-4 w-[206px]">
+      <div className="absolute left-4 right-[150px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
         <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{f.league}</p>
       </div>
