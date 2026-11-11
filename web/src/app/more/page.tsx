@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand";
@@ -87,16 +88,10 @@ export default function MorePage() {
     <>
       <TopBar variant="title" title="More" className="lg:mx-auto lg:max-w-[720px]" />
       <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
-        {/* hero: light card so the blue + gold logo reads */}
-        <Link href="/" className="card-premium relative flex items-center gap-4 overflow-hidden rounded-[20px] border border-line bg-surface p-5">
-          <span className="bg-brand-diag pointer-events-none absolute -right-10 -top-12 size-40 rounded-full opacity-15 blur-2xl" aria-hidden />
-          <span className="relative min-w-0 flex-1">
-            <Logo className="h-11 w-auto" />
-            <span className="mt-3 block text-sm font-medium text-text-2">Live scores, news and stats. Stay updated, stay ahead.</span>
-          </span>
-          <span className="bg-gold relative flex size-10 shrink-0 items-center justify-center rounded-full text-[#012c78] shadow-[0_4px_14px_rgb(217_171_75/0.45)]">
-            <Icon name="back" size={18} className="rotate-180" />
-          </span>
+        {/* welcome banner: user's artwork (public/banners/more-hero.webp) with the logo overlaid in code; no arrow */}
+        <Link href="/" aria-label="1stLive247 home" className="relative block aspect-[370/150] overflow-hidden rounded-[20px] bg-deep shadow-raised">
+          <Image src="/banners/more-hero.webp" alt="" fill sizes="(min-width: 1024px) 720px, 100vw" priority className="object-cover" />
+          <span className="absolute left-4 top-4 rounded-xl bg-white/95 px-3 py-2 shadow-[0_4px_14px_rgb(1_44_120/0.25)]"><Logo className="h-9 w-auto" /></span>
         </Link>
 
         {/* quick actions */}
