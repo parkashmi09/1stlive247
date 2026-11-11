@@ -5,7 +5,7 @@ import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
 import { BallChip, Card, LiveBadge, TeamBadge, cx } from "./ui";
 
-/** Compact scoreboard (reference: 118px embed card): solid navy, one-line competition, team code + score each side,
+/** Compact scoreboard (reference: 118px embed card) on the brand gradient: one-line competition, team code + score each side,
  *  live clock in the centre, note + stats on one line below. No gradient. */
 export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   const side = (s: Match["home"], right: boolean) => (
@@ -24,7 +24,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   );
   const [desc, series] = m.sport === "cricket" ? [m.competition.split(" · ")[0], m.competition.split(" · ").slice(1).join(" · ")] : [m.competition, ""];
   return (
-    <section className="flex flex-col gap-2 bg-[#0B1622] px-4 py-3 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl">
+    <section className="hero-glow flex flex-col gap-2 px-4 py-3 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl">
       <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide">
         <span>{desc}</span>
         {series && <><span className="text-white/45">•</span><span className="truncate font-bold normal-case tracking-normal text-white/60">{series}</span></>}
