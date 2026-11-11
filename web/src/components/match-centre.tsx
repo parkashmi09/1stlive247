@@ -5,30 +5,46 @@ import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
 import { BallChip, Card, LiveBadge, TeamBadge, cx } from "./ui";
 
+/** Compact scoreboard (reference: 118px embed card): solid navy, one-line competition, team code + score each side,
+ *  live clock in the centre, note + stats on one line below. No gradient. */
 export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
-  const side = (s: Match["home"], align: "items-start" | "items-end") => (
-    <div className={cx("flex flex-col gap-1", align)}>
-      <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={56} />
-      <span className="text-sm font-semibold uppercase">{s.team.name}</span>
-      {s.score
-        ? /\/|^\d/.test(s.score) ? <ScorePop value={s.score} className="text-[32px] font-bold leading-none" /> : <span className="text-gold text-xl font-bold">{s.score}</span>
-        : <span className="text-sm font-medium text-white/60">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>}
-      {s.detail && <span className="text-xs text-white/70">{s.detail}</span>}
+  const side = (s: Match["home"], right: boolean) => (
+    <div className={cx("flex min-w-0 flex-1 items-center gap-2.5", right && "flex-row-reverse text-right")}>
+      <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={36} />
+      <div className={cx("flex min-w-0 flex-col", right && "items-end")}>
+        <span className="truncate text-[11px] font-black uppercase tracking-wide text-white/90">{s.team.code}</span>
+        {s.score
+          ? /\/|^\d/.test(s.score)
+            ? <ScorePop value={s.score} className="text-[22px] font-black leading-tight tabular-nums text-white" />
+            : <span className="text-gold text-sm font-bold">{s.score}</span>
+          : <span className="text-xs font-semibold text-white/55">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>}
+        {s.detail && <span className="text-[10.5px] font-semibold text-white/55 tabular-nums">{s.detail}</span>}
+      </div>
     </div>
   );
+  const [desc, series] = m.sport === "cricket" ? [m.competition.split(" · ")[0], m.competition.split(" · ").slice(1).join(" · ")] : [m.competition, ""];
   return (
-    <section className="hero-glow flex flex-col items-center gap-3 px-4 py-4 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl md:py-6">
-      <p className="text-sm text-white/70">{m.competition}</p>
-      {m.status === "live" && (
-        <p className="flex items-center gap-2"><LiveBadge />{(m.clock || m.timer) && <span className="text-sm font-semibold"><LiveClock timer={m.timer} fallback={m.clock} /></span>}</p>
-      )}
-      <div className="flex w-full items-start justify-between md:max-w-[560px]">{side(m.home, "items-start")}{side(m.away, "items-end")}</div>
-      {m.note && m.sport === "cricket" && <p className="text-gold text-center text-sm font-semibold">{m.note}</p>}
-      {stats && (
-        <p className="flex items-center gap-3.5 rounded-full border border-[#D9AB4B]/50 bg-white/10 px-4 py-2 text-xs">
-          {stats.map((s, i) => <span key={s} className={i ? "border-l border-[#D9AB4B]/50 pl-3.5" : undefined}>{s}</span>)}
-        </p>
-      )}
+    <section className="flex flex-col gap-2 bg-[#0B1622] px-4 py-3 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl">
+      <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide">
+        <span>{desc}</span>
+        {series && <><span className="text-white/45">•</span><span className="truncate font-bold normal-case tracking-normal text-white/60">{series}</span></>}
+      </p>
+      <div className="flex items-center gap-2">
+        {side(m.home, false)}
+        <div className="flex w-[84px] shrink-0 flex-col items-center gap-0.5">
+          {m.status === "live"
+            ? <>
+                <LiveBadge />
+                {(m.clock || m.timer) && <span className="text-[13px] font-black text-cyan"><LiveClock timer={m.timer} fallback={m.clock} /></span>}
+              </>
+            : <span className="text-[11px] font-bold text-white/60">{m.status === "upcoming" ? "Upcoming" : "Final"}</span>}
+        </div>
+        {side(m.away, true)}
+      </div>
+      <p className="flex min-w-0 items-center gap-2 text-[10.5px] font-bold">
+        {m.note && m.sport === "cricket" && <span className="truncate text-gold">{m.note}</span>}
+        {stats && <span className="ml-auto shrink-0 text-white/60">{stats.join("  ·  ")}</span>}
+      </p>
     </section>
   );
 }
