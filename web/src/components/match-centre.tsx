@@ -16,7 +16,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
         {s.score
           ? /\/|^\d/.test(s.score)
             ? <ScorePop value={s.score} className="text-[22px] font-black leading-tight tabular-nums text-white" />
-            : <span className="text-gold text-sm font-bold">{s.score}</span>
+            : <span className="text-sm font-bold text-[var(--gold-light)]">{s.score}</span>
           : <span className="text-xs font-semibold text-white/55">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>}
         {s.detail && <span className="text-[10.5px] font-semibold text-white/55 tabular-nums">{s.detail}</span>}
       </div>
@@ -42,7 +42,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
         {side(m.away, true)}
       </div>
       <p className="flex min-w-0 items-center gap-2 text-[10.5px] font-bold">
-        {m.note && m.sport === "cricket" && <span className="truncate text-gold">{m.note}</span>}
+        {m.note && m.sport === "cricket" && <span className="truncate text-[var(--gold-light)]">{m.note}</span>}
         {stats && <span className="ml-auto shrink-0 text-white/60">{stats.join("  ·  ")}</span>}
       </p>
     </section>
