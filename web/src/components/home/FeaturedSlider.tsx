@@ -14,7 +14,7 @@ import type { Tone } from "@/data/types";
 // shortcut: no tennis cut-out from the designer yet, so that slide runs without a player image; add it here when it lands.
 const ART: Partial<Record<SportId, string | null>> = {
   football: "/banners/football.webp",
-  tennis: null,
+  tennis: "/banners/tennis.webp",
 };
 // shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
 // shortcut: user wants IND v NZ on the cricket slide; the feed has no such fixture, so it is a fixed promo. Swap to a real
