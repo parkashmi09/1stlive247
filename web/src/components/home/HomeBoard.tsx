@@ -19,7 +19,7 @@ type TabId = (typeof TABS)[number]["id"];
 
 export function HomeBoard({ sports, initial, featured, children }: { sports: Sport[]; initial: Match[]; featured: Featured[]; children?: ReactNode }) {
   const matches = useLiveMatches(initial);
-  const [sport, setSport] = useState<SportId>("football"); // Home always opens on football
+  const [sport, setSport] = useState<SportId>("cricket"); // Home always opens on cricket, Top Events
   const [tab, setTab] = useState<TabId>("top");
 
   const list = matches.filter((m) =>
