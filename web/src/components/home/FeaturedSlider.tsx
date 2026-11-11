@@ -30,18 +30,18 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
       <div className="absolute left-[217px] top-0 h-[180px] w-[153px]" aria-hidden>
         <Image src={ART[f.sport]!} alt="" fill sizes="153px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-contain object-right-bottom" />
       </div>
-      <div className="absolute left-4 top-4 w-[200px]">
-        <p className="text-[35px] font-black italic uppercase leading-[0.9] tracking-[-0.9px] text-white">{sportOf(f.sport).label}</p>
-        <p className="truncate text-[28px] font-extrabold italic uppercase leading-[0.9] text-transparent [-webkit-text-stroke:1px_#fff]">{f.league}</p>
+      <div className="absolute left-4 top-4 w-[206px]">
+        <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
+        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{f.league}</p>
       </div>
-      <div className="absolute left-4 top-[104px] flex items-center gap-[5px] whitespace-nowrap text-[9.8px] font-bold uppercase tracking-[0.33px] text-white">
+      <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
         <span>{fit(f.home, f.homeCode)}</span>
-        <TeamBadge code={f.homeCode} tone={f.homeTone} logo={f.homeLogo} size={23} />
-        <span className="text-[12.6px] font-extrabold normal-case tracking-normal text-black">VS</span>
-        <TeamBadge code={f.awayCode} tone={f.awayTone} logo={f.awayLogo} size={23} />
+        <TeamBadge code={f.homeCode} tone={f.homeTone} logo={f.homeLogo} size={24} />
+        <span className="text-[13px] font-extrabold normal-case tracking-normal text-black">VS</span>
+        <TeamBadge code={f.awayCode} tone={f.awayTone} logo={f.awayLogo} size={24} />
         <span>{fit(f.away, f.awayCode)}</span>
       </div>
-      <p className="absolute left-4 top-[134px] flex gap-[9px] whitespace-nowrap text-[7.4px] text-[#06121C]">
+      <p className="absolute left-4 top-[134px] flex gap-[9px] whitespace-nowrap text-[9px] text-[#06121C]">
         <span className="font-semibold">{formatBannerDate(f.start)}</span>
         <span className="font-medium opacity-60">Starts at {formatTime(f.start)}</span>
       </p>
