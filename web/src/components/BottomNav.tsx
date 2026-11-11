@@ -35,9 +35,10 @@ export function NavBar({ path }: { path?: string }) {
           return (
             <li key={t.href} className="relative flex-1">
               <Link href={t.href} aria-current={on ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2 font-[family-name:var(--font-inter)] text-[11px] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] ${on ? "font-semibold text-white" : "font-medium text-muted"}`}>
-                <Icon name={t.icon} active={on && t.icon !== "more"} className={`motion-safe:transition-[color,transform] motion-safe:duration-200 ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
-                {t.label}
+                // Thrill tab markup: 20px filled icon, 8px gap, xx-small bold uppercase label, colours transition 200ms ease-in-out
+                className={`flex flex-col items-center gap-2 py-2 font-[family-name:var(--font-inter)] text-[10px] font-bold uppercase tracking-[0.04em] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-muted"}`}>
+                <Icon name={t.icon} size={20} active={on && t.icon !== "more"} className={`motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+                <span className="max-w-full truncate">{t.label}</span>
               </Link>
             </li>
           );
