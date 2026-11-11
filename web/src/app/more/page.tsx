@@ -110,12 +110,7 @@ export default function MorePage() {
           <Row icon={<Icon name="news" size={20} />} tint="gold" title="About 1stLive247" />
         </Section>
 
-        {/* brand footer */}
-        <section className="flex flex-col items-center gap-2.5 rounded-[20px] border border-line bg-surface px-5 py-6 text-center">
-          <span className="rounded-xl bg-white px-3 py-2"><Logo className="h-10 w-auto" /></span>
-          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#945D0A] dark:text-[#FBEA99]">Always on for sports</p>
-          <p className="text-[11px] text-text-2">Version 0.1</p>
-        </section>
+        <p className="pb-2 text-center text-[11px] text-text-2">1stLive247 · Version 0.1</p>
       </main>
     </>
   );
