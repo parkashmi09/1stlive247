@@ -58,11 +58,28 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-const QUICK: { label: string; icon: IconName; tint: Tint; href: string }[] = [
-  { label: "Favourites", icon: "star", tint: "gold", href: "/more" },
-  { label: "Alerts", icon: "bell", tint: "red", href: "/more" },
-  { label: "Live", icon: "live", tint: "blue", href: "/live" },
-  { label: "News", icon: "news", tint: "green", href: "/news" },
+// Solid custom marks for the quick tiles (24×24, filled, white) on a gradient chip each.
+const SOLID = {
+  star: <path d="M12 2.6c.3 0 .6.2.7.5l2.3 4.9 5.3.6c.7.1 1 .9.5 1.4l-3.9 3.7 1 5.3c.1.7-.6 1.2-1.2.9L12 17.3l-4.7 2.6c-.6.3-1.3-.2-1.2-.9l1-5.3-3.9-3.7c-.5-.5-.2-1.3.5-1.4l5.3-.6 2.3-4.9c.1-.3.4-.5.7-.5Z" />,
+  bell: <><path d="M12 2.5a1.3 1.3 0 0 1 1.3 1.3v.6A6.5 6.5 0 0 1 18.5 11v3.6l1.6 2.2c.5.7 0 1.7-.9 1.7H4.8c-.9 0-1.4-1-.9-1.7l1.6-2.2V11a6.5 6.5 0 0 1 5.2-6.6v-.6A1.3 1.3 0 0 1 12 2.5Z" /><path d="M9.5 20h5a2.5 2.5 0 0 1-5 0Z" /></>,
+  live: <><circle cx="12" cy="12" r="3.2" /><path d="M7.4 7.4a1 1 0 0 1 1.4 1.4 4.5 4.5 0 0 0 0 6.4 1 1 0 0 1-1.4 1.4 6.5 6.5 0 0 1 0-9.2Zm9.2 0a6.5 6.5 0 0 1 0 9.2 1 1 0 0 1-1.4-1.4 4.5 4.5 0 0 0 0-6.4 1 1 0 0 1 1.4-1.4ZM4.2 4.2a1 1 0 0 1 1.4 1.4 9 9 0 0 0 0 12.8 1 1 0 0 1-1.4 1.4 11 11 0 0 1 0-15.6Zm15.6 0a11 11 0 0 1 0 15.6 1 1 0 0 1-1.4-1.4 9 9 0 0 0 0-12.8 1 1 0 0 1 1.4-1.4Z" /></>,
+  news: <path fillRule="evenodd" d="M4.5 3.5h11a1.5 1.5 0 0 1 1.5 1.5v2h3a1 1 0 0 1 1 1v10a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18V5a1.5 1.5 0 0 1 1.5-1.5ZM17 9v9a1 1 0 0 0 2 0V9h-2ZM6 7h8v4H6V7Zm0 6h8v1.6H6V13Zm0 3h5v1.6H6V16Z" />,
+} as const;
+const SOLID_BG = {
+  star: "bg-gold text-[#5a3a05]",
+  bell: "bg-[linear-gradient(135deg,#ff5a62,#c4000b)] text-white",
+  live: "bg-brand-diag text-white",
+  news: "bg-[linear-gradient(135deg,#34d399,#047857)] text-white",
+} as const;
+function SolidIcon({ name }: { name: keyof typeof SOLID }) {
+  return <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" aria-hidden>{SOLID[name]}</svg>;
+}
+
+const QUICK: { label: string; icon: keyof typeof SOLID; href: string }[] = [
+  { label: "Favourites", icon: "star", href: "/more" },
+  { label: "Alerts", icon: "bell", href: "/more" },
+  { label: "Live", icon: "live", href: "/live" },
+  { label: "News", icon: "news", href: "/news" },
 ];
 
 export default function MorePage() {
@@ -86,7 +103,7 @@ export default function MorePage() {
         <nav aria-label="Quick actions" className="grid grid-cols-4 gap-2.5">
           {QUICK.map((q) => (
             <Link key={q.label} href={q.href} className="card-premium flex flex-col items-center gap-2 rounded-2xl border border-line bg-surface px-1 py-3.5">
-              <Chip tint={q.tint}><Icon name={q.icon} size={20} /></Chip>
+              <span className={`flex size-11 items-center justify-center rounded-2xl shadow-[0_6px_16px_rgb(1_44_120/0.18)] ${SOLID_BG[q.icon]}`}><SolidIcon name={q.icon} /></span>
               <span className="text-xs font-semibold">{q.label}</span>
             </Link>
           ))}
