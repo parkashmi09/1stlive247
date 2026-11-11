@@ -9,13 +9,13 @@ import { API_URL } from "@/lib/config";
 import { formatBannerDate, formatTime } from "@/lib/format";
 import { TeamBadge } from "../ui";
 
-// Player art per sport (designer PNGs, Figma 60:1088 / 61:61 / 63:168). A sport without art gets no slide.
-// shortcut: badminton isn't a feed sport yet, so its art waits here until it is.
-const ART: Partial<Record<SportId | "badminton", string>> = {
+// Player art per sport: the designer's framed cut-outs (Figma 69:213 / 69:214 / 69:215, each 153×180). A sport without art gets no slide.
+const ART: Partial<Record<SportId, string>> = {
   football: "/banners/football.webp",
   cricket: "/banners/cricket.webp",
-  badminton: "/banners/badminton.webp",
 };
+// shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
+const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-cutout.webp", href: "/live" }];
 const AUTOPLAY_MS = 5000;
 const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
@@ -49,6 +49,22 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
   );
 }
 
+function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
+  return (
+    <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative block h-[180px] w-full shrink-0 snap-center">
+      <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
+      <div className="absolute right-0 top-0 h-[180px] w-[153px]" aria-hidden>
+        <Image src={p.art} alt="" fill sizes="153px" loading="lazy" className="object-contain object-right-bottom" />
+      </div>
+      <div className="absolute left-4 right-[150px] top-4">
+        <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
+        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{p.sub}</p>
+      </div>
+      <p className="absolute left-4 top-[134px] text-[9px] font-semibold text-[#06121C]">1stLive247 · Always on for sports</p>
+    </Link>
+  );
+}
+
 export function FeaturedSlider({ initial }: { initial: Featured[] }) {
   const [slides, setSlides] = useState(() => withArt(initial));
   const track = useRef<HTMLDivElement>(null);
@@ -67,23 +83,25 @@ export function FeaturedSlider({ initial }: { initial: Featured[] }) {
 
   // autoplay; pauses while the user touches/hovers, off for reduced motion
   useEffect(() => {
-    if (slides.length < 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const total = slides.length + PROMOS.length;
+    if (total < 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const t = setInterval(() => {
       const el = track.current;
       if (!el || paused.current) return;
-      const next = (Math.round(el.scrollLeft / el.clientWidth) + 1) % slides.length;
+      const next = (Math.round(el.scrollLeft / el.clientWidth) + 1) % total;
       el.scrollTo({ left: next * el.clientWidth, behavior: "smooth" });
     }, AUTOPLAY_MS);
     return () => clearInterval(t);
   }, [slides.length]);
 
-  if (!slides.length) return null;
+  if (!slides.length && !PROMOS.length) return null;
   return (
     <section aria-label="Featured matches" aria-roledescription="carousel">
       <div ref={track} className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto"
         onPointerEnter={() => (paused.current = true)} onPointerLeave={() => (paused.current = false)}
         onTouchStart={() => (paused.current = true)} onTouchEnd={() => setTimeout(() => (paused.current = false), 4000)}>
         {slides.map((f, i) => <Slide key={f.matchId} f={f} priority={i === 0} />)}
+        {PROMOS.map((p) => <PromoSlide key={p.label} p={p} />)}
       </div>
     </section>
   );
