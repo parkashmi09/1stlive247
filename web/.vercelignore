@@ -1,0 +1,4 @@
+.next
+node_modules
+snapshot.tmp
+.env*
