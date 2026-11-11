@@ -26,7 +26,8 @@ const withArt = (all: Featured[]) => all.filter((f) => ART[f.sport]);
 /** Team mark on the banner: the raw crest/flag, no white plate (Figma 63:160); badge fallback when the feed has no logo. */
 function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string }) {
   return logo
-    ? <Image src={logo} alt="" width={24} height={24} className="size-6 shrink-0 rounded-[7px] object-cover" unoptimized />
+    // feed flags are 30×30 PNGs with the flag floating in the middle; zoom-crop so every mark fills the same 24px box
+    ? <span className="size-6 shrink-0 overflow-hidden rounded-[7px]"><Image src={logo} alt="" width={24} height={24} className="size-full scale-[1.6] object-cover" unoptimized /></span>
     : <TeamBadge code={code} tone={tone} size={24} />;
 }
 
