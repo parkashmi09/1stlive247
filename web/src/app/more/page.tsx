@@ -70,21 +70,20 @@ export default function MorePage() {
     <>
       <TopBar variant="title" title="More" className="lg:mx-auto lg:max-w-[720px]" />
       <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
-        {/* hero: welcome card (client theme 2) */}
-        <Link href="/" className="hero-glow relative flex items-center gap-4 overflow-hidden rounded-[20px] p-5 text-white shadow-raised">
-          <SportIcon sport="cricket" size={130} className="pointer-events-none absolute -right-6 -top-6 text-white opacity-[0.07]" />
-          <span className="relative flex size-14 shrink-0 items-center justify-center rounded-full p-[2px] [background:var(--grad-gold)]">
-            <span className="flex size-full items-center justify-center rounded-full bg-[#0A1F4A]">
-              <svg width="28" height="22" viewBox="0 0 20 16" aria-hidden><path d="M2 14h16l1.5-10-5 4L10 1 5.5 8l-5-4z" fill="url(#crown-g)" /><defs><linearGradient id="crown-g" x1="10" y1="1" x2="10" y2="14" gradientUnits="userSpaceOnUse"><stop stopColor="#FBEA99" /><stop offset=".5" stopColor="#D9AB4B" /><stop offset="1" stopColor="#945D0A" /></linearGradient></defs></svg>
+        {/* hero: the logo is blue + gold, so it sits on a white plate instead of the blue gradient */}
+        <Link href="/" className="hero-glow relative flex flex-col gap-4 overflow-hidden rounded-[20px] p-4 text-white shadow-raised">
+          <SportIcon sport="cricket" size={150} className="pointer-events-none absolute -bottom-10 -right-8 text-white opacity-[0.07]" />
+          <span className="relative flex items-center justify-center rounded-2xl bg-white px-4 py-4 shadow-[0_6px_20px_rgb(1_44_120/0.25)]">
+            <Logo className="h-12 w-auto" />
+          </span>
+          <span className="relative flex items-center gap-3 px-1">
+            <span className="min-w-0 flex-1">
+              <span className="text-gold block text-[11px] font-bold uppercase tracking-[0.14em]">Welcome</span>
+              <span className="block text-[15px] font-semibold">Stay updated. Stay ahead.</span>
             </span>
-          </span>
-          <span className="relative min-w-0 flex-1">
-            <span className="text-gold block text-xs font-semibold uppercase tracking-[0.12em]">Welcome to</span>
-            <Logo className="mb-1 mt-2 h-9 w-auto" />
-            <span className="block text-xs text-white/75">Stay updated. Stay ahead.</span>
-          </span>
-          <span className="relative flex size-9 items-center justify-center rounded-full bg-white/15 backdrop-blur">
-            <Icon name="back" size={18} className="rotate-180" />
+            <span className="bg-gold flex size-9 shrink-0 items-center justify-center rounded-full text-[#012c78]">
+              <Icon name="back" size={18} className="rotate-180" />
+            </span>
           </span>
         </Link>
 
@@ -111,11 +110,11 @@ export default function MorePage() {
           <Row icon={<Icon name="news" size={20} />} tint="gold" title="About 1stLive247" />
         </Section>
 
-        {/* brand footer card (client theme 2) */}
-        <section className="hero-glow flex flex-col items-center gap-2 rounded-[20px] px-5 py-6 text-center">
-          <Logo className="h-12 w-auto" />
-          <p className="text-gold text-[11px] font-semibold uppercase tracking-[0.35em]">Always on for sports</p>
-          <p className="text-[11px] text-white/60">Version 0.1</p>
+        {/* brand footer */}
+        <section className="flex flex-col items-center gap-2.5 rounded-[20px] border border-line bg-surface px-5 py-6 text-center">
+          <span className="rounded-xl bg-white px-3 py-2"><Logo className="h-10 w-auto" /></span>
+          <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#945D0A] dark:text-[#FBEA99]">Always on for sports</p>
+          <p className="text-[11px] text-text-2">Version 0.1</p>
         </section>
       </main>
     </>
