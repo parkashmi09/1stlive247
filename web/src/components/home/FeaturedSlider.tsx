@@ -7,16 +7,21 @@ import { sportOf } from "@/data/sports";
 import type { Featured, SportId } from "@/data/types";
 import { API_URL } from "@/lib/config";
 import { formatBannerDate, formatTime } from "@/lib/format";
-import { TeamBadge } from "../ui";
+import { TeamBadge, cx } from "../ui";
 import type { Tone } from "@/data/types";
 
 // Player art per sport: the designer's framed cut-outs (Figma 69:213 / 69:214 / 69:215, each 153×180). A sport without art gets no slide.
 const ART: Partial<Record<SportId, string>> = {
   football: "/banners/football.webp",
-  cricket: "/banners/cricket-2.webp",
 };
 // shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
-const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-2.webp", href: "/live" }];
+// shortcut: user wants IND v NZ on the cricket slide; the feed has no such fixture, so it is a fixed promo. Swap to a real
+// Featured entry (and put cricket back in ART) once the series is in the feed. India flag = feed IND crest until the user's file lands.
+const PROMOS = [
+  { label: "Cricket", sub: "India tour of New Zealand", art: "/banners/cricket-2.webp", href: "/live",
+    teams: [{ name: "India", flag: "https://static.flashscore.com/res/image/data/2PligRmC-vqjYdOL1.png" }, { name: "New Zealand", flag: "/flags/nz.webp" }] },
+  { label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-2.webp", href: "/live" },
+];
 const AUTOPLAY_MS = 5000;
 const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
@@ -25,10 +30,17 @@ const withArt = (all: Featured[]) => all.filter((f) => ART[f.sport]);
 
 /** Team mark on the banner: the raw crest/flag, no white plate (Figma 63:160); badge fallback when the feed has no logo. */
 function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string }) {
-  return logo
-    // feed flags are 30×30 PNGs with the flag floating in the middle; zoom-crop so every mark fills the same 24px box
-    ? <span className="h-4 w-6 shrink-0 overflow-hidden rounded-[4px]"><Image src={logo} alt="" width={24} height={16} className="size-full scale-[1.5] object-cover object-center" unoptimized /></span>
-    : <TeamBadge code={code} tone={tone} size={24} />;
+  return logo ? <Flag src={logo} /> : <TeamBadge code={code} tone={tone} size={24} />;
+}
+
+/** Every flag in the same 24×16 box. Feed flags are 30×30 PNGs with the flag floating in the middle, so those get zoomed. */
+function Flag({ src }: { src: string }) {
+  const feed = src.startsWith("http");
+  return (
+    <span className="h-4 w-6 shrink-0 overflow-hidden rounded-[4px]">
+      <Image src={src} alt="" width={24} height={16} className={cx("size-full object-cover object-center", feed && "scale-[1.5]")} unoptimized={feed} />
+    </span>
+  );
 }
 
 function Slide({ f, priority }: { f: Featured; priority: boolean }) {
@@ -70,7 +82,14 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
         <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{p.sub}</p>
       </div>
-      <p className="absolute left-4 top-[134px] text-[9px] font-semibold text-[#06121C]">1stLive247 · Always on for sports</p>
+      {p.teams && (
+        <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
+          <span>{p.teams[0].name}</span><Flag src={p.teams[0].flag} />
+          <span className="text-[13px] font-extrabold normal-case tracking-normal text-black">VS</span>
+          <Flag src={p.teams[1].flag} /><span>{p.teams[1].name}</span>
+        </div>
+      )}
+      <p className="absolute left-4 top-[134px] text-[9px] font-semibold text-[#06121C]">{p.teams ? "Series fixtures coming soon" : "1stLive247 · Always on for sports"}</p>
     </Link>
   );
 }
