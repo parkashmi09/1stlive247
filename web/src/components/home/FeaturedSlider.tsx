@@ -7,6 +7,7 @@ import { sportOf } from "@/data/sports";
 import type { Featured, SportId } from "@/data/types";
 import { API_URL } from "@/lib/config";
 import { formatBannerDate, formatTime } from "@/lib/format";
+import { SportIcon } from "../icons/SportIcon";
 import { TeamBadge, cx } from "../ui";
 import type { Tone } from "@/data/types";
 
@@ -31,6 +32,16 @@ const ORDER = Object.keys(ART);
 const withArt = (all: Featured[]) => all.filter((f) => f.sport in ART).sort((a, b) => ORDER.indexOf(a.sport) - ORDER.indexOf(b.sport));
 
 /** Team mark on the banner: the raw crest/flag, no white plate (Figma 63:160); badge fallback when the feed has no logo. */
+/** Faint sport marks behind the banner card (same idea as the Live hero). */
+function Watermark({ sport }: { sport: SportId }) {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[155px] overflow-hidden rounded-[20px]">
+      <SportIcon sport={sport} size={120} className="absolute -left-6 -top-8 rotate-[-15deg] text-white opacity-[0.08]" />
+      <SportIcon sport={sport} size={72} className="absolute bottom-[-18px] left-[42%] rotate-12 text-white opacity-[0.07]" />
+    </div>
+  );
+}
+
 function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string }) {
   return logo ? <Flag src={logo} /> : <TeamBadge code={code} tone={tone} size={24} />;
 }
@@ -50,6 +61,7 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
     // 155px card; the player box (148×174, designer's 153×180 ratio) rises 19px above the card top and sits flush with its bottom
     <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
+      <Watermark sport={f.sport} />
       {ART[f.sport] && (
         <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
           <Image src={ART[f.sport]!} alt="" fill sizes="148px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
@@ -79,6 +91,7 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
   return (
     <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
+      <Watermark sport="cricket" />
       <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
         <Image src={p.art} alt="" fill sizes="148px" loading="lazy" className="object-cover" />
       </div>
