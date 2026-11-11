@@ -9,11 +9,12 @@ import { AdSlot } from "../AdSlot";
 import { FeaturedSlider } from "./FeaturedSlider";
 import { cx } from "../ui";
 
+// Status tabs: equal-width pills with always-coloured icons (user picked this over the segmented pill).
 const TABS = [
-  { id: "top", label: "Top Events" },
-  { id: "live", label: "Live" },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "finished", label: "Finished" },
+  { id: "top", label: "Top", color: "text-[#D9AB4B]", icon: <path d="M12 3.6l2.5 5.3 5.8.7-4.3 4 1.1 5.7L12 16.5l-5.1 2.8 1.1-5.7-4.3-4 5.8-.7z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /> },
+  { id: "live", label: "Live", color: "text-[#22c55e]", icon: <><circle cx="12" cy="12" r="10" fill="currentColor" /><path d="M10 8.5v7l5.5-3.5z" fill="#fff" /></> },
+  { id: "upcoming", label: "Upcoming", color: "text-[#f97316]", icon: <path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3 .5-6 1-9.5z" fill="currentColor" /> },
+  { id: "finished", label: "Finished", color: "text-cyan", icon: <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="8.5" /><path d="M8.3 12.2l2.5 2.5 4.9-5" /></g> },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
@@ -43,24 +44,27 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
           const on = s.id === sport;
           return (
             <button key={s.id} role="tab" aria-selected={on} aria-label={s.label} onClick={() => setSport(s.id)}
-              className={cx("flex h-12 shrink-0 items-center justify-center rounded-full transition-all",
-                on ? "bg-brand gap-3 pl-[23px] pr-6 text-white shadow-[0_4px_14px_rgb(1_44_120/0.28)]" : "w-12 border border-line bg-surface text-[#98A3A6]")}>
-              <SportIcon sport={s.id} />
-              {on && <span className="text-lg font-semibold">{s.label}</span>}
+              className={cx("flex h-[34px] shrink-0 items-center justify-center rounded-full transition-all",
+                on ? "bg-brand gap-2 pl-4 pr-[17px] text-white shadow-[0_3px_10px_rgb(1_44_120/0.28)]" : "w-[34px] border border-line bg-surface text-[#98A3A6]")}>
+              <SportIcon sport={s.id} size={17} />
+              {on && <span className="text-[13px] font-semibold">{s.label}</span>}
             </button>
           );
         })}
       </div>
 
-      <div role="tablist" aria-label="Events" className="flex rounded-full bg-surface-2 p-0.5">
-        {TABS.map((t) => (
-          <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
-            className={cx("flex h-8 flex-1 items-center justify-center gap-1.5 rounded-full text-sm font-medium transition",
-              tab === t.id ? "bg-brand text-white" : "text-text-2")}>
-            {t.id === "live" && <span className="size-1 rounded-full bg-current" />}
-            {t.label}
-          </button>
-        ))}
+      <div role="tablist" aria-label="Events" className="grid grid-cols-4 gap-2">
+        {TABS.map((t) => {
+          const on = tab === t.id;
+          return (
+            <button key={t.id} role="tab" aria-selected={on} onClick={() => setTab(t.id)}
+              className={cx("flex h-9 min-w-0 items-center justify-center gap-1 rounded-full border px-1 text-[12px] font-semibold whitespace-nowrap transition md:gap-1.5 md:text-[13px]",
+                on ? "bg-brand border-transparent text-white shadow-[0_3px_10px_rgb(1_44_120/0.28)]" : "border-line bg-surface text-text")}>
+              <svg viewBox="0 0 24 24" className={cx("size-4 shrink-0", on && t.id === "finished" ? "text-white" : t.color)} aria-hidden>{t.icon}</svg>
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="md:columns-2 md:gap-3">
