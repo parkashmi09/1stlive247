@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Onest } from "next/font/google";
 import { Suspense } from "react";
 import { BottomNav, DesktopNav, NavBar } from "@/components/BottomNav";
+import { PageIn } from "@/components/PageIn";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import "./globals.css";
 
@@ -34,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="relative mx-auto min-h-dvh max-w-[480px] overflow-x-clip pb-28 md:max-w-[960px] md:px-6 lg:max-w-[1280px] lg:pb-12 lg:pt-4">
           {/* brand glow behind the nav, as in the designer's mockup */}
           <div aria-hidden className="pointer-events-none fixed bottom-0 left-1/2 h-24 w-72 -translate-x-1/2 translate-y-1/2 rounded-full bg-cyan opacity-25 blur-[100px]" />
-          {children}
+          <Suspense fallback={children}><PageIn>{children}</PageIn></Suspense>
         </div>
         <Suspense fallback={<NavBar />}>
           <BottomNav />

@@ -18,18 +18,26 @@ export function BottomNav() {
 }
 
 export function NavBar({ path }: { path?: string }) {
+  const active = path === undefined ? -1 : TABS.findIndex((t) => t.match(path));
   return (
-    <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] md:max-w-none lg:hidden border-t border-line bg-nav pb-[max(12px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-4px_16px_rgb(10_31_74/0.06)]">
-      <ul className="flex">
-        {TABS.map((t) => {
-          const on = path !== undefined && t.match(path);
+    // Thrill-style bar (measured): edge-to-edge glass, a soft tinted pill slides (transform, 300ms) behind the active tab,
+    // icon + label recolour over 200ms. Our colours: gold active, brand-tinted pill, nav glass.
+    <nav aria-label="Primary"
+      className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] border-t border-line/70 bg-nav/80 pb-[max(10px,env(safe-area-inset-bottom))] pt-1 shadow-[0_-10px_30px_rgb(1_44_120/0.10)] backdrop-blur-xl md:max-w-none lg:hidden dark:border-white/10 dark:shadow-[0_-10px_30px_rgb(0_0_0/0.45)]">
+      <ul className="relative flex px-3">
+        {active >= 0 && (
+          // 72×52 glass pill (Thrill: 88px pill, 46px radius): tinted fill, inner highlight, soft glow; slides on transform
+          <li aria-hidden className="pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/60 bg-[linear-gradient(180deg,rgb(255_255_255/0.55),rgb(52_196_238/0.16))] shadow-[0_6px_18px_rgb(52_196_238/0.28),inset_0_1px_0_rgb(255_255_255/0.8)] backdrop-blur-md motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] dark:border-white/15 dark:bg-[linear-gradient(180deg,rgb(255_255_255/0.12),rgb(52_196_238/0.14))] dark:shadow-[0_6px_18px_rgb(52_196_238/0.22),inset_0_1px_0_rgb(255_255_255/0.2)]"
+            style={{ left: `calc(12px + (100% - 24px) * ${active + 0.5} / ${TABS.length} - 36px)` }} />
+        )}
+        {TABS.map((t, i) => {
+          const on = i === active;
           return (
-            <li key={t.href} className="flex-1">
+            <li key={t.href} className="relative flex-1">
               <Link href={t.href} aria-current={on ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 font-[family-name:var(--font-inter)] text-xs ${on ? "font-semibold text-text" : "font-medium text-muted"}`}>
-                <Icon name={t.icon} active={on && t.icon !== "more"} className={on ? "text-[var(--gold-mid)]" : undefined} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+                className={`flex flex-col items-center gap-1 py-2 font-[family-name:var(--font-inter)] text-[11px] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] ${on ? "font-semibold text-text" : "font-medium text-muted"}`}>
+                <Icon name={t.icon} active={on && t.icon !== "more"} className={`motion-safe:transition-[color,transform] motion-safe:duration-200 ${on ? "text-[var(--gold-mid)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
                 {t.label}
-                <span className={`h-[3px] w-6 rounded-sm ${on ? "bg-gold-h" : ""}`} />
               </Link>
             </li>
           );
