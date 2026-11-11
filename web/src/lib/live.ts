@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import type { CommentaryEntry, Match, MatchCentre } from "@/data/types";
-import { API_URL } from "./config";
+import { API_URL, SNAPSHOT } from "./config";
 
 type ServerToClient = {
   "match:update": (m: Match) => void;
@@ -17,7 +17,8 @@ type ClientToServer = {
 };
 
 let socket: Socket<ServerToClient, ClientToServer> | undefined;
-export const getSocket = () => (socket ??= io(API_URL, { transports: ["websocket"] }));
+// snapshot mode never connects; the hooks keep their initial data
+export const getSocket = () => (socket ??= io(API_URL, { transports: ["websocket"], autoConnect: !SNAPSHOT }));
 
 /** Keep a list of matches fresh from the `live` room. */
 export function useLiveMatches(initial: Match[]) {

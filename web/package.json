@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test src/lib/*.test.ts",
+    "snapshot": "node scripts/snapshot.mjs",
     "gen:icons": "python3 scripts/gen-icons.py"
   },
   "dependencies": {
