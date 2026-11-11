@@ -27,7 +27,7 @@ const withArt = (all: Featured[]) => all.filter((f) => ART[f.sport]);
 function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string }) {
   return logo
     // feed flags are 30×30 PNGs with the flag floating in the middle; zoom-crop so every mark fills the same 24px box
-    ? <span className="size-6 shrink-0 overflow-hidden rounded-[7px]"><Image src={logo} alt="" width={24} height={24} className="size-full scale-[1.6] object-cover" unoptimized /></span>
+    ? <span className="h-4 w-6 shrink-0 overflow-hidden rounded-[4px]"><Image src={logo} alt="" width={24} height={16} className="size-full scale-[1.5] object-cover object-center" unoptimized /></span>
     : <TeamBadge code={code} tone={tone} size={24} />;
 }
 
