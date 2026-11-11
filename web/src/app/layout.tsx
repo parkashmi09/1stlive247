@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Onest } from "next/font/google";
 import { Suspense } from "react";
 import { BottomNav, DesktopNav, NavBar } from "@/components/BottomNav";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import "./globals.css";
 
 const onest = Onest({ variable: "--font-onest", subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full font-sans">
+        <Suspense fallback={null}><ScrollToTop /></Suspense>
         <Suspense fallback={<DesktopNav />}>
           <DesktopNav live />
         </Suspense>

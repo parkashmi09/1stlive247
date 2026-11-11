@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand";
+import { SiteFooter } from "@/components/SiteFooter";
 import { TopBar } from "@/components/chrome";
 import { Icon, type IconName } from "@/components/icons/Icon";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -69,11 +70,11 @@ export default function MorePage() {
     <>
       <TopBar variant="title" title="More" className="lg:mx-auto lg:max-w-[720px]" />
       <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
-        {/* hero: light card so the blue + gold logo reads; a white plate keeps it readable in dark mode */}
+        {/* hero: light card so the blue + gold logo reads */}
         <Link href="/" className="card-premium relative flex items-center gap-4 overflow-hidden rounded-[20px] border border-line bg-surface p-5">
           <span className="bg-brand-diag pointer-events-none absolute -right-10 -top-12 size-40 rounded-full opacity-15 blur-2xl" aria-hidden />
           <span className="relative min-w-0 flex-1">
-            <span className="block w-fit dark:rounded-lg dark:bg-white dark:px-2 dark:py-1"><Logo className="h-11 w-auto" /></span>
+            <Logo className="h-11 w-auto" />
             <span className="mt-3 block text-sm font-medium text-text-2">Live scores, news and stats. Stay updated, stay ahead.</span>
           </span>
           <span className="bg-gold relative flex size-10 shrink-0 items-center justify-center rounded-full text-[#012c78] shadow-[0_4px_14px_rgb(217_171_75/0.45)]">
@@ -104,7 +105,7 @@ export default function MorePage() {
           <Row icon={<Icon name="news" size={20} />} tint="gold" title="About 1stLive247" />
         </Section>
 
-        <p className="pb-2 text-center text-[11px] text-text-2">1stLive247 · Version 0.1</p>
+        <SiteFooter />
       </main>
     </>
   );
