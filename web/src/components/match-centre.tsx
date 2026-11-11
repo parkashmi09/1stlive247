@@ -35,7 +35,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
           {m.status === "live"
             ? <>
                 <LiveBadge />
-                {(m.clock || m.timer) && <span className="text-[13px] font-black text-cyan"><LiveClock timer={m.timer} fallback={m.clock} /></span>}
+                {(m.clock || m.timer) && <span className="text-[13px] font-black text-[#06121C]"><LiveClock timer={m.timer} fallback={m.clock} /></span>}
               </>
             : <span className="text-[11px] font-bold text-white/60">{m.status === "upcoming" ? "Upcoming" : "Final"}</span>}
         </div>
