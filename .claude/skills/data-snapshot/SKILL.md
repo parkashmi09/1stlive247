@@ -23,7 +23,7 @@ The web app can read frozen JSON instead of the backend. Use this when the feed 
 - Snapshot is the DEFAULT (user said: remove the backend link). Set `NEXT_PUBLIC_DATA_SOURCE=api` to go back to the live backend.
   - `web/src/lib/api.ts` routes every call through `web/src/lib/snapshot.ts`.
   - The socket never connects (`live.ts`), so scores stay frozen at `takenAt`.
-- Images: `scripts/snapshot-assets.mjs` downloads every static.flashscore.com logo into `web/public/fs/` (~7.2k png, ~84MB) and rewrites the JSON to `/fs/...`, so no outside host is needed.
+- Images stay as their original static.flashscore.com links (user's choice: don't download assets).
 - Local: `npx next dev -p 3247`.
 - Vercel: `cd web && vercel deploy --prod --yes`. No env needed. `.vercelignore` keeps the 478MB local `.next` out of the upload (that's what hung the first deploy). `next.config.ts` has `outputFileTracingIncludes` so the JSON is bundled into the functions.
 
