@@ -28,7 +28,7 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
     <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative block h-[180px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
       <div className="absolute right-0 top-0 h-[180px] w-[153px]" aria-hidden>
-        <Image src={ART[f.sport]!} alt="" fill sizes="153px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-contain object-right-bottom" />
+        <Image src={ART[f.sport]!} alt="" fill sizes="153px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
       </div>
       <div className="absolute left-4 right-[150px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
