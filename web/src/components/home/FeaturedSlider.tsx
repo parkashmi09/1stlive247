@@ -15,7 +15,7 @@ const ART: Partial<Record<SportId, string>> = {
   cricket: "/banners/cricket.webp",
 };
 // shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
-const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-cutout.webp", href: "/live" }];
+const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-frame.webp", href: "/live" }];
 const AUTOPLAY_MS = 5000;
 const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
@@ -54,7 +54,7 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
     <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative block h-[180px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
       <div className="absolute right-0 top-0 h-[180px] w-[153px]" aria-hidden>
-        <Image src={p.art} alt="" fill sizes="153px" loading="lazy" className="object-contain object-right-bottom" />
+        <Image src={p.art} alt="" fill sizes="153px" loading="lazy" className="object-cover" />
       </div>
       <div className="absolute left-4 right-[150px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
