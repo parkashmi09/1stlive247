@@ -12,7 +12,7 @@ import { TeamBadge } from "../ui";
 // Player art per sport: the designer's framed cut-outs (Figma 69:213 / 69:214 / 69:215, each 153×180). A sport without art gets no slide.
 const ART: Partial<Record<SportId, string>> = {
   football: "/banners/football.webp",
-  cricket: "/banners/cricket.webp",
+  cricket: "/banners/cricket-2.webp",
 };
 // shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
 const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-frame.webp", href: "/live" }];
