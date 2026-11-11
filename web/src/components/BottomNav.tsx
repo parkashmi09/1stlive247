@@ -23,11 +23,11 @@ export function NavBar({ path }: { path?: string }) {
     // Thrill-style bar (measured), floated and rounded per the user: glass, a soft tinted pill slides (transform, 300ms) behind the active tab,
     // icon + label recolour over 200ms. Our colours: gold active, brand-tinted pill, nav glass.
     <nav aria-label="Primary"
-      className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 mx-auto max-w-[456px] rounded-[28px] border border-white/70 bg-nav/90 shadow-[0_10px_34px_rgb(1_44_120/0.18),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-2xl md:max-w-[640px] lg:hidden dark:border-white/10 dark:bg-nav/75 dark:shadow-[0_10px_34px_rgb(0_0_0/0.55),inset_0_1px_0_rgb(255_255_255/0.08)]">
+      className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 mx-auto max-w-[456px] rounded-[28px] border border-white/15 bg-[rgb(8_20_36/0.9)] shadow-[0_8px_28px_rgb(0_0_0/0.35)] backdrop-blur-2xl backdrop-saturate-150 md:max-w-[640px] lg:hidden">
       <ul className="relative flex px-3 py-1">
         {active >= 0 && (
-          // 72×52 glass pill (Thrill: 88px pill, 46px radius): tinted fill, inner highlight, soft glow; slides on transform
-          <li aria-hidden className="pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/60 bg-[linear-gradient(180deg,rgb(255_255_255/0.9),rgb(52_196_238/0.22))] shadow-[0_6px_20px_rgb(52_196_238/0.35),inset_0_1px_0_rgb(255_255_255/1)] backdrop-blur-md motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] dark:border-white/15 dark:bg-[linear-gradient(180deg,rgb(255_255_255/0.2),rgb(52_196_238/0.2))] dark:shadow-[0_6px_18px_rgb(52_196_238/0.22),inset_0_1px_0_rgb(255_255_255/0.2)]"
+          // 72×52 quiet glass pill (Thrill: 88px pill, 46px radius), no glow; slides on left
+          <li aria-hidden className="pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/10 bg-white/10 backdrop-blur-md motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
             style={{ left: `calc(12px + (100% - 24px) * ${active + 0.5} / ${TABS.length} - 36px)` }} />
         )}
         {TABS.map((t, i) => {
@@ -35,8 +35,8 @@ export function NavBar({ path }: { path?: string }) {
           return (
             <li key={t.href} className="relative flex-1">
               <Link href={t.href} aria-current={on ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2 font-[family-name:var(--font-inter)] text-[11px] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] ${on ? "font-semibold text-text" : "font-medium text-muted"}`}>
-                <Icon name={t.icon} active={on && t.icon !== "more"} className={`motion-safe:transition-[color,transform] motion-safe:duration-200 ${on ? "text-[var(--gold-mid)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+                className={`flex flex-col items-center gap-1 py-2 font-[family-name:var(--font-inter)] text-[11px] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] ${on ? "font-semibold text-white" : "font-medium text-white/55"}`}>
+                <Icon name={t.icon} active={on && t.icon !== "more"} className={`motion-safe:transition-[color,transform] motion-safe:duration-200 ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
                 {t.label}
               </Link>
             </li>
