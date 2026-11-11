@@ -4,6 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BellGold, Logo } from "./brand";
 import { Icon, type IconName } from "./icons/Icon";
+import type { ReactNode } from "react";
+
+// Solid tab icons (24×24, filled). Drawn for the bar: heavier shapes read better at 20px than the stroke set.
+const TAB_ICON: Record<IconName, ReactNode> = {
+  home: <path d="M11.3 3.1a1.1 1.1 0 0 1 1.4 0l7.5 6.3c.5.4.8 1 .8 1.6V19a2 2 0 0 1-2 2h-3.5a1 1 0 0 1-1-1v-4.5a1.5 1.5 0 0 0-1.5-1.5h-2A1.5 1.5 0 0 0 9.5 15.5V20a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2v-8c0-.6.3-1.2.8-1.6l7.5-6.3Z" />,
+  live: <><circle cx="12" cy="12" r="3" /><path d="M8.2 7.9a1.05 1.05 0 0 1 1.5 1.5 3.7 3.7 0 0 0 0 5.2 1.05 1.05 0 0 1-1.5 1.5 5.8 5.8 0 0 1 0-8.2Zm7.6 0a5.8 5.8 0 0 1 0 8.2 1.05 1.05 0 0 1-1.5-1.5 3.7 3.7 0 0 0 0-5.2 1.05 1.05 0 0 1 1.5-1.5ZM4.9 4.6a1.05 1.05 0 0 1 1.5 1.5 8.3 8.3 0 0 0 0 11.8 1.05 1.05 0 0 1-1.5 1.5 10.4 10.4 0 0 1 0-14.8Zm14.2 0a10.4 10.4 0 0 1 0 14.8 1.05 1.05 0 0 1-1.5-1.5 8.3 8.3 0 0 0 0-11.8 1.05 1.05 0 0 1 1.5-1.5Z" /></>,
+  news: <path fillRule="evenodd" d="M5 3.5h10A1.5 1.5 0 0 1 16.5 5v2.5h3.3a1 1 0 0 1 1 1V18a2.5 2.5 0 0 1-2.5 2.5H5.5A2.5 2.5 0 0 1 3 18V5.5A2 2 0 0 1 5 3.5Zm11.5 5.7V18a.8.8 0 0 0 1.6 0V9.2h-1.6ZM6 7h8v4.2H6V7Zm0 6h8v1.6H6V13Zm0 3h5.5v1.6H6V16Z" />,
+  more: <><circle cx="5.5" cy="12" r="2.2" /><circle cx="12" cy="12" r="2.2" /><circle cx="18.5" cy="12" r="2.2" /></>,
+} as Record<string, ReactNode>;
+const TabIcon = ({ name }: { name: IconName }) => (
+  <svg width={22} height={22} viewBox="0 0 24 24" fill="currentColor" aria-hidden className="motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out">{TAB_ICON[name]}</svg>
+);
 
 const TABS: { href: string; label: string; icon: IconName; match: (p: string) => boolean }[] = [
   { href: "/", label: "Home", icon: "home", match: (p) => p === "/" },
@@ -35,7 +47,7 @@ export function NavBar({ path }: { path?: string }) {
           return (
             <Link key={t.href} href={t.href} aria-current={on ? "page" : undefined}
               className={`relative z-[1] flex flex-col items-center justify-center gap-2 rounded-xl font-[family-name:var(--font-inter)] text-[10px] font-bold uppercase leading-3 active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-[#858FA6]"}`}>
-              <Icon name={t.icon} size={20} active={on && t.icon !== "more"} className={`motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+              <span className={on ? "text-[var(--gold-light)]" : ""}><TabIcon name={t.icon} /></span>
               <span className="max-w-full truncate">{t.label}</span>
             </Link>
           );
