@@ -6,7 +6,7 @@ import { TimeAgo } from "./TimeAgo";
 import { SportIcon } from "./icons/SportIcon";
 
 // Article photos in public/news/<slug>.webp. shortcut: hand-kept list while news is seeded demo data; move to an `image` field once a news API exists.
-const NEWS_IMAGES = new Set(["stage-set-upcoming-tournament", "india-clinch-thriller-final-over", "new-look-batting-order", "late-winner-title-race", "pkl-raiders-to-watch", "five-set-classic"]);
+const NEWS_IMAGES = new Set(["venue-ready-series-opener", "india-clinch-thriller-final-over", "new-look-batting-order", "late-winner-title-race", "pkl-raiders-to-watch", "five-set-classic"]);
 
 /** Image slot: the article photo when we have one, else gradient + sport mark. */
 export function ImagePlaceholder({ sport, slug, className, iconSize, corner, sizes = "(min-width: 1024px) 720px, 100vw" }: { sport: NewsArticle["sport"]; slug?: string; className: string; iconSize: number; corner?: boolean; sizes?: string }) {
