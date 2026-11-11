@@ -14,12 +14,9 @@ import { LeagueHeader, groupByLeague } from "./match-cards";
 import { ScorePop } from "./ScorePop";
 import { TeamBadge, cx } from "./ui";
 
-// Chip icons from the user's hero-assets zip (24×24 line art, stroke 1.6). currentColor so the active chip turns navy.
+// "All" grid icon from the user's hero-assets zip; sport chips use the app's SportIcon (same as Home).
 const CHIP_ICON: Record<string, ReactNode> = {
   all: <><rect x="3" y="3" width="7" height="7" rx="2" /><rect x="14" y="3" width="7" height="7" rx="2" /><rect x="3" y="14" width="7" height="7" rx="2" /><rect x="14" y="14" width="7" height="7" rx="2" /></>,
-  cricket: <><path d="m14 3 3 3-8.5 12-4-4Z" /><path d="m15.5 4.5 3-3M5.7 15.7l-2 2" /><circle cx="18" cy="18" r="3" /><path d="m16.5 15.4 3 5.2" /></>,
-  football: <><circle cx="12" cy="12" r="9" /><path d="m12 7 4.8 3.5-1.8 5.6H9l-1.8-5.6ZM12 7V3m4.8 7.5 3.8-1.3M15 16.1l2.4 3.2M9 16.1l-2.4 3.2m.6-8.8L3.4 9.2" /></>,
-  tennis: <g transform="rotate(35 12 12)"><ellipse cx="12" cy="8" rx="5.5" ry="7" /><path d="M9 2.2v11.6M12 1v14m3-12.8v11.6M7 5h10M6.5 8h11M7 11h10m-8 2.9 3 4.1 3-4.1M12 18v5" /></g>,
 };
 const ChipIcon = ({ id, size = 18 }: { id: string; size?: number }) => CHIP_ICON[id]
   ? <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{CHIP_ICON[id]}</svg>
@@ -101,7 +98,7 @@ export function LiveList({ initial }: { initial: Match[] }) {
                 onClick={(e) => { setOnly(c.id); e.currentTarget.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }}
                 className={cx("flex h-9 shrink-0 items-center gap-2 rounded-full border pl-3 pr-1.5 text-[12px] font-bold transition",
                   on ? "border-white bg-white text-deep" : "border-white/25 bg-white/12 text-white hover:bg-white/20")}>
-                {CHIP_ICON[c.id] ? <ChipIcon id={c.id} /> : <SportIcon sport={c.id as SportId} size={16} />}
+                {c.id === "all" ? <ChipIcon id="all" /> : <SportIcon sport={c.id} size={17} />}
                 {c.label}
                 <span className={cx("flex h-[22px] min-w-[27px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold tabular-nums", on ? "bg-deep text-white" : "bg-white/20 text-white")}>{c.n}</span>
               </button>
