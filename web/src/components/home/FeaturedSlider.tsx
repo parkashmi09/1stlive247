@@ -15,7 +15,7 @@ const ART: Partial<Record<SportId, string>> = {
   cricket: "/banners/cricket-2.webp",
 };
 // shortcut: badminton isn't a feed sport yet, so its designer banner runs as a fixed promo slide; move it into ART once the feed has it.
-const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-frame.webp", href: "/live" }];
+const PROMOS = [{ label: "Badminton", sub: "Live scores coming soon", art: "/banners/badminton-2.webp", href: "/live" }];
 const AUTOPLAY_MS = 5000;
 const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
