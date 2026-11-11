@@ -26,8 +26,8 @@ export function NavBar({ path }: { path?: string }) {
       className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 mx-auto max-w-[456px] rounded-[28px] border border-white/70 bg-nav/85 shadow-[0_10px_34px_rgb(1_44_120/0.16),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-2xl md:max-w-[640px] lg:hidden dark:border-white/10 dark:bg-nav/75 dark:shadow-[0_10px_34px_rgb(0_0_0/0.55),inset_0_1px_0_rgb(255_255_255/0.08)]">
       <ul className="relative flex px-3 py-1">
         {active >= 0 && (
-          // 72×52 dark frosted-glass pill (90%), no glow; slides on left
-          <li aria-hidden className="pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/10 bg-[rgb(8_20_36/0.9)] backdrop-blur-md backdrop-saturate-150 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
+          // 72×52 frosted-glass pill in brand navy (90%), cyan-tinted in dark mode; no glow; slides on left
+          <li aria-hidden className="pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/15 bg-[rgb(1_44_120/0.9)] backdrop-blur-md backdrop-saturate-150 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)] dark:border-white/10 dark:bg-[rgb(52_196_238/0.18)]"
             style={{ left: `calc(12px + (100% - 24px) * ${active + 0.5} / ${TABS.length} - 36px)` }} />
         )}
         {TABS.map((t, i) => {
