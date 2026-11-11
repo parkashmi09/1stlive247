@@ -17,12 +17,12 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
     </div>
   );
   return (
-    <section className="hero-glow flex flex-col items-center gap-3 px-4 py-4 text-white">
+    <section className="hero-glow flex flex-col items-center gap-3 px-4 py-4 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl md:py-6">
       <p className="text-sm text-white/70">{m.competition}</p>
       {m.status === "live" && (
         <p className="flex items-center gap-2"><LiveBadge />{(m.clock || m.timer) && <span className="text-sm font-semibold"><LiveClock timer={m.timer} fallback={m.clock} /></span>}</p>
       )}
-      <div className="flex w-full items-start justify-between">{side(m.home, "items-start")}{side(m.away, "items-end")}</div>
+      <div className="flex w-full items-start justify-between md:max-w-[560px]">{side(m.home, "items-start")}{side(m.away, "items-end")}</div>
       {m.note && m.sport === "cricket" && <p className="text-gold text-center text-sm font-semibold">{m.note}</p>}
       {stats && (
         <p className="flex items-center gap-3.5 rounded-full border border-[#D9AB4B]/50 bg-white/10 px-4 py-2 text-xs">

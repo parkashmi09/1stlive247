@@ -33,10 +33,10 @@ Use `<AdSlot>` from `web/src/components/AdSlot.tsx`. Never hand-build an ad box.
 
 | Placement | Mobile | Tablet | Desktop |
 |---|---|---|---|
-| `list-inline`: inside match lists, after every 6th item | 320×100 | 728×90 (spans the grid) | 728×90 |
-| `top`: under the page header | none | 728×90 | 970×90 |
-| `side`: side column, after the widgets | none | none | 300×250, sticky |
-| `match`: Match Centre, under the score header | 320×50 | 728×90 | 728×90 |
+| `list-inline`: inside match lists, after every 6th item | full card width, 16:5 (art: public/ads/ad-320x100.webp) | 728×90 (spans the grid) | 728×90 |
+| `top`: under the page header | none | full content width × 90 | full content width × 130 (art: public/ads/ad-top-wide.webp) |
+| `side`: side column, after the widgets | none | none | full column width, 6:5 (300×250 art), sticky |
+| `match`: Match Centre, under the score header | full card width, 32:5 (art: public/ads/ad-320x50.webp) | full card width × 100 | full card width × 100 |
 
 Slots reserve their height, so no layout shift happens when a real ad loads. Today they render a labelled placeholder. Real ads are wired in one place later.
 

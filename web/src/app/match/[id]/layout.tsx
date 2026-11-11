@@ -23,7 +23,7 @@ async function Feed({ params, children }: { params: Params; children: ReactNode 
     <MatchLive match={match} centre={centre} insights={insights}>
       {centre && <MatchTabs id={id} />}
       <LiveScoreHeader />
-      <AdSlot placement="match" className="mt-3" />
+      <div className="px-4 pt-3"><AdSlot placement="match" /></div>
       <div className="flex flex-col gap-3 px-4 pt-3">{children}</div>
     </MatchLive>
   );
