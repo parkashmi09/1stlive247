@@ -49,6 +49,10 @@ export function pickFeatured(matches: Match[], now = Date.now(), max = 3): Featu
       away: m.away.team.name,
       homeCode: m.home.team.code,
       awayCode: m.away.team.code,
+      homeTone: m.home.team.tone,
+      awayTone: m.away.team.tone,
+      homeLogo: m.home.team.logo,
+      awayLogo: m.away.team.logo,
       start: m.start,
     }));
 }

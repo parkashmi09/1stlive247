@@ -22,7 +22,7 @@ export type Timer = {
 };
 
 /** A Home banner slide: a notable upcoming fixture. */
-export type Featured = { matchId: string; sport: SportId; league: string; home: string; away: string; homeCode: string; awayCode: string; start: string };
+export type Featured = { matchId: string; sport: SportId; league: string; home: string; away: string; homeCode: string; awayCode: string; homeTone: Tone; awayTone: Tone; homeLogo?: string; awayLogo?: string; start: string };
 
 export type StatGroup = { title: string; stats: { name: string; home: string; away: string }[] };
 
