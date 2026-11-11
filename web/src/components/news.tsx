@@ -27,12 +27,13 @@ export function ImagePlaceholder({ sport, slug, className, iconSize, corner, siz
 
 export function NewsHero({ a }: { a: NewsArticle }) {
   return (
-    <Link href={`/news/${a.slug}`} className="relative flex h-60 flex-col lg:h-[420px] justify-end gap-2 overflow-hidden rounded-[20px] p-4 text-white">
-      <ImagePlaceholder sport={a.sport} slug={a.slug} className="absolute inset-0" iconSize={96} corner />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent from-30% via-[#051530]/55 via-60% to-[#051530]/95" />
-      <span className="bg-gold relative w-fit rounded-md px-2 py-0.5 text-xs font-bold uppercase text-[#06121C]">{sportOf(a.sport).label}</span>
-      <h3 className="relative text-xl font-bold leading-tight">{a.title}</h3>
-      <p className="relative text-xs text-white/70"><TimeAgo iso={a.publishedAt} /></p>
+    // 16:10 cover anchored to the top so the subject (trophy, players) isn't cropped; text sits on a bottom-only scrim
+    <Link href={`/news/${a.slug}`} className="relative flex aspect-[16/10] flex-col justify-end gap-1.5 overflow-hidden rounded-[20px] p-4 text-white shadow-raised lg:aspect-[16/9]">
+      <ImagePlaceholder sport={a.sport} slug={a.slug} className="absolute inset-0 [&_img]:object-top" iconSize={96} corner />
+      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-[#051530]/95 via-[#051530]/55 to-transparent" />
+      <span className="bg-gold relative w-fit rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[#06121C]">{sportOf(a.sport).label}</span>
+      <h3 className="relative line-clamp-2 text-[17px] font-extrabold leading-snug lg:text-xl">{a.title}</h3>
+      <p className="relative text-[11px] font-medium text-white/70"><TimeAgo iso={a.publishedAt} /></p>
     </Link>
   );
 }
