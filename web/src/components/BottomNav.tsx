@@ -20,30 +20,27 @@ export function BottomNav() {
 export function NavBar({ path }: { path?: string }) {
   const active = path === undefined ? -1 : TABS.findIndex((t) => t.match(path));
   return (
-    // Thrill-style bar (measured), floated and rounded per the user: glass, a soft tinted pill slides (transform, 300ms) behind the active tab,
-    // icon + label recolour over 200ms. Our colours: gold active, brand-tinted pill, nav glass.
+    // Thrill bottom nav, measured: outer 80px (pad 4/16/14) with a page-colour fade; inner 62px bar, radius 64, 70% bg + 20px blur,
+    // shadow 0 4px 32px 8%; 88×54 pill, radius 46, flat tint, slides on transform; icon 20, label 10/12 bold uppercase, muted #858FA6.
     <nav aria-label="Primary"
-      className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-30 mx-auto max-w-[456px] rounded-[28px] border border-white/70 bg-nav/85 shadow-[0_10px_34px_rgb(1_44_120/0.16),inset_0_1px_0_rgb(255_255_255/0.9)] backdrop-blur-2xl md:max-w-[640px] lg:hidden dark:border-white/10 dark:bg-nav/75 dark:shadow-[0_10px_34px_rgb(0_0_0/0.55),inset_0_1px_0_rgb(255_255_255/0.08)]">
-      <ul className="relative flex px-3 py-1">
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,transparent_14%,var(--bg)_52%)] px-4 pb-[max(14px,env(safe-area-inset-bottom))] pt-1 lg:hidden">
+      <div className="pointer-events-auto relative mx-auto grid h-[62px] max-w-[448px] grid-cols-4 rounded-[64px] bg-nav/70 px-3.5 py-1 shadow-[0_4px_32px_rgb(0_0_0/0.08)] backdrop-blur-[20px] md:max-w-[640px] dark:bg-nav/70 dark:shadow-[0_4px_32px_rgb(0_0_0/0.4)]">
         {active >= 0 && (
-          // 72×52 pill in the theme's brand gradient at 90% over blur (same as the app's active pills); no glow; slides on left
-          <li aria-hidden className="bg-brand pointer-events-none absolute top-1/2 h-[52px] w-[72px] -translate-y-1/2 rounded-[26px] border border-white/20 opacity-90 backdrop-blur-md motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
-            style={{ left: `calc(12px + (100% - 24px) * ${active + 0.5} / ${TABS.length} - 36px)` }} />
+          // centred under the active column: left = inner padding + column centre - half the pill
+          <div aria-hidden className="bg-brand pointer-events-none absolute top-1 h-[54px] w-[88px] rounded-[46px] opacity-90 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
+            style={{ left: `calc(14px + (100% - 28px) * ${active + 0.5} / ${TABS.length} - 44px)` }} />
         )}
         {TABS.map((t, i) => {
           const on = i === active;
           return (
-            <li key={t.href} className="relative flex-1">
-              <Link href={t.href} aria-current={on ? "page" : undefined}
-                // Thrill tab markup: 20px filled icon, 8px gap, xx-small bold uppercase label, colours transition 200ms ease-in-out
-                className={`flex flex-col items-center gap-2 py-2 font-[family-name:var(--font-inter)] text-[10px] font-bold uppercase tracking-[0.04em] active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-muted"}`}>
-                <Icon name={t.icon} size={20} active={on && t.icon !== "more"} className={`motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
-                <span className="max-w-full truncate">{t.label}</span>
-              </Link>
-            </li>
+            <Link key={t.href} href={t.href} aria-current={on ? "page" : undefined}
+              className={`relative z-[1] flex flex-col items-center justify-center gap-2 rounded-xl font-[family-name:var(--font-inter)] text-[10px] font-bold uppercase leading-3 active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-[#858FA6]"}`}>
+              <Icon name={t.icon} size={20} active={on && t.icon !== "more"} className={`motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-[var(--gold-light)]" : ""}`} {...(on && t.icon === "more" && { strokeWidth: 2.6 })} />
+              <span className="max-w-full truncate">{t.label}</span>
+            </Link>
           );
         })}
-      </ul>
+      </div>
     </nav>
   );
 }
