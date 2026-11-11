@@ -17,7 +17,7 @@ const LEGAL = ["Privacy Policy", "Cookie Policy", "Terms & Conditions"];
 /** Brand footer (Sofascore-style, follows the light/dark theme): logo, socials, links, copyright. No app-store badges until the apps ship. */
 export function SiteFooter() {
   return (
-    <footer className="-mx-4 -mb-28 mt-2 border-t border-line bg-surface px-5 pb-36 pt-6 text-text md:-mx-10 lg:mx-0 lg:mb-0 lg:rounded-[20px] lg:border lg:pb-8">
+    <footer className="-mx-4 -mb-32 mt-2 border-t border-line bg-surface px-5 pb-40 pt-6 text-text md:-mx-10 lg:mx-0 lg:mb-0 lg:rounded-[20px] lg:border lg:pb-8">
       <nav aria-label="Footer" className="flex flex-col border-b border-line pb-4">
         {NAV.map((n) => (
           <Link key={n.href} href={n.href} className="py-2.5 text-sm font-bold uppercase tracking-wide text-text">{n.label}</Link>
