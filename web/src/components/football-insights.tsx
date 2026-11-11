@@ -462,7 +462,7 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
           {tabs.map((t, i) => (
             <button key={t.name} onClick={() => setTi(i)}
-              className={cx("shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition", i === ti ? "border-transparent bg-brand text-white" : "border-line bg-surface text-text-2")}>
+              className={cx("shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition", i === ti ? "border-transparent bg-brand bg-origin-border text-white" : "border-line bg-surface text-text-2")}>
               {label(t.name)}
             </button>
           ))}
