@@ -8,6 +8,7 @@ import type { Featured, SportId } from "@/data/types";
 import { API_URL } from "@/lib/config";
 import { formatBannerDate, formatTime } from "@/lib/format";
 import { TeamBadge } from "../ui";
+import type { Tone } from "@/data/types";
 
 // Player art per sport: the designer's framed cut-outs (Figma 69:213 / 69:214 / 69:215, each 153×180). A sport without art gets no slide.
 const ART: Partial<Record<SportId, string>> = {
@@ -21,6 +22,13 @@ const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
 const fit = (name: string, code: string) => (name.length <= 11 ? name : code);
 const withArt = (all: Featured[]) => all.filter((f) => ART[f.sport]);
+
+/** Team mark on the banner: the raw crest/flag, no white plate (Figma 63:160); badge fallback when the feed has no logo. */
+function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string }) {
+  return logo
+    ? <Image src={logo} alt="" width={24} height={24} className="size-6 shrink-0 rounded-[7px] object-cover" unoptimized />
+    : <TeamBadge code={code} tone={tone} size={24} />;
+}
 
 function Slide({ f, priority }: { f: Featured; priority: boolean }) {
   return (
@@ -36,14 +44,15 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
       </div>
       <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
         <span>{fit(f.home, f.homeCode)}</span>
-        <TeamBadge code={f.homeCode} tone={f.homeTone} logo={f.homeLogo} size={24} />
+        <Mark code={f.homeCode} tone={f.homeTone} logo={f.homeLogo} />
         <span className="text-[13px] font-extrabold normal-case tracking-normal text-black">VS</span>
-        <TeamBadge code={f.awayCode} tone={f.awayTone} logo={f.awayLogo} size={24} />
+        <Mark code={f.awayCode} tone={f.awayTone} logo={f.awayLogo} />
         <span>{fit(f.away, f.awayCode)}</span>
       </div>
       <p className="absolute left-4 top-[134px] flex gap-[9px] whitespace-nowrap text-[9px] text-[#06121C]">
-        <span className="font-semibold">{formatBannerDate(f.start)}</span>
-        <span className="font-medium opacity-60">Starts at {formatTime(f.start)}</span>
+        {f.live
+          ? <span className="flex items-center gap-1 font-bold uppercase tracking-wide text-live"><span className="size-1.5 rounded-full bg-live" />Live now</span>
+          : <><span className="font-semibold">{formatBannerDate(f.start)}</span><span className="font-medium opacity-60">Starts at {formatTime(f.start)}</span></>}
       </p>
     </Link>
   );
