@@ -72,7 +72,7 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
       )}
       <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
-        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{f.league}</p>
+        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-[var(--gold-light)] drop-shadow-[0_1px_1px_rgb(0_43_119/0.5)]">{f.league}</p>
       </div>
       <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
         <span>{fit(f.home, f.homeCode)}</span>
@@ -100,7 +100,7 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
       </div>
       <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
-        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-transparent [-webkit-text-stroke:0.9px_#fff]">{p.sub}</p>
+        <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-[var(--gold-light)] drop-shadow-[0_1px_1px_rgb(0_43_119/0.5)]">{p.sub}</p>
       </div>
       {p.teams && (
         <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
