@@ -96,7 +96,7 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
       <Watermark sport="cricket" />
       <div className="absolute bottom-0 right-0" style={artBox("cricket")} aria-hidden>
-        <Image src={p.art} alt="" fill sizes="160px" loading="lazy" className="object-cover [mask-image:linear-gradient(to_bottom,transparent,#000_14px)]" />
+        <Image src={p.art} alt="" fill sizes="160px" loading="lazy" className="object-cover" />
       </div>
       <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
