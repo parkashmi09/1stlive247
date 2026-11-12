@@ -142,7 +142,7 @@ export function FeaturedSlider({ initial }: { initial: Featured[] }) {
 
   if (!slides.length && !PROMOS.length) return null;
   return (
-    <section aria-label="Featured matches" aria-roledescription="carousel">
+    <section aria-label="Featured matches" aria-roledescription="carousel" className="-mt-4">
       <div ref={track} className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto"
         onPointerEnter={() => (paused.current = true)} onPointerLeave={() => (paused.current = false)}
         onTouchStart={() => (paused.current = true)} onTouchEnd={() => setTimeout(() => (paused.current = false), 4000)}>
