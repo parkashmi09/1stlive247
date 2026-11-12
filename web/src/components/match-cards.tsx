@@ -19,7 +19,7 @@ export function LiveHeroCard({ m }: { m: Match }) {
     </div>
   );
   return (
-    <Link href={`/match/${m.id}`} className="bg-brand-diag flex w-full shrink-0 snap-center flex-col gap-2.5 rounded-2xl px-3.5 py-3 text-white shadow-raised">
+    <Link href={`/match/${m.id}`} className="bg-brand-diag flex w-full shrink-0 snap-center flex-col gap-2.5 rounded-2xl px-3.5 py-3 text-white">
       <div className="flex items-center gap-2"><LiveBadge /><span className="truncate text-xs text-white/65">{m.competition}</span></div>
       {line(m.home)}
       {line(m.away)}

@@ -89,9 +89,9 @@ export default function MorePage() {
       <TopBar variant="title" title="More" className="lg:mx-auto lg:max-w-[720px]" />
       <main className="flex flex-col gap-5 px-4 pt-2 lg:mx-auto lg:max-w-[720px]">
         {/* welcome banner: user's artwork (public/banners/more-stadium.webp) with the logo overlaid in code; no arrow */}
-        <Link href="/" aria-label="1stLive247 home" className="relative block aspect-[370/150] overflow-hidden rounded-[20px] bg-deep shadow-raised">
+        <Link href="/" aria-label="1stLive247 home" className="relative block aspect-[370/150] overflow-hidden rounded-[20px] bg-deep">
           <Image src="/banners/more-stadium.webp" alt="" fill sizes="(min-width: 1024px) 720px, 100vw" priority className="object-cover" />
-          <span className="absolute left-4 top-4 rounded-xl bg-white/95 px-3 py-2 shadow-[0_4px_14px_rgb(1_44_120/0.25)]"><Logo className="h-9 w-auto" /></span>
+          <span className="absolute left-4 top-4 rounded-xl bg-white/95 px-3 py-2"><Logo className="h-9 w-auto" /></span>
           <span className="absolute bottom-4 left-4 flex flex-col text-white drop-shadow-[0_1px_6px_rgb(0_0_0/0.6)]">
             <span className="text-[15px] font-extrabold leading-tight">Live scores, news &amp; stats.</span>
             <span className="text-[12px] font-semibold text-white/85">Stay updated. Stay ahead.</span>
@@ -102,7 +102,7 @@ export default function MorePage() {
         <nav aria-label="Quick actions" className="grid grid-cols-4 gap-2.5">
           {QUICK.map((q) => (
             <Link key={q.label} href={q.href} className="card-premium flex flex-col items-center gap-2 rounded-2xl border border-line bg-surface px-1 py-3.5">
-              <span className={`flex size-11 items-center justify-center rounded-2xl shadow-[0_6px_16px_rgb(1_44_120/0.18)] ${SOLID_BG[q.icon]}`}><SolidIcon name={q.icon} /></span>
+              <span className={`flex size-11 items-center justify-center rounded-2xl ${SOLID_BG[q.icon]}`}><SolidIcon name={q.icon} /></span>
               <span className="text-xs font-semibold">{q.label}</span>
             </Link>
           ))}

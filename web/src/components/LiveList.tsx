@@ -64,7 +64,7 @@ function LiveRow({ m }: { m: Match }) {
 
 function LeagueCard({ name, logo, sport, matches }: { name: string; logo?: string; sport: SportId; matches: Match[] }) {
   return (
-    <section className="card-premium mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_4px_16px_rgb(10_31_74/0.06)]">
+    <section className="card-premium mb-3 break-inside-avoid overflow-hidden rounded-2xl border border-line bg-surface">
       <LeagueHeader name={name} logo={logo} sport={sport} count={matches.length} className="border-b border-line border-l-[3px] border-l-[var(--gold-mid)] bg-surface px-4 py-2.5" />
       <ul className="divide-y divide-line">{matches.map((m) => <LiveRow key={m.id} m={m} />)}</ul>
     </section>
@@ -79,7 +79,7 @@ export function LiveList({ initial }: { initial: Match[] }) {
 
   return (
     <>
-      <div className="relative overflow-hidden rounded-2xl bg-deep px-4 pb-3 pt-3.5 text-white shadow-raised">
+      <div className="relative overflow-hidden rounded-2xl bg-deep px-4 pb-3 pt-3.5 text-white">
         {/* user-supplied hero artwork (public/banners/live-hero.webp): navy/cyan gradient with faint sport line-art */}
         <Image src="/banners/live-hero.webp" alt="" fill sizes="(min-width: 1024px) 860px, 100vw" priority className="object-cover object-left" />
         <div className="relative flex items-baseline gap-2">

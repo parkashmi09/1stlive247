@@ -48,7 +48,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
         <div role="tablist" aria-label="Match sections" className="sticky top-16 z-20 -mx-4 flex gap-1 bg-bg/85 px-4 py-2 backdrop-blur">
           {tabs.map(([id, label]) => (
             <button key={id} role="tab" aria-selected={id === active} onClick={() => setTab(id)}
-              className={cx("h-9 flex-1 rounded-full text-sm font-semibold transition", id === active ? "bg-brand text-white shadow-[0_4px_14px_rgb(1_44_120/0.25)]" : "border border-line bg-surface text-text-2")}>
+              className={cx("h-9 flex-1 rounded-full text-sm font-semibold transition", id === active ? "bg-brand text-white" : "border border-line bg-surface text-text-2")}>
               {label}
             </button>
           ))}

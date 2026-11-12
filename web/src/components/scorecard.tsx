@@ -22,14 +22,14 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
         {innings.map((i, k) => (
           <button key={k} role="tab" aria-selected={k === active} onClick={() => setActive(k)}
             className={cx("flex shrink-0 flex-col items-start rounded-2xl px-3.5 py-2 text-left transition",
-              k === active ? "bg-brand text-white shadow-raised" : "border border-line bg-surface text-text-2")}>
+              k === active ? "bg-brand text-white" : "border border-line bg-surface text-text-2")}>
             <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">{labels[k]}</span>
             <span className={cx("text-sm font-bold", k === active ? "text-white" : "text-text")}>{i.total.split(" (")[0]}</span>
           </button>
         ))}
       </div>
 
-      <section className="bg-brand-diag relative overflow-hidden rounded-[20px] px-4 py-4 text-white shadow-raised">
+      <section className="bg-brand-diag relative overflow-hidden rounded-[20px] px-4 py-4 text-white">
         <Icon name="cricket" active size={120} className="pointer-events-none absolute -right-4 -top-3 text-white opacity-10" />
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-white/70">{inn.team} · {labels[active]} innings</p>
         <p className="mt-1 text-[34px] font-bold leading-none">{inn.total.split(" (")[0]}</p>

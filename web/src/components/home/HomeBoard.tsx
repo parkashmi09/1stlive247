@@ -44,7 +44,7 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
           return (
             <button key={s.id} role="tab" aria-selected={on} aria-label={s.label} onClick={() => setSport(s.id)}
               className={cx("flex h-[34px] shrink-0 items-center justify-center rounded-full transition-all",
-                on ? "bg-brand gap-2 pl-4 pr-[17px] text-white shadow-[0_3px_10px_rgb(1_44_120/0.28)]" : "w-[34px] border border-line bg-surface text-[#98A3A6]")}>
+                on ? "bg-brand gap-2 pl-4 pr-[17px] text-white" : "w-[34px] border border-line bg-surface text-[#98A3A6]")}>
               <SportIcon sport={s.id} size={17} />
               {on && <span className="text-[13px] font-semibold">{s.label}</span>}
             </button>
@@ -58,7 +58,7 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
           return (
             <button key={t.id} role="tab" aria-selected={on} onClick={() => setTab(t.id)}
               className={cx("flex h-9 min-w-0 items-center justify-center gap-1 rounded-full border px-1 text-[12px] font-semibold whitespace-nowrap transition md:gap-1.5 md:text-[13px]",
-                on ? "bg-brand bg-origin-border border-transparent text-white shadow-[0_3px_10px_rgb(1_44_120/0.28)]" : "border-line bg-surface text-text")}>
+                on ? "bg-brand bg-origin-border border-transparent text-white" : "border-line bg-surface text-text")}>
               <svg viewBox={t.viewBox} className="h-4 w-auto shrink-0" aria-hidden>{t.icon}</svg>
               {t.label}
             </button>

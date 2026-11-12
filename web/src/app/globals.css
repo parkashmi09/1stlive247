@@ -29,8 +29,6 @@
   --grad-brand: linear-gradient(90deg, var(--cyan) 0%, var(--deep) 100%);
   --grad-brand-diag: linear-gradient(135deg, var(--cyan) 0%, var(--deep) 92%);
 
-  --shadow-card: 0 1px 2px rgb(10 31 74 / 0.06), 0 4px 16px rgb(10 31 74 / 0.08);
-  --shadow-raised: 0 1px 14px rgb(0 0 0 / 0.35);
   color-scheme: light;
 }
 
@@ -69,8 +67,6 @@
   --color-boundary: #1e9e4a;
   --color-boundary-soft: #e3f5ea;
   --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  --shadow-card: var(--shadow-card);
-  --shadow-raised: var(--shadow-raised);
 }
 
 @utility bg-brand { background-image: var(--grad-brand); }
@@ -122,11 +118,10 @@ body {
   box-shadow: inset 0 -1px 0 rgb(217 171 75 / 0.6);
 }
 
-/* elevated card: soft shadow, faint gold edge on hover/press */
+/* card: faint gold edge on hover/press (no drop shadows in this UI) */
 @utility card-premium {
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 200ms, border-color 200ms, transform 150ms;
-  &:hover { border-color: rgb(217 171 75 / 0.45); box-shadow: 0 8px 28px rgb(10 31 74 / 0.12); }
+  transition: border-color 200ms, transform 150ms;
+  &:hover { border-color: rgb(217 171 75 / 0.45); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,7 +28,7 @@ export function ImagePlaceholder({ sport, slug, className, iconSize, corner, siz
 export function NewsHero({ a }: { a: NewsArticle }) {
   return (
     // 16:10 cover anchored to the top so the subject (trophy, players) isn't cropped; text sits on a bottom-only scrim
-    <Link href={`/news/${a.slug}`} className="relative flex aspect-[16/10] flex-col justify-end gap-1.5 overflow-hidden rounded-[20px] p-4 text-white shadow-raised lg:aspect-[16/9]">
+    <Link href={`/news/${a.slug}`} className="relative flex aspect-[16/10] flex-col justify-end gap-1.5 overflow-hidden rounded-[20px] p-4 text-white lg:aspect-[16/9]">
       <ImagePlaceholder sport={a.sport} slug={a.slug} className="absolute inset-0 [&_img]:object-top" iconSize={96} corner />
       <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-[#051530]/95 via-[#051530]/55 to-transparent" />
       <span className="bg-gold relative w-fit rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[#06121C]">{sportOf(a.sport).label}</span>
