@@ -28,6 +28,9 @@ const AUTOPLAY_MS = 5000;
 const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
 const fit = (name: string, code: string) => (name.length <= 11 ? name : code);
+// how far the player box pops above the 155px card; box keeps the 153×180 ratio and stays flush with the card bottom
+const RISE: Partial<Record<SportId, number>> = { football: 19 };
+const artBox = (sport: SportId) => { const rise = RISE[sport] ?? 8; return { top: -rise, width: Math.round((155 + rise) * 0.85) }; };
 const ORDER = Object.keys(ART);
 const withArt = (all: Featured[]) => all.filter((f) => f.sport in ART).sort((a, b) => ORDER.indexOf(a.sport) - ORDER.indexOf(b.sport));
 
@@ -58,13 +61,13 @@ function Flag({ src }: { src: string }) {
 
 function Slide({ f, priority }: { f: Featured; priority: boolean }) {
   return (
-    // 155px card; the player box (148×174, designer's 153×180 ratio) rises 19px above the card top and sits flush with its bottom
+    // 155px card; the player box (RISE above) sits flush with the card bottom and pops above its top
     <Link href={`/match/${f.matchId}`} aria-label={`${f.home} vs ${f.away}, ${f.league}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
       <Watermark sport={f.sport} />
       {ART[f.sport] && (
-        <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
-          <Image src={ART[f.sport]!} alt="" fill sizes="148px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
+        <div className="absolute bottom-0 right-0" style={artBox(f.sport)} aria-hidden>
+          <Image src={ART[f.sport]!} alt="" fill sizes="160px" loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} className="object-cover" />
         </div>
       )}
       <div className="absolute left-4 right-[140px] top-4">
@@ -92,8 +95,8 @@ function PromoSlide({ p }: { p: (typeof PROMOS)[number] }) {
     <Link href={p.href} aria-label={`${p.label}: ${p.sub}`} className="relative mt-[19px] block h-[155px] w-full shrink-0 snap-center">
       <div className="absolute inset-x-0 top-0 h-[155px] rounded-[20px] [background-image:linear-gradient(131deg,#34C4EE_26.6%,#002B77_101%)]" />
       <Watermark sport="cricket" />
-      <div className="absolute -top-[19px] bottom-0 right-0 w-[148px]" aria-hidden>
-        <Image src={p.art} alt="" fill sizes="148px" loading="lazy" className="object-cover [mask-image:linear-gradient(to_bottom,transparent,#000_14px)]" />
+      <div className="absolute bottom-0 right-0" style={artBox("cricket")} aria-hidden>
+        <Image src={p.art} alt="" fill sizes="160px" loading="lazy" className="object-cover [mask-image:linear-gradient(to_bottom,transparent,#000_14px)]" />
       </div>
       <div className="absolute left-4 right-[140px] top-4">
         <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{p.label}</p>
