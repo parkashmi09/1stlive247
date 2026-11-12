@@ -1,8 +1,13 @@
 import Image from "next/image";
 
-/** Brand logo (designer PNG, background removed, 610×160). */
+/** Brand logo: light = designer PNG (610×160); dark = user's lighter-blue variant (1744×456, same ratio). */
 export function Logo({ className = "h-10 w-auto" }: { className?: string }) {
-  return <Image src="/logo.png" alt="1stLive247" width={610} height={160} priority className={className} />;
+  return (
+    <>
+      <Image src="/logo.png" alt="1stLive247" width={610} height={160} priority className={`${className} dark:hidden`} />
+      <Image src="/logo-dark.png" alt="1stLive247" width={1744} height={456} className={`${className} hidden dark:block`} />
+    </>
+  );
 }
 
 export function BellGold({ unread = false }: { unread?: boolean }) {
