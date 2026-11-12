@@ -21,7 +21,7 @@ const ART: Partial<Record<SportId, string | null>> = {
 // shortcut: user wants IND v NZ on the cricket slide; the feed has no such fixture, so it is a fixed promo. Swap to a real
 // Featured entry (and put cricket back in ART) once the series is in the feed. India flag = feed IND crest until the user's file lands.
 const PROMOS = [
-  { label: "Cricket", sub: "India tour of New Zealand", art: "/banners/cricket-2.webp", href: "/live",
+  { label: "Cricket", sub: "India tour of New Zealand", art: "/banners/cricket-3.webp", href: "/live",
     teams: [{ name: "India", flag: "https://static.flashscore.com/res/image/data/2PligRmC-vqjYdOL1.png" }, { name: "New Zealand", flag: "/flags/nz.webp" }] },
 ];
 const AUTOPLAY_MS = 5000;
