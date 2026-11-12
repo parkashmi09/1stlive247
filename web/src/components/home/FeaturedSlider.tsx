@@ -29,7 +29,7 @@ const REFRESH_MS = 5 * 60_000;
 // the team row fits ~11 chars per name at the Figma size; longer names show the team code
 const fit = (name: string, code: string) => (name.length <= 11 ? name : code);
 // how far the player box pops above the 155px card; box keeps the 153×180 ratio and stays flush with the card bottom
-const RISE: Partial<Record<SportId, number>> = { football: 19, cricket: 0 };
+const RISE: Partial<Record<SportId, number>> = { football: 19, cricket: 12 };
 const artBox = (sport: SportId) => { const rise = RISE[sport] ?? 8; return { top: -rise, width: Math.round((155 + rise) * 0.85) }; };
 const ORDER = Object.keys(ART);
 const withArt = (all: Featured[]) => all.filter((f) => f.sport in ART).sort((a, b) => ORDER.indexOf(a.sport) - ORDER.indexOf(b.sport));
