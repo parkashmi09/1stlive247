@@ -5,7 +5,7 @@ import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
 import Image from "next/image";
 import { SportIcon } from "./icons/SportIcon";
-import { LiveBadge, TeamBadge, cx } from "./ui";
+import { CricketRole, LiveBadge, TeamBadge, cx } from "./ui";
 
 
 /** Carousel slide: live match on the brand gradient (designer dark Home). */
@@ -28,11 +28,35 @@ export function LiveHeroCard({ m }: { m: Match }) {
   );
 }
 
-/** 44px team mark as in the Figma card: the raw logo (no circle) or the initials badge when there is none. */
-function TeamMark({ team }: { team: Side["team"] }) {
+/** Team mark (44px in the Figma card): the raw logo (no circle) or the initials badge when there is none. */
+function TeamMark({ team, size = 44 }: { team: Side["team"]; size?: number }) {
   return team.logo
-    ? <Image src={team.logo} alt="" width={44} height={44} unoptimized className="size-11 object-contain" />
-    : <TeamBadge code={team.code} tone={team.tone} size={44} />;
+    ? <Image src={team.logo} alt="" width={size} height={size} unoptimized className="object-contain" style={{ width: size, height: size }} />
+    : <TeamBadge code={team.code} tone={team.tone} size={size} />;
+}
+
+/** Upcoming card: a brand ribbon carries the start time, so the body is all team pictures. */
+function UpcomingCard({ m }: { m: Match }) {
+  const team = (s: Side) => (
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center">
+      <TeamMark team={s.team} size={58} />
+      <span className="max-w-full truncate text-[14px] font-semibold leading-tight">{s.team.name}</span>
+      {s.record && <span className="text-xs text-text-2">{s.record}</span>}
+    </div>
+  );
+  return (
+    <Link href={`/match/${m.id}`} className="block overflow-hidden rounded-xl border border-line bg-surface transition active:scale-[0.99]">
+      <p className="bg-brand flex h-8 items-center justify-between gap-2 px-3.5 text-[12px] font-bold text-white">
+        <span className="uppercase tracking-wide">Upcoming</span>
+        <span className="truncate">{formatDay(m.start)} · {formatTime(m.start)}</span>
+      </p>
+      <div className="flex items-center gap-2 px-3 py-3">
+        {team(m.home)}
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[12px] font-black text-text-2">VS</span>
+        {team(m.away)}
+      </div>
+    </Link>
+  );
 }
 
 /**
@@ -41,13 +65,14 @@ function TeamMark({ team }: { team: Side["team"] }) {
  * sub Regular 12 #8E8E93); centre: LIVE pill, Regular 15 #8E8E93, Bold 17 #1C1C1E.
  */
 export function MatchCard({ m }: { m: Match }) {
+  if (m.status === "upcoming") return <UpcomingCard m={m} />;
   const live = m.status === "live", done = m.status === "finished";
   const scored = Boolean(m.home.score || m.away.score);
   const third = scored || Boolean(m.home.record || m.away.record);
   const team = (s: Side) => (
     <div className="flex w-[90px] shrink-0 flex-col items-center gap-1 text-center">
       <TeamMark team={s.team} />
-      <span className="text-[15px] font-semibold leading-tight">{s.team.code}</span>
+      <span className="flex items-center gap-1 text-[15px] font-semibold leading-tight">{s.team.code}<CricketRole m={m} s={s} /></span>
       {/* same-height slot on both sides so logos line up even when one side is a 2-line score and the other "Yet to bat" */}
       {third && <div className="flex min-h-9 items-start justify-center">
         {scored && s.score
@@ -65,9 +90,7 @@ export function MatchCard({ m }: { m: Match }) {
         {live
           ? <span className="text-[15px] text-text-2">{(m.clock || m.timer) ? <LiveClock timer={m.timer} fallback={m.clock} /> : formatDay(m.start)}</span>
           : <span className="text-[15px] text-text-2">{formatDay(m.start)}</span>}
-        {!live && !done
-          ? <span className="text-[17px] font-bold">{formatTime(m.start)}</span>
-          : m.note && <span className="line-clamp-2 text-xs text-text-2">{m.note}</span>}
+        {m.note && <span className="line-clamp-2 text-xs text-text-2">{m.note}</span>}
       </div>
       {team(m.away)}
     </Link>

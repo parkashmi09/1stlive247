@@ -12,7 +12,7 @@ import { SportIcon } from "./icons/SportIcon";
 import { LiveClock } from "./LiveClock";
 import { LeagueHeader, groupByLeague } from "./match-cards";
 import { ScorePop } from "./ScorePop";
-import { TeamBadge, cx } from "./ui";
+import { CricketRole, TeamBadge, cx } from "./ui";
 
 // "All" grid icon from the user's hero-assets zip; sport chips use the app's SportIcon (same as Home).
 const CHIP_ICON: Record<string, ReactNode> = {
@@ -32,6 +32,7 @@ function LiveRow({ m }: { m: Match }) {
       <div className="flex items-center gap-2.5">
         <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={26} />
         <span className={cx("min-w-0 flex-1 truncate text-[15px]", ahead ? "font-bold" : "font-medium")}>{s.team.name}</span>
+        <CricketRole m={m} s={s} />
         {s.detail && <span className="text-[11px] text-text-2 tabular-nums">{s.detail}</span>}
         <span className="flex w-[72px] items-center justify-end gap-1.5">
           {ahead && <span className="size-1.5 rounded-full bg-[var(--gold-mid)]" aria-hidden />}

@@ -7,7 +7,7 @@ type TopBarProps =
   | { variant: "title"; title: string }
   | { variant: "back"; title: string; backHref: string };
 
-export function TopBar(props: TopBarProps & { className?: string }) {
+export function TopBar(props: TopBarProps & { className?: string; hideSearch?: boolean }) {
   return (
     <header className={`sticky top-0 z-20 flex h-16 items-center gap-3 bg-bg/85 px-4 backdrop-blur-md md:px-0 lg:top-16 ${props.variant === "brand" ? "lg:hidden" : ""} ${props.className ?? ""}`}>
       {props.variant === "brand" && (
@@ -21,8 +21,8 @@ export function TopBar(props: TopBarProps & { className?: string }) {
           <button type="button" aria-label="Share" className="p-1"><Icon name="share" /></button>
         </>
       )}
-      {props.variant === "title" && (
-        <Link href="/news" aria-label="Search" className="p-1"><Icon name="search" /></Link>
+      {props.variant === "title" && !props.hideSearch && (
+        <Link href="/search" aria-label="Search" className="p-1"><Icon name="search" /></Link>
       )}
       <button type="button" aria-label="Notifications, 1 unread" className="p-0.5 lg:hidden"><BellGold unread /></button>
     </header>

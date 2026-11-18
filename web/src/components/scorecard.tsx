@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import type { Crease, InningsCard } from "@/data/types";
 import { sr } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
-import { cx } from "./ui";
+import { BatBallIcon, cx } from "./ui";
 
 const ordinal = (n: number) => ["1st", "2nd", "3rd", "4th"][n] ?? `${n + 1}th`;
 
@@ -129,7 +129,7 @@ export function AtTheCrease({ crease }: { crease: Crease }) {
       {crease.batters.map((p) => (
         <div key={p.name} className="flex items-center gap-2.5 px-3.5 py-2.5">
           <span className={cx("flex size-7 shrink-0 items-center justify-center rounded-full", p.onStrike ? "bg-gold text-[#06121C]" : "bg-surface-2 text-text-2")}>
-            <Icon name="cricket" size={15} />
+            <BatBallIcon kind="bat" size={15} className="" />
           </span>
           <p className="min-w-0 flex-1 truncate text-sm font-semibold">{p.name}{p.onStrike && <span className="text-gold ml-1">*</span>}</p>
           <p className="text-right text-sm tabular-nums"><b className="text-base">{p.r}</b> <span className="text-text-2">({p.b})</span></p>
@@ -138,7 +138,7 @@ export function AtTheCrease({ crease }: { crease: Crease }) {
       ))}
       {crease.bowler && (
         <div className="flex items-center gap-2.5 border-t border-line bg-surface-2/50 px-3.5 py-2.5">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand text-white"><Icon name="cricket" active size={15} /></span>
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand text-white"><BatBallIcon kind="ball" size={15} /></span>
           <p className="min-w-0 flex-1 truncate text-sm font-semibold">{crease.bowler.name}</p>
           <p className="text-sm tabular-nums">
             <span className="text-text-2">{crease.bowler.o}-{crease.bowler.m}-</span>{crease.bowler.r}-<b className="text-base">{crease.bowler.w}</b>

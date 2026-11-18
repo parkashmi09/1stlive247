@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { Ball, Tone } from "@/data/types";
+import type { Ball, Match, Side, Tone } from "@/data/types";
+import { battingSide } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
@@ -39,6 +40,20 @@ export function TeamBadge({ code, tone, size = 28, logo }: { code: string; tone:
       {code}
     </span>
   );
+}
+
+/** Solid bat (currentColor, gold by default) or red ball. */
+export function BatBallIcon({ kind, size = 14, className = "text-[var(--gold-mid)]" }: { kind: "bat" | "ball"; size?: number; className?: string }) {
+  return kind === "bat"
+    ? <svg role="img" aria-label="Batting" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={cx("shrink-0", className)}><path d="M13 5l6 6-8.5 8.5a1.5 1.5 0 0 1-2.1 0l-3.9-3.9a1.5 1.5 0 0 1 0-2.1z" /><path d="M16 8l4.5-4.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
+    : <svg role="img" aria-label="Bowling" width={size} height={size} viewBox="0 0 24 24" fill="none" className="shrink-0"><circle cx="12" cy="12" r="10" fill="#D80612" /><path d="M8 3.5c3 5 3 12 0 17M16 3.5c-3 5-3 12 0 17" stroke="#fff" strokeWidth="1.6" strokeDasharray="2 1.6" /></svg>;
+}
+
+/** Bat next to the side batting now, ball next to the other; nothing outside live cricket. */
+export function CricketRole({ m, s, size }: { m: Match; s: Side; size?: number }) {
+  const batting = battingSide(m);
+  if (!batting) return null;
+  return <BatBallIcon kind={(batting === "home") === (s === m.home) ? "bat" : "ball"} size={size} />;
 }
 
 const BALL: Record<Ball["kind"], string> = {

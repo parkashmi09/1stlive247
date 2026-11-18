@@ -5,9 +5,9 @@ export const SPORTS: Sport[] = [
   { id: "cricket", label: "Cricket", icon: "cricket" },
   { id: "football", label: "Football", icon: "football" },
   { id: "tennis", label: "Tennis", icon: "tennis" },
-  { id: "kabaddi", label: "Kabaddi", icon: "kabaddi" },
+  { id: "racing", label: "Horse Racing", icon: "racing" },
   { id: "basketball", label: "Basketball", icon: "basketball" },
-  { id: "racing", label: "Racing", icon: "racing" },
+  { id: "kabaddi", label: "Kabaddi", icon: "kabaddi" },
   { id: "f1", label: "F1", icon: "f1" },
 ];
 

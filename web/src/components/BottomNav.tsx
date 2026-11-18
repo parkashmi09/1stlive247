@@ -79,6 +79,7 @@ function DesktopBar({ path }: { path?: string }) {
             );
           })}
         </nav>
+        <Link href="/search" aria-label="Search" className="p-1 text-text-2 hover:text-text"><Icon name="search" /></Link>
         <button type="button" aria-label="Notifications, 1 unread" className="p-0.5"><BellGold unread /></button>
       </div>
     </header>

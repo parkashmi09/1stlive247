@@ -1,8 +1,10 @@
 "use client";
 
-import { Fragment, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { Fragment, useRef, useState, type ReactNode } from "react";
 import type { Featured, Match, Sport, SportId } from "@/data/types";
 import { useLiveMatches } from "@/lib/live";
+import { Icon } from "../icons/Icon";
 import { SportIcon } from "../icons/SportIcon";
 import { LeagueHeader, MatchCard, groupByLeague } from "../match-cards";
 import { AdSlot } from "../AdSlot";
@@ -15,21 +17,97 @@ const TABS = [
   { id: "live", label: "Live", viewBox: "0 0 24 24", icon: <><circle cx="12" cy="12" r="10" fill="#22c55e" /><path d="M10 8.5v7l5.5-3.5z" fill="#fff" /></> },
   { id: "upcoming", label: "Upcoming", viewBox: "0 0 20.6006 31.2508", icon: <><path d="M6.44148 16.8298C5.26601 12.6055 5.80636 8.08794 7.94495 4.26013C8.93329 2.50739 9.92482 1.39314 11.3336 0C11.4003 1.00147 11.3847 2.01139 11.4689 3.01257C11.6685 5.38813 12.0885 7.65019 13.2813 9.74304C15.2677 13.2281 19.2664 15.2018 20.3117 19.2513C21.6424 24.2641 18.1732 28.4638 14.0576 30.8033C13.8347 30.9295 13.5211 31.1417 13.2909 31.2251L13.2393 31.1939C13.2406 31.1008 13.2982 31.032 13.3468 30.9554C14.8072 28.653 14.7262 26.1089 13.6179 23.7063C13.3927 24.6124 12.9878 25.5779 12.1569 26.0898C12.0242 26.1715 11.8827 26.2231 11.7435 26.2973L11.6826 26.2793C11.6339 26.1286 11.7655 25.8217 11.8034 25.6574C12.384 23.1379 11.3387 20.7304 9.87411 18.7264C9.72132 18.5173 9.53323 18.279 9.38717 18.0655C9.42761 18.4326 9.39354 18.9592 9.36198 19.3334C9.21801 21.0415 8.76789 22.8889 7.67298 24.2453C7.37132 24.619 7.05076 24.9324 6.74029 25.2938C6.58304 25.4769 6.3977 25.78 6.26439 25.99C5.18767 28.0251 6.07211 29.5841 7.28782 31.2508C4.79607 29.9404 2.40436 28.2487 0.975731 25.7415C0.0697934 24.1516 -0.272738 21.8373 0.237106 20.0724C0.268356 19.9315 0.300262 19.7617 0.350856 19.6289L0.384012 19.4491C0.98845 17.5958 1.90454 15.8593 3.09292 14.3141C3.19992 14.1722 3.62814 13.6222 3.7597 13.5682C3.86514 13.7446 3.97392 14.2876 4.0712 14.5162C4.44726 15.4001 4.87792 16.0014 5.7297 16.4828C5.98923 16.6295 6.21445 16.7088 6.44148 16.8298Z" fill="url(#tab-flame)" /><defs><linearGradient id="tab-flame" x1="14.1476" y1="-2.26438" x2="1.98758" y2="26.5356" gradientUnits="userSpaceOnUse"><stop stopColor="#F0483B" /><stop offset="1" stopColor="#FCA82E" /></linearGradient></defs></> },
 ] as const;
-type TabId = (typeof TABS)[number]["id"];
+type TabId = (typeof TABS)[number]["id"] | "finished"; // "finished" is reached from the filter sheet
+
+const STATUSES: { id: TabId; label: string }[] = [
+  { id: "top", label: "All" }, { id: "live", label: "Live" }, { id: "upcoming", label: "Upcoming" }, { id: "finished", label: "Finished" },
+];
+
+function Leagues({ matches, sport, ads }: { matches: Match[]; sport: SportId; ads?: boolean }) {
+  const groups = groupByLeague(matches);
+  return (
+    <div className="md:columns-2 md:gap-3">
+      {groups.map((g, gi) => (
+        <Fragment key={g.name}>
+          <section className="mb-4 flex break-inside-avoid flex-col gap-2">
+            <LeagueHeader name={g.name} logo={g.logo} sport={sport} count={g.matches.length} />
+            {g.matches.map((m) => <MatchCard key={m.id} m={m} />)}
+          </section>
+          {ads && gi % 3 === 2 && gi < groups.length - 1 && <AdSlot placement="list-inline" className="mb-4 break-inside-avoid" />}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
 
 export function HomeBoard({ sports, initial, featured, children }: { sports: Sport[]; initial: Match[]; featured: Featured[]; children?: ReactNode }) {
   const matches = useLiveMatches(initial);
   const [sport, setSport] = useState<SportId>("cricket"); // Home always opens on cricket, Top Events
   const [tab, setTab] = useState<TabId>("top");
 
-  const list = matches.filter((m) =>
-    m.sport === sport && (tab === "top" || m.status === tab),
+  const sheet = useRef<HTMLDialogElement>(null);
+
+  const ofSport = matches.filter((m) => m.sport === sport);
+  // Top Events: live first, then upcoming; finished get their own section so the 30-card cap can't push them out
+  const list = (tab === "top"
+    ? ofSport.filter((m) => m.status !== "finished").sort((a, b) => Number(b.status === "live") - Number(a.status === "live"))
+    : ofSport.filter((m) => m.status === tab)
   ).slice(0, 30);
-  const groups = groupByLeague(list);
+  const finished = tab === "top" ? ofSport.filter((m) => m.status === "finished").slice(0, 12) : [];
+  const filtered = sport !== "cricket" || tab !== "top";
 
   return (
-    // phone: one column; desktop: match board left, banner + side widgets right
-    <div className="flex flex-col gap-4 px-4 pt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start md:px-0 lg:gap-6 lg:pt-0">
+    <div className="flex flex-col gap-4 px-4 pt-2 md:px-0 lg:pt-0">
+      <div className="flex gap-2">
+        <Link href="/search" className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-line bg-surface px-3.5 text-sm text-text-2">
+          <Icon name="search" size={18} className="shrink-0" /><span className="truncate">Search teams, leagues, news</span>
+        </Link>
+        <button type="button" aria-label="Filter sports" aria-haspopup="dialog" onClick={() => sheet.current?.showModal()}
+          className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-text-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" /></svg>
+          {filtered && <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full bg-live ring-2 ring-surface" />}
+        </button>
+      </div>
+
+      <dialog ref={sheet} aria-label="Filter sports" onClick={(e) => { if (e.target === e.currentTarget) sheet.current?.close(); }}
+        className="mx-auto mb-0 mt-auto w-full max-w-[480px] rounded-t-2xl bg-surface text-text backdrop:bg-black/50 md:m-auto md:rounded-2xl">
+        <div className="flex flex-col gap-4 p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold">Filter</h2>
+            <button type="button" onClick={() => { setSport("cricket"); setTab("top"); }} className="text-sm font-semibold text-accent">Reset</button>
+          </div>
+          <fieldset className="grid grid-cols-2 gap-2">
+            <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-text-2">Sport</legend>
+            {sports.map((s) => {
+              const n = matches.filter((m) => m.sport === s.id).length;
+              return (
+                <button key={s.id} type="button" disabled={!n} aria-pressed={s.id === sport} onClick={() => setSport(s.id)}
+                  className={cx("flex h-11 min-w-0 items-center gap-2 rounded-xl border px-3 text-[13px] font-semibold disabled:opacity-45",
+                    s.id === sport ? "bg-brand border-transparent text-white" : "border-line bg-surface")}>
+                  <SportIcon sport={s.id} size={16} className="shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-left">{s.label}</span>
+                  <span className="text-[11px] font-bold tabular-nums opacity-70">{n || "Soon"}</span>
+                </button>
+              );
+            })}
+          </fieldset>
+          <fieldset className="grid grid-cols-4 gap-2">
+            <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-text-2">Status</legend>
+            {STATUSES.map((s) => (
+              <button key={s.id} type="button" aria-pressed={s.id === tab} onClick={() => setTab(s.id)}
+                className={cx("h-9 min-w-0 rounded-full border text-[12px] font-bold", s.id === tab ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "border-line bg-surface text-text-2")}>
+                {s.label}
+              </button>
+            ))}
+          </fieldset>
+          <button type="button" onClick={() => sheet.current?.close()} className="bg-brand h-11 rounded-full text-sm font-bold text-white">
+            Show {list.length + finished.length} matches
+          </button>
+        </div>
+      </dialog>
+
+    {/* phone: one column; desktop: match board left, banner + side widgets right */}
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-6">
       <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:col-start-2 lg:row-start-1">
         <FeaturedSlider initial={featured} />
         {children}
@@ -66,19 +144,18 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
         })}
       </div>
 
-      <div className="md:columns-2 md:gap-3">
-        {list.length === 0 && <p className="py-10 text-center text-sm text-text-2">No events right now.</p>}
-        {groups.map((g, gi) => (
-          <Fragment key={g.name}>
-            <section className="mb-4 flex break-inside-avoid flex-col gap-2">
-              <LeagueHeader name={g.name} logo={g.logo} sport={sport} count={g.matches.length} />
-              {g.matches.map((m) => <MatchCard key={m.id} m={m} />)}
-            </section>
-            {gi % 3 === 2 && gi < groups.length - 1 && <AdSlot placement="list-inline" className="mb-4 break-inside-avoid" />}
-          </Fragment>
-        ))}
-      </div>
+      {list.length + finished.length === 0 && <p className="py-10 text-center text-sm text-text-2">{ofSport.length ? "No events right now." : "Coming soon."}</p>}
+      <Leagues matches={list} sport={sport} ads />
+      {finished.length > 0 && (
+        <section aria-labelledby="h-finished" className="flex flex-col gap-3">
+          <h2 id="h-finished" className="flex items-center gap-2 px-1 text-[15px] font-extrabold uppercase tracking-wide">
+            Finished <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-text-2 ring-1 ring-line">{finished.length}</span>
+          </h2>
+          <Leagues matches={finished} sport={sport} />
+        </section>
+      )}
       </section>
+    </div>
     </div>
   );
 }

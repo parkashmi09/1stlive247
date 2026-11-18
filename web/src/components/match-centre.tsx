@@ -3,7 +3,7 @@ import { econ, sr } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
 import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
-import { BallChip, Card, LiveBadge, TeamBadge, cx } from "./ui";
+import { BallChip, Card, CricketRole, LiveBadge, TeamBadge, cx } from "./ui";
 
 /** Compact scoreboard (reference: 118px embed card) on the brand gradient: one-line competition, team code + score each side,
  *  live clock in the centre, note + stats on one line below. No gradient. */
@@ -12,7 +12,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
     <div className={cx("flex min-w-0 flex-1 items-center gap-2.5", right && "flex-row-reverse text-right")}>
       <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={36} />
       <div className={cx("flex min-w-0 flex-col", right && "items-end")}>
-        <span className="truncate text-[11px] font-black uppercase tracking-wide text-white/90">{s.team.code}</span>
+        <span className={cx("flex items-center gap-1 text-[11px] font-black uppercase tracking-wide text-white/90", right && "flex-row-reverse")}><span className="truncate">{s.team.code}</span><CricketRole m={m} s={s} /></span>
         {s.score
           ? /\/|^\d/.test(s.score)
             ? <ScorePop value={s.score} className="text-[22px] font-black leading-tight tabular-nums text-white" />
