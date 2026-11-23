@@ -5,7 +5,7 @@ import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
 import Image from "next/image";
 import { SportIcon } from "./icons/SportIcon";
-import { CricketRole, LiveBadge, TeamBadge, cx } from "./ui";
+import { CricketRole, HexPlate, LiveBadge, TabPill, TeamBadge, cx } from "./ui";
 
 
 /** Carousel slide: live match on the brand gradient (designer dark Home). */
@@ -35,25 +35,69 @@ function TeamMark({ team, size = 44 }: { team: Side["team"]; size?: number }) {
     : <TeamBadge code={team.code} tone={team.tone} size={size} />;
 }
 
-/** Upcoming card: a brand ribbon carries the start time, so the body is all team pictures. */
+/** Team picture on a white disc, so any crest reads on the glass and on the gradient. */
+function Disc({ team, size }: { team: Side["team"]; size: number }) {
+  return (
+    <span className="flex shrink-0 items-center justify-center rounded-full bg-white/85 shadow-sm" style={{ width: size, height: size }}>
+      <TeamMark team={team} size={Math.round(size * 0.66)} />
+    </span>
+  );
+}
+
+/** Upcoming card (glass reference): league line, both teams on discs, kick-off time in the middle. */
 function UpcomingCard({ m }: { m: Match }) {
-  const team = (s: Side) => (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center">
-      <TeamMark team={s.team} size={58} />
-      <span className="max-w-full truncate text-[14px] font-semibold leading-tight">{s.team.name}</span>
-      {s.record && <span className="text-xs text-text-2">{s.record}</span>}
+  const team = (s: Side, right?: boolean) => (
+    <span className={cx("flex min-w-0 flex-1 items-center gap-2", right && "flex-row-reverse text-right")}>
+      <Disc team={s.team} size={40} />
+      <span className="min-w-0">
+        <span className="block truncate text-[14px] font-semibold leading-tight">{s.team.name}</span>
+        {s.record && <span className="block truncate text-[11px] text-text-2">{s.record}</span>}
+      </span>
+    </span>
+  );
+  return (
+    <Link href={`/match/${m.id}`} className="glass block rounded-2xl px-3.5 py-3 transition active:scale-[0.99]">
+      <p className="truncate text-[11px] text-text-2">{m.competition.split(" · ")[0]}</p>
+      <div className="mt-2 flex items-center gap-2">
+        {team(m.home)}
+        <span className="flex shrink-0 flex-col items-center px-1">
+          <span className="text-[15px] font-bold tabular-nums">{formatTime(m.start)}</span>
+          <span className="text-[10px] text-text-2">{formatDay(m.start)}</span>
+        </span>
+        {team(m.away, true)}
+      </div>
+    </Link>
+  );
+}
+
+/** "Live Match" carousel card, to the client's glass reference: hex status tab on the top edge, bare crests,
+ *  flat hex score plate, and an inset panel at the bottom (league, or the cricket note). */
+export function LiveGlassCard({ m }: { m: Match }) {
+  const cricket = m.sport === "cricket";
+  const team = (s: Side, right?: boolean) => (
+    <div className={cx("flex w-[96px] shrink-0 flex-col items-center gap-1 text-center", right && "order-3")}>
+      <TeamMark team={s.team} size={60} />
+      <span className="mt-1 flex max-w-full items-center gap-1 text-[14px] font-bold"><span className="truncate">{s.team.name}</span><CricketRole m={m} s={s} /></span>
+      {cricket
+        ? <span className="text-[14px] font-bold tabular-nums">{s.score ?? <span className="text-[11px] font-normal text-text-2">Yet to bat</span>}{s.detail && <span className="ml-1 text-[11px] font-normal text-text-2">{s.detail}</span>}</span>
+        : <span className="text-[11px] text-text-2">{right ? "Away" : "At Home"}</span>}
     </div>
   );
   return (
-    <Link href={`/match/${m.id}`} className="block overflow-hidden rounded-xl border border-line bg-surface transition active:scale-[0.99]">
-      <p className="bg-brand flex h-8 items-center justify-between gap-2 px-3.5 text-[12px] font-bold text-white">
-        <span className="uppercase tracking-wide">Upcoming</span>
-        <span className="truncate">{formatDay(m.start)} · {formatTime(m.start)}</span>
-      </p>
-      <div className="flex items-center gap-2 px-3 py-3">
-        {team(m.home)}
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[12px] font-black text-text-2">VS</span>
-        {team(m.away)}
+    <Link href={`/match/${m.id}`} className="relative w-[300px] shrink-0 snap-center pt-3.5 transition active:scale-[0.99] md:w-[340px]">
+      <TabPill m={m} />
+      <div className="glass h-full rounded-3xl px-3 pb-3 pt-7">
+        <div className="flex items-start">
+          {team(m.home)}
+          <div className="order-2 flex min-w-0 flex-1 justify-center pt-3">
+            <HexPlate>{cricket ? <span className="text-[16px]">VS</span> : `${m.home.score ?? 0} - ${m.away.score ?? 0}`}</HexPlate>
+          </div>
+          {team(m.away, true)}
+        </div>
+        <p className={cx("mt-3 truncate rounded-2xl bg-white/55 px-3.5 py-2.5 text-[12px] font-medium dark:bg-white/[0.06]", cricket && m.note ? "text-accent" : "text-text-2")}>
+          {/* cricket: "<match> · <series>" → series; others: "<league> · <country>" → league */}
+          {cricket && m.note ? m.note : cricket ? m.competition.split(" · ").at(-1) : m.competition.split(" · ")[0]}
+        </p>
       </div>
     </Link>
   );
@@ -82,7 +126,7 @@ export function MatchCard({ m }: { m: Match }) {
     </div>
   );
   return (
-    <Link href={`/match/${m.id}`} className="flex min-h-[120px] items-center rounded-xl border border-line bg-surface px-4 py-3 transition active:scale-[0.99]">
+    <Link href={`/match/${m.id}`} className="flex min-h-[120px] items-center rounded-xl glass px-4 py-3 transition active:scale-[0.99]">
       {team(m.home)}
       <div className="flex min-w-0 flex-1 flex-col items-center gap-0.5 text-center">
         {live && <LiveBadge />}

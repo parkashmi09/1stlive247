@@ -15,7 +15,7 @@ export function SearchBoard({ matches, news }: { matches: Match[]; news: NewsArt
 
   return (
     <>
-      <label className="flex h-11 items-center gap-2 rounded-full border border-line bg-surface px-3.5 focus-within:border-cyan">
+      <label className="flex h-11 items-center gap-2 rounded-full glass px-3.5 focus-within:border-cyan">
         <Icon name="search" size={18} className="shrink-0 text-text-2" />
         <span className="sr-only">Search teams, leagues, news</span>
         <input type="search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search teams, leagues, news"

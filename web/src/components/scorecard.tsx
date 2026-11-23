@@ -22,7 +22,7 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
         {innings.map((i, k) => (
           <button key={k} role="tab" aria-selected={k === active} onClick={() => setActive(k)}
             className={cx("flex shrink-0 flex-col items-start rounded-2xl px-3.5 py-2 text-left transition",
-              k === active ? "bg-brand text-white" : "border border-line bg-surface text-text-2")}>
+              k === active ? "bg-brand text-white" : "glass text-text-2")}>
             <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">{labels[k]}</span>
             <span className={cx("text-sm font-bold", k === active ? "text-white" : "text-text")}>{i.total.split(" (")[0]}</span>
           </button>
@@ -40,7 +40,7 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
         </p>
       </section>
 
-      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+      <div className="overflow-hidden rounded-2xl glass">
         <Head cols={["Batter", "R", "B", "4s", "6s", "SR"]} />
         <ul>
           {inn.batting.map((b) => {
@@ -64,7 +64,7 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
         </ul>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+      <div className="overflow-hidden rounded-2xl glass">
         <Head cols={["Bowler", "O", "M", "R", "W", "Econ"]} />
         <ul>
           {inn.bowling.map((b) => (
@@ -88,7 +88,7 @@ export function InningsScorecard({ innings }: { innings: InningsCard[] }) {
             {inn.fallOfWickets.map((f) => {
               const [score, rest] = [f.split(" (")[0], f.match(/\(([^)]+)\)/)?.[1] ?? ""];
               return (
-                <li key={f} className="shrink-0 rounded-xl border border-line bg-surface px-3 py-2">
+                <li key={f} className="shrink-0 rounded-xl glass px-3 py-2">
                   <p className="text-sm font-bold tabular-nums">{score}</p>
                   <p className="text-[11px] text-text-2">{rest}</p>
                 </li>
@@ -122,7 +122,7 @@ const Num = ({ children, bold, muted, wide, className }: { children: ReactNode; 
 export function AtTheCrease({ crease }: { crease: Crease }) {
   if (!crease.batters.length && !crease.bowler) return null;
   return (
-    <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <section className="overflow-hidden rounded-2xl glass">
       <h3 className="flex items-center gap-2 border-b border-line px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-primary">
         <span className="size-1.5 animate-pulse rounded-full bg-live" /> At the crease
       </h3>

@@ -4,8 +4,38 @@ import type { ReactNode } from "react";
 import type { Ball, Match, Side, Tone } from "@/data/types";
 import { battingSide } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
+import { LiveClock } from "./LiveClock";
 
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
+
+/** A live match in a break: the feed's clock is a word ("Stumps", "Lunch", "Tea", "Innings Break"), not overs or minutes. */
+export const onBreak = (m: Pick<Match, "clock" | "timer">) => Boolean(m.clock && !/\d/.test(m.clock) && !m.timer?.running);
+
+/** Hex status tab straddling a card's top edge (parent: `relative` with pt-3.5, the card below it):
+ *  "● Live 38.2 ov" while play is on, "● Stumps" (amber) in a break, else Upcoming / Final. */
+export function TabPill({ m }: { m: Match }) {
+  const paused = m.status === "live" && onBreak(m);
+  // only a real clock ("38.2 ov", "67'", "45:10"); the feed sometimes puts the format ("T20") there
+  const clock = m.timer || /ov|'|:/.test(m.clock ?? "");
+  return (
+    <span className="hex absolute left-1/2 top-0 z-[1] flex h-7 min-w-[124px] -translate-x-1/2 items-center justify-center gap-1.5 bg-white/90 px-6 text-[11px] font-semibold text-text [--hex:12px] dark:bg-[#1b2a3d] dark:text-white">
+      {m.status !== "live"
+        ? <span className="uppercase text-text-2">{m.status === "upcoming" ? "Upcoming" : "Final"}</span>
+        : paused
+          ? <><span className="size-1.5 shrink-0 rounded-full bg-[var(--gold-mid)]" /><span className="truncate">{m.clock}</span></>
+          : <><span className="size-1.5 shrink-0 animate-pulse rounded-full bg-live" />Live{clock && <span className="truncate text-text-2"><LiveClock timer={m.timer} fallback={m.clock} /></span>}</>}
+    </span>
+  );
+}
+
+/** Score plate: flat stretched hexagon, as in the reference. */
+export function HexPlate({ children }: { children: ReactNode }) {
+  return (
+    <span className="hex flex h-14 min-w-[124px] items-center justify-center bg-white/80 px-6 text-[30px] font-semibold leading-none tabular-nums dark:bg-white/10">
+      {children}
+    </span>
+  );
+}
 
 export function LiveBadge({ soft = false, label = "LIVE" }: { soft?: boolean; label?: string }) {
   return (
@@ -93,7 +123,7 @@ export function SectionHeader({ title, href }: { title: string; href?: string })
 }
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cx("card-premium rounded-2xl border border-line bg-surface", className)}>{children}</div>;
+  return <div className={cx("card-premium rounded-2xl glass", className)}>{children}</div>;
 }
 
 export { cx };

@@ -1,50 +1,47 @@
+import Image from "next/image";
 import type { BallKind, CommentaryEntry, Match, MatchCentre } from "@/data/types";
 import { econ, sr } from "@/lib/cricket";
 import { Icon } from "./icons/Icon";
-import { LiveClock } from "./LiveClock";
 import { ScorePop } from "./ScorePop";
-import { BallChip, Card, CricketRole, LiveBadge, TeamBadge, cx } from "./ui";
+import { BallChip, Card, CricketRole, HexPlate, TabPill, TeamBadge, cx } from "./ui";
 
-/** Compact scoreboard (reference: 118px embed card) on the brand gradient: one-line competition, team code + score each side,
- *  live clock in the centre, note + stats on one line below. No gradient. */
+/** Glass scoreboard (client's frosted reference): competition on top, teams on white discs with "At Home / Away",
+ *  football score + clock in the centre; cricket keeps its score and overs under each team. */
 export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
+  const cricket = m.sport === "cricket";
   const side = (s: Match["home"], right: boolean) => (
-    <div className={cx("flex min-w-0 flex-1 items-center gap-2.5", right && "flex-row-reverse text-right")}>
-      <TeamBadge code={s.team.code} tone={s.team.tone} logo={s.team.logo} size={36} />
-      <div className={cx("flex min-w-0 flex-col", right && "items-end")}>
-        <span className={cx("flex items-center gap-1 text-[11px] font-black uppercase tracking-wide text-white/90", right && "flex-row-reverse")}><span className="truncate">{s.team.code}</span><CricketRole m={m} s={s} /></span>
-        {s.score
+    <div className={cx("flex w-[100px] shrink-0 flex-col items-center gap-1 text-center", right && "order-3")}>
+      {s.team.logo
+        ? <Image src={s.team.logo} alt="" width={64} height={64} unoptimized className="size-16 object-contain" />
+        : <TeamBadge code={s.team.code} tone={s.team.tone} size={64} />}
+      <span className="mt-1 flex max-w-full items-center gap-1 text-[14px] font-bold"><span className="truncate">{s.team.name}</span><CricketRole m={m} s={s} /></span>
+      {cricket
+        ? s.score
           ? /\/|^\d/.test(s.score)
-            ? <ScorePop value={s.score} className="text-[22px] font-black leading-tight tabular-nums text-white" />
-            : <span className="text-sm font-bold text-[var(--gold-light)]">{s.score}</span>
-          : <span className="text-xs font-semibold text-white/55">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>}
-        {s.detail && <span className="text-[10.5px] font-semibold text-white/55 tabular-nums">{s.detail}</span>}
-      </div>
+            ? <ScorePop value={s.score} className="text-[20px] font-black leading-tight tabular-nums" />
+            : <span className="text-sm font-bold text-accent">{s.score}</span>
+          : <span className="text-xs font-semibold text-text-2">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>
+        : <span className="text-[11px] text-text-2">{right ? "Away" : "At Home"}</span>}
+      {s.detail && <span className="text-[11px] font-semibold text-text-2 tabular-nums">{s.detail}</span>}
     </div>
   );
-  const [desc, series] = m.sport === "cricket" ? [m.competition.split(" · ")[0], m.competition.split(" · ").slice(1).join(" · ")] : [m.competition, ""];
+  const competition = cricket ? m.competition : m.competition.split(" · ")[0];
   return (
-    <section className="hero-glow flex flex-col gap-2 px-4 py-3 text-white md:mx-4 md:mt-3 md:overflow-hidden md:rounded-2xl">
-      <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide">
-        <span>{desc}</span>
-        {series && <><span className="text-white/45">•</span><span className="truncate font-bold normal-case tracking-normal text-white/60">{series}</span></>}
-      </p>
-      <div className="flex items-center gap-2">
-        {side(m.home, false)}
-        <div className="flex w-[84px] shrink-0 flex-col items-center gap-0.5">
-          {m.status === "live"
-            ? <>
-                <LiveBadge />
-                {(m.clock || m.timer) && <span className="text-[13px] font-black text-[var(--gold-light)]"><LiveClock timer={m.timer} fallback={m.clock} /></span>}
-              </>
-            : <span className="text-[11px] font-bold text-white/60">{m.status === "upcoming" ? "Upcoming" : "Final"}</span>}
+    <section className="relative mx-4 pt-3.5">
+      <TabPill m={m} />
+      <div className="glass flex flex-col gap-3 rounded-3xl px-3 pb-3 pt-7">
+        <div className="flex items-start">
+          {side(m.home, false)}
+          <div className="order-2 flex min-w-0 flex-1 justify-center pt-3">
+            <HexPlate>{!cricket && m.status !== "upcoming" ? `${m.home.score ?? 0} - ${m.away.score ?? 0}` : <span className="text-[16px]">VS</span>}</HexPlate>
+          </div>
+          {side(m.away, true)}
         </div>
-        {side(m.away, true)}
+        <p className="flex min-w-0 items-center gap-2 rounded-2xl bg-white/55 px-3.5 py-2.5 text-[11px] font-bold dark:bg-white/[0.06]">
+          {m.note && cricket ? <span className="truncate text-accent">{m.note}</span> : <span className="truncate font-medium text-text-2">{competition}</span>}
+          {stats && <span className="ml-auto shrink-0 text-text-2">{stats.join("  ·  ")}</span>}
+        </p>
       </div>
-      <p className="flex min-w-0 items-center gap-2 text-[10.5px] font-bold">
-        {m.note && m.sport === "cricket" && <span className="truncate text-[var(--gold-light)]">{m.note}</span>}
-        {stats && <span className="ml-auto shrink-0 text-white/60">{stats.join("  ·  ")}</span>}
-      </p>
     </section>
   );
 }
@@ -104,7 +101,7 @@ function OverSummary({ title, summary }: { title: string; summary: string }) {
 
 export function Commentary({ items }: { items: CommentaryEntry[] }) {
   return (
-    <ol className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <ol className="overflow-hidden rounded-2xl glass">
       {items.map((e, i) => {
         if (e.type === "over") return <OverSummary key={i} title={e.title} summary={e.summary} />;
         const { who, result, desc } = splitBall(e.text);
@@ -127,7 +124,7 @@ export function Commentary({ items }: { items: CommentaryEntry[] }) {
 
 function Table({ head, rows, foot }: { head: string[]; rows: { name: string; sub?: string; cells: (string | number)[] }[]; foot?: [string, string][] }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <div className="overflow-hidden rounded-2xl glass">
       <table className="w-full text-right text-sm tabular-nums">
         <thead className="bg-surface-2 text-xs font-bold text-text-2">
           <tr>{head.map((h, i) => <th key={h} scope="col" className={cx("px-1.5 py-2 font-bold first:pl-3.5 first:text-left last:pr-3.5", i === 0 && "w-full")}>{h}</th>)}</tr>

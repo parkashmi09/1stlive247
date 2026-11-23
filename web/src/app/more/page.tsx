@@ -54,7 +54,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
       <h2 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-text-2">{title}</h2>
-      <ul className="overflow-hidden rounded-2xl border border-line bg-surface">{children}</ul>
+      <ul className="overflow-hidden rounded-2xl glass">{children}</ul>
     </section>
   );
 }
@@ -101,7 +101,7 @@ export default function MorePage() {
         {/* quick actions */}
         <nav aria-label="Quick actions" className="grid grid-cols-4 gap-2.5">
           {QUICK.map((q) => (
-            <Link key={q.label} href={q.href} className="card-premium flex flex-col items-center gap-2 rounded-2xl border border-line bg-surface px-1 py-3.5">
+            <Link key={q.label} href={q.href} className="card-premium flex flex-col items-center gap-2 rounded-2xl glass px-1 py-3.5">
               <span className={`flex size-11 items-center justify-center rounded-2xl ${SOLID_BG[q.icon]}`}><SolidIcon name={q.icon} /></span>
               <span className="text-xs font-semibold">{q.label}</span>
             </Link>

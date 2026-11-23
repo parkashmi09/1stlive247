@@ -6,7 +6,7 @@ import type { Featured, Match, Sport, SportId } from "@/data/types";
 import { useLiveMatches } from "@/lib/live";
 import { Icon } from "../icons/Icon";
 import { SportIcon } from "../icons/SportIcon";
-import { LeagueHeader, MatchCard, groupByLeague } from "../match-cards";
+import { LeagueHeader, LiveGlassCard, MatchCard, groupByLeague } from "../match-cards";
 import { AdSlot } from "../AdSlot";
 import { FeaturedSlider } from "./FeaturedSlider";
 import { cx } from "../ui";
@@ -48,29 +48,28 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
   const sheet = useRef<HTMLDialogElement>(null);
 
   const ofSport = matches.filter((m) => m.sport === sport);
-  // Top Events: live first, then upcoming; finished get their own section so the 30-card cap can't push them out
-  const list = (tab === "top"
-    ? ofSport.filter((m) => m.status !== "finished").sort((a, b) => Number(b.status === "live") - Number(a.status === "live"))
-    : ofSport.filter((m) => m.status === tab)
-  ).slice(0, 30);
-  const finished = tab === "top" ? ofSport.filter((m) => m.status === "finished").slice(0, 12) : [];
+  // Top Events: live in the "Live Match" carousel, then upcoming; finished get their own section so the 30-card cap can't push them out
+  const top = tab === "top";
+  const liveNow = top ? ofSport.filter((m) => m.status === "live").slice(0, 10) : [];
+  const list = ofSport.filter((m) => m.status === (top ? "upcoming" : tab)).slice(0, 30);
+  const finished = top ? ofSport.filter((m) => m.status === "finished").slice(0, 12) : [];
   const filtered = sport !== "cricket" || tab !== "top";
 
   return (
     <div className="flex flex-col gap-4 px-4 pt-2 md:px-0 lg:pt-0">
       <div className="flex gap-2">
-        <Link href="/search" className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-line bg-surface px-3.5 text-sm text-text-2">
+        <Link href="/search" className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full glass px-3.5 text-sm text-text-2">
           <Icon name="search" size={18} className="shrink-0" /><span className="truncate">Search teams, leagues, news</span>
         </Link>
         <button type="button" aria-label="Filter sports" aria-haspopup="dialog" onClick={() => sheet.current?.showModal()}
-          className="relative flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-text-2">
+          className="relative flex size-10 shrink-0 items-center justify-center rounded-full glass text-text-2">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M4 7h10M18 7h2M4 17h2M10 17h10" /><circle cx="16" cy="7" r="2" /><circle cx="8" cy="17" r="2" /></svg>
           {filtered && <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full bg-live ring-2 ring-surface" />}
         </button>
       </div>
 
       <dialog ref={sheet} aria-label="Filter sports" onClick={(e) => { if (e.target === e.currentTarget) sheet.current?.close(); }}
-        className="mx-auto mb-0 mt-auto w-full max-w-[480px] rounded-t-2xl bg-surface text-text backdrop:bg-black/50 md:m-auto md:rounded-2xl">
+        className="mx-auto mb-0 mt-auto w-full max-w-[480px] rounded-t-2xl bg-surface-solid text-text backdrop:bg-black/50 md:m-auto md:rounded-2xl">
         <div className="flex flex-col gap-4 p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold">Filter</h2>
@@ -83,7 +82,7 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
               return (
                 <button key={s.id} type="button" disabled={!n} aria-pressed={s.id === sport} onClick={() => setSport(s.id)}
                   className={cx("flex h-11 min-w-0 items-center gap-2 rounded-xl border px-3 text-[13px] font-semibold disabled:opacity-45",
-                    s.id === sport ? "bg-brand border-transparent text-white" : "border-line bg-surface")}>
+                    s.id === sport ? "bg-brand bg-origin-border border-transparent text-white" : "glass")}>
                   <SportIcon sport={s.id} size={16} className="shrink-0" />
                   <span className="min-w-0 flex-1 truncate text-left">{s.label}</span>
                   <span className="text-[11px] font-bold tabular-nums opacity-70">{n || "Soon"}</span>
@@ -95,13 +94,13 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
             <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-text-2">Status</legend>
             {STATUSES.map((s) => (
               <button key={s.id} type="button" aria-pressed={s.id === tab} onClick={() => setTab(s.id)}
-                className={cx("h-9 min-w-0 rounded-full border text-[12px] font-bold", s.id === tab ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "border-line bg-surface text-text-2")}>
+                className={cx("h-9 min-w-0 rounded-full border text-[12px] font-bold", s.id === tab ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "glass text-text-2")}>
                 {s.label}
               </button>
             ))}
           </fieldset>
           <button type="button" onClick={() => sheet.current?.close()} className="bg-brand h-11 rounded-full text-sm font-bold text-white">
-            Show {list.length + finished.length} matches
+            Show {liveNow.length + list.length + finished.length} matches
           </button>
         </div>
       </dialog>
@@ -122,7 +121,7 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
           return (
             <button key={s.id} role="tab" aria-selected={on} aria-label={s.label} onClick={() => setSport(s.id)}
               className={cx("flex h-[34px] shrink-0 items-center justify-center rounded-full transition-all",
-                on ? "bg-brand gap-2 pl-4 pr-[17px] text-white" : "w-[34px] border border-line bg-surface text-[#98A3A6]")}>
+                on ? "bg-brand gap-2 pl-4 pr-[17px] text-white" : "w-[34px] glass text-[#98A3A6]")}>
               <SportIcon sport={s.id} size={17} />
               {on && <span className="text-[13px] font-semibold">{s.label}</span>}
             </button>
@@ -136,7 +135,7 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
           return (
             <button key={t.id} role="tab" aria-selected={on} onClick={() => setTab(t.id)}
               className={cx("flex h-9 min-w-0 items-center justify-center gap-1 rounded-full border px-1 text-[12px] font-bold whitespace-nowrap transition md:gap-1.5 md:text-[13px]",
-                on ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "border-line bg-surface text-text-2")}>
+                on ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "glass text-text-2")}>
               <svg viewBox={t.viewBox} className="h-4 w-auto shrink-0" aria-hidden>{t.icon}</svg>
               {t.label}
             </button>
@@ -144,12 +143,22 @@ export function HomeBoard({ sports, initial, featured, children }: { sports: Spo
         })}
       </div>
 
-      {list.length + finished.length === 0 && <p className="py-10 text-center text-sm text-text-2">{ofSport.length ? "No events right now." : "Coming soon."}</p>}
+      {liveNow.length + list.length + finished.length === 0 && <p className="py-10 text-center text-sm text-text-2">{ofSport.length ? "No events right now." : "Coming soon."}</p>}
+      {liveNow.length > 0 && (
+        <section aria-labelledby="h-live-now" className="flex flex-col gap-2.5">
+          <h2 id="h-live-now" className="px-1 text-[17px] font-bold">Live Match ({liveNow.length})</h2>
+          {/* padded scroller (cancelled by negative margins) so the card shadows aren't clipped into a hard edge */}
+          <div className="no-scrollbar -mx-4 -my-4 flex snap-x gap-3 overflow-x-auto px-4 py-4 pb-9 -mb-7 md:-mx-4 md:px-4">
+            {liveNow.map((m) => <LiveGlassCard key={m.id} m={m} />)}
+          </div>
+        </section>
+      )}
+      {top && list.length > 0 && <h2 className="-mb-2 px-1 text-[17px] font-bold">Upcoming ({list.length})</h2>}
       <Leagues matches={list} sport={sport} ads />
       {finished.length > 0 && (
         <section aria-labelledby="h-finished" className="flex flex-col gap-3">
           <h2 id="h-finished" className="flex items-center gap-2 px-1 text-[15px] font-extrabold uppercase tracking-wide">
-            Finished <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-text-2 ring-1 ring-line">{finished.length}</span>
+            Finished <span className="rounded-full glass px-2 py-0.5 text-[11px] font-semibold text-text-2 ring-1 ring-line">{finished.length}</span>
           </h2>
           <Leagues matches={finished} sport={sport} />
         </section>

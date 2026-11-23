@@ -35,20 +35,19 @@ export function NavBar({ path }: { path?: string }) {
     // Thrill bottom nav, measured: outer 80px (pad 4/16/14) with a page-colour fade; inner 62px bar, radius 64, 70% bg + 20px blur,
     // shadow 0 4px 32px 8%; 88×54 pill, radius 46, flat tint, slides on transform; icon 20, label 10/12 bold uppercase, muted #858FA6.
     <nav aria-label="Primary"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,transparent_14%,var(--bg)_52%)] px-4 pb-[max(14px,env(safe-area-inset-bottom))] pt-1 lg:hidden">
-      <div className="pointer-events-auto relative mx-auto grid h-[62px] w-full max-w-[448px] grid-cols-4 rounded-[30px] bg-nav/70 px-1 py-1 shadow-[0_4px_32px_rgb(0_0_0/0.08)] backdrop-blur-[20px] md:max-w-[640px] dark:bg-nav/70 dark:shadow-[0_4px_32px_rgb(0_0_0/0.4)]">
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(14px,env(safe-area-inset-bottom))] pt-1 lg:hidden">
+      <div className="glass pointer-events-auto relative mx-auto grid h-[62px] w-full max-w-[360px] grid-cols-4 rounded-full p-[5px]">
         {active >= 0 && (
-          // pill = one column wide (Thrill: pill sits flush inside the bar's 4px inset, fully rounded), slides on left
-          <div aria-hidden className="bg-brand pointer-events-none absolute top-1 h-[54px] rounded-[27px] opacity-90 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
-            style={{ width: `calc((100% - 8px) / ${TABS.length})`, left: `calc(4px + (100% - 8px) * ${active} / ${TABS.length})` }} />
+          // glass reference: a 52px brand circle centred in the active column, slides on left
+          <div aria-hidden className="bg-brand pointer-events-none absolute top-[5px] size-[52px] rounded-full shadow-[0_6px_16px_rgb(52_196_238/0.45)] motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
+            style={{ left: `calc(5px + (100% - 10px) * ${active} / ${TABS.length} + ((100% - 10px) / ${TABS.length} - 52px) / 2)` }} />
         )}
         {TABS.map((t, i) => {
           const on = i === active;
           return (
-            <Link key={t.href} href={t.href} aria-current={on ? "page" : undefined}
-              className={`relative z-[1] flex flex-col items-center justify-center gap-2 rounded-xl font-[family-name:var(--font-inter)] text-[10px] font-bold uppercase leading-3 active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-[#858FA6]"}`}>
-              <span className={on ? "text-[var(--gold-light)]" : ""}><TabIcon name={t.icon} /></span>
-              <span className="max-w-full truncate">{t.label}</span>
+            <Link key={t.href} href={t.href} aria-current={on ? "page" : undefined} aria-label={t.label}
+              className={`relative z-[1] flex items-center justify-center rounded-full active:scale-95 motion-safe:transition-[color,transform] motion-safe:duration-200 motion-safe:ease-in-out ${on ? "text-white" : "text-[#858FA6]"}`}>
+              <TabIcon name={t.icon} />
             </Link>
           );
         })}

@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   // team/league logos come from the Sports API feed
   images: { remotePatterns: [{ protocol: "https", hostname: "static.flashscore.com" }] },
   cacheComponents: true,
+  // browser → same origin → backend (see lib/config.ts): REST, and Socket.IO polling on /sio
+  async rewrites() {
+    const backend = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4247";
+    return [
+      { source: "/api/v1/:path*", destination: `${backend}/api/v1/:path*` },
+      { source: "/sio", destination: `${backend}/socket.io/` },
+    ];
+  },
   // snapshot mode reads these JSON files at runtime; make sure Vercel ships them
   outputFileTracingIncludes: { "/**": ["./snapshot/**/*"] },
   partialPrefetching: true,

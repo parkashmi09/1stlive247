@@ -48,7 +48,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
         <div role="tablist" aria-label="Match sections" className="sticky top-16 z-20 -mx-4 flex gap-1 bg-bg/85 px-4 py-2 backdrop-blur">
           {tabs.map(([id, label]) => (
             <button key={id} role="tab" aria-selected={id === active} onClick={() => setTab(id)}
-              className={cx("h-9 flex-1 rounded-full text-sm font-semibold transition", id === active ? "bg-brand text-white" : "border border-line bg-surface text-text-2")}>
+              className={cx("h-9 flex-1 rounded-full text-sm font-semibold transition", id === active ? "bg-brand text-white" : "glass text-text-2")}>
               {label}
             </button>
           ))}
@@ -149,7 +149,7 @@ function Momentum({ match, points, timeline }: { match: Match; points: MatchInsi
           })}
         </svg>
         {goals.map((g, i) => (
-          <span key={i} title={`${g.minute} ${g.player}`} className={cx("absolute flex size-5 -translate-x-1/2 items-center justify-center rounded-full bg-surface shadow ring-1 ring-line", g.side === "home" ? "-top-1" : "-bottom-1")} style={{ left: `${(x(minuteOf(g.minute)) / W) * 100}%` }}>
+          <span key={i} title={`${g.minute} ${g.player}`} className={cx("absolute flex size-5 -translate-x-1/2 items-center justify-center rounded-full bg-surface-solid shadow ring-1 ring-line", g.side === "home" ? "-top-1" : "-bottom-1")} style={{ left: `${(x(minuteOf(g.minute)) / W) * 100}%` }}>
             <Icon name="football" size={13} />
           </span>
         ))}
@@ -272,7 +272,7 @@ function Timeline({ match, items }: { match: Match; items: Incident[] }) {
               return (
                 <div key={j} className={cx("relative grid grid-cols-[1fr_44px_1fr] items-center py-1.5", goal && "rounded-xl bg-boundary/6")}>
                   <div className="min-w-0 pr-1">{e.side === "home" && <EventBody e={e} align="right" />}</div>
-                  <span className={cx("z-10 mx-auto flex h-6 min-w-9 items-center justify-center rounded-full px-1 text-[11px] font-bold tabular-nums ring-1", goal ? "bg-brand-diag text-white ring-transparent" : "bg-surface ring-line")}>{e.minute}</span>
+                  <span className={cx("z-10 mx-auto flex h-6 min-w-9 items-center justify-center rounded-full px-1 text-[11px] font-bold tabular-nums ring-1", goal ? "bg-brand-diag text-white ring-transparent" : "bg-surface-solid ring-line")}>{e.minute}</span>
                   <div className="min-w-0 pl-1">{e.side === "away" && <EventBody e={e} align="left" />}</div>
                 </div>
               );
@@ -462,7 +462,7 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
           {tabs.map((t, i) => (
             <button key={t.name} onClick={() => setTi(i)}
-              className={cx("shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition", i === ti ? "border-transparent bg-brand bg-origin-border text-white" : "border-line bg-surface text-text-2")}>
+              className={cx("shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition", i === ti ? "border-transparent bg-brand bg-origin-border text-white" : "glass text-text-2")}>
               {label(t.name)}
             </button>
           ))}

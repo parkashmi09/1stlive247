@@ -20,7 +20,7 @@ The web app can read frozen JSON instead of the backend. Use this when the feed 
 - `news/<slug>.json`: the full article
 
 ## Run in snapshot mode
-- Snapshot is the DEFAULT (user said: remove the backend link). Set `NEXT_PUBLIC_DATA_SOURCE=api` to go back to the live backend.
+- The live backend is the DEFAULT (user, 2026-11-23: "fake json data nahi rehna chahiye"). Snapshot is opt-in only: `NEXT_PUBLIC_DATA_SOURCE=snapshot`, for offline use.
   - `web/src/lib/api.ts` routes every call through `web/src/lib/snapshot.ts`.
   - The socket never connects (`live.ts`), so scores stay frozen at `takenAt`.
 - Images stay as their original static.flashscore.com links (user's choice: don't download assets).

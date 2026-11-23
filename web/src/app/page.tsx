@@ -14,7 +14,7 @@ async function Board() {
     <HomeBoard sports={SPORTS} initial={matches} featured={featured}>
       {/* desktop-only side widget, like Sofascore's middle column */}
       {news.length > 0 && (
-        <section aria-labelledby="h-news" className="hidden rounded-2xl border border-line bg-surface px-4 pt-3 lg:block">
+        <section aria-labelledby="h-news" className="hidden rounded-2xl glass px-4 pt-3 lg:block">
           <h2 id="h-news" className="flex items-center text-sm font-bold">
             <span className="flex-1">Latest News</span>
             <Link href="/news" className="text-xs font-semibold text-accent">See all</Link>
