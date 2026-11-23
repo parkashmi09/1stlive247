@@ -15,8 +15,6 @@ const nextConfig: NextConfig = {
       { source: "/sio", destination: `${backend}/socket.io/` },
     ];
   },
-  // snapshot mode reads these JSON files at runtime; make sure Vercel ships them
-  outputFileTracingIncludes: { "/**": ["./snapshot/**/*"] },
   partialPrefetching: true,
   turbopack: {
     rules: {

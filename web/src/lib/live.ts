@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import type { CommentaryEntry, Match, MatchCentre } from "@/data/types";
-import { API_URL, SNAPSHOT } from "./config";
+import { API_URL } from "./config";
 
 type ServerToClient = {
   "match:update": (m: Match) => void;
@@ -18,8 +18,7 @@ type ClientToServer = {
 
 let socket: Socket<ServerToClient, ClientToServer> | undefined;
 // Same-origin long-polling through the /sio rewrite (Vercel rewrites can't carry a websocket, and the backend is plain http).
-// snapshot mode never connects; the hooks keep their initial data
-export const getSocket = () => (socket ??= io(API_URL, { path: "/sio", addTrailingSlash: false, transports: ["polling"], autoConnect: !SNAPSHOT }));
+export const getSocket = () => (socket ??= io(API_URL, { path: "/sio", addTrailingSlash: false, transports: ["polling"] }));
 
 /** Keep a list of matches fresh from the `live` room. */
 export function useLiveMatches(initial: Match[]) {

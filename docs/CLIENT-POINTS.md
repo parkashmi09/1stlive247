@@ -1,6 +1,6 @@
 # 1stLive247: client points ka plan
 
-Status: **2026-11-18 update.** Points 2, 4, 5, 7, 9 aur 10 frontend mein ban gaye hain, static snapshot data par. Points 1, 3, 6 aur 8 (logo, flags, image quality, 3D score card) user ke kehne par abhi skip hain. Backend items B1 se B4 pending hain.
+Status: **2026-11-18 update.** Points 2, 4, 5, 7, 9 aur 10 frontend mein ban gaye hain. 2026-11-23 se app asli backend API par chalti hai; static snapshot data hata diya gaya. Points 1, 3, 6 aur 8 (logo, flags, image quality, 3D score card) user ke kehne par abhi skip hain. Backend items B1 se B4 pending hain.
 
 Legend: 🟢 frontend se ho jayega · 🟡 frontend ho jayega, par poora result backend ya client par depend · 🔴 client ke bina start nahi hoga
 
@@ -93,7 +93,7 @@ Har step ke baad mobile, tablet aur desktop par browser mein check karna hai, li
 |---|---|---|---|
 | B1 | Horse Racing data (point 4) | `backend/src/feed/store.ts:41` race events skip karta hai, kyunki unmein home/away nahi hota | Pehle check ki feed kya data deta hai, phir race data model, API aur race-card UI |
 | B2 | Zyada Finished matches (point 5) | Finished match sirf 3 ghante memory mein rehta hai (`store.ts:154`), restart par khatam | Retention badhana aur database mein save karna. Purane results ke liye API docs check karne hain |
-| B3 | Vercel par live data | Backend plain HTTP par hai, isliye Vercel site snapshot se chalti hai | Backend par HTTPS, phir Vercel ko live API se jodna |
+| B3 | Vercel par live data | Done (2026-11-23): browser ki calls Next rewrites se backend tak jaati hain (/api/v1, /sio) | Baad mein backend par HTTPS lagana, taaki proxy ki zaroorat na rahe |
 | B4 | F1 aur Kabaddi | F1 bhi race format ki wajah se skip hota hai, Kabaddi ka abhi koi match nahi aa raha | B1 ke saath F1. Kabaddi feed check karni hai |
 
 Backend flow: code change, user push karega, server deploy hoga, user batayega, phir testing.
