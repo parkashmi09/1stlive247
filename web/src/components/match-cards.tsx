@@ -31,26 +31,18 @@ export function LiveHeroCard({ m }: { m: Match }) {
 /** Team mark (44px in the Figma card): the raw logo (no circle) or the initials badge when there is none. */
 function TeamMark({ team, size = 44 }: { team: Side["team"]; size?: number }) {
   return team.logo
-    ? <Image src={team.logo} alt="" width={size} height={size} unoptimized className="object-contain" style={{ width: size, height: size }} />
+    // multiply drops the white box baked into Cricbuzz .jpg logos on the light glass (dark mode keeps the image as is)
+    ? <Image src={team.logo} alt="" width={size} height={size} unoptimized className="object-contain mix-blend-multiply dark:mix-blend-normal" style={{ width: size, height: size }} />
     : <TeamBadge code={team.code} tone={team.tone} size={size} />;
 }
 
-/** Team picture on a white disc, so any crest reads on the glass and on the gradient. */
-function Disc({ team, size }: { team: Side["team"]; size: number }) {
-  return (
-    <span className="flex shrink-0 items-center justify-center rounded-full bg-white/85 shadow-sm" style={{ width: size, height: size }}>
-      <TeamMark team={team} size={Math.round(size * 0.66)} />
-    </span>
-  );
-}
-
-/** Upcoming card (glass reference): league line, both teams on discs, kick-off time in the middle. */
+/** Upcoming card (glass reference): league line, both teams' bare logos (no white disc), kick-off time in the middle. */
 function UpcomingCard({ m }: { m: Match }) {
   const team = (s: Side, right?: boolean) => (
     <span className={cx("flex min-w-0 flex-1 items-center gap-2", right && "flex-row-reverse text-right")}>
-      <Disc team={s.team} size={40} />
+      <span className="shrink-0"><TeamMark team={s.team} size={34} /></span>
       <span className="min-w-0">
-        <span className="block truncate text-[14px] font-semibold leading-tight">{s.team.name}</span>
+        <span className="line-clamp-2 text-[14px] font-semibold leading-tight">{s.team.name}</span>
         {s.record && <span className="block truncate text-[11px] text-text-2">{s.record}</span>}
       </span>
     </span>
@@ -155,8 +147,8 @@ export function groupByLeague(list: Match[]) {
   return [...groups.values()];
 }
 
-/** Sofascore-style competition header: crest/flag, "League · Country", match count. */
-export function LeagueHeader({ name, logo, sport, count, className }: { name: string; logo?: string; sport?: SportId; count: number; className?: string }) {
+/** Competition header: crest/flag, "League · Country" (no match count; the client asked to drop it). */
+export function LeagueHeader({ name, logo, sport, className }: { name: string; logo?: string; sport?: SportId; className?: string }) {
   const [league, country] = name.split(" · ");
   return (
     <h3 className={cx("flex items-center gap-2.5 px-1 pt-1", className)}>
@@ -167,7 +159,6 @@ export function LeagueHeader({ name, logo, sport, count, className }: { name: st
         <span className="block truncate text-[13px] font-bold">{league}</span>
         {country && <span className="block truncate text-[11px] text-text-2">{country}</span>}
       </span>
-      <span className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-text-2 ring-1 ring-line">{count}</span>
     </h3>
   );
 }

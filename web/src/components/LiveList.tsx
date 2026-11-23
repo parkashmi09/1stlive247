@@ -66,7 +66,7 @@ function LiveRow({ m }: { m: Match }) {
 function LeagueCard({ name, logo, sport, matches }: { name: string; logo?: string; sport: SportId; matches: Match[] }) {
   return (
     <section className="card-premium mb-3 break-inside-avoid overflow-hidden rounded-2xl glass">
-      <LeagueHeader name={name} logo={logo} sport={sport} count={matches.length} className="border-b border-line border-l-[3px] border-l-[var(--gold-mid)] bg-surface px-4 py-2.5" />
+      <LeagueHeader name={name} logo={logo} sport={sport} className="border-b border-line border-l-[3px] border-l-[var(--gold-mid)] bg-surface px-4 py-2.5" />
       <ul className="divide-y divide-line">{matches.map((m) => <LiveRow key={m.id} m={m} />)}</ul>
     </section>
   );

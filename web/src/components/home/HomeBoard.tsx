@@ -30,7 +30,7 @@ function Leagues({ matches, sport, ads }: { matches: Match[]; sport: SportId; ad
       {groups.map((g, gi) => (
         <Fragment key={g.name}>
           <section className="mb-4 flex break-inside-avoid flex-col gap-2">
-            <LeagueHeader name={g.name} logo={g.logo} sport={sport} count={g.matches.length} />
+            <LeagueHeader name={g.name} logo={g.logo} sport={sport} />
             {g.matches.map((m) => <MatchCard key={m.id} m={m} />)}
           </section>
           {ads && gi % 3 === 2 && gi < groups.length - 1 && <AdSlot placement="list-inline" className="mb-4 break-inside-avoid" />}

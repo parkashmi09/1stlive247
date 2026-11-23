@@ -9,7 +9,7 @@ import { LiveClock } from "./LiveClock";
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(" ");
 
 /** A live match in a break: the feed's clock is a word ("Stumps", "Lunch", "Tea", "Innings Break"), not overs or minutes. */
-export const onBreak = (m: Pick<Match, "clock" | "timer">) => Boolean(m.clock && !/\d/.test(m.clock) && !m.timer?.running);
+export const onBreak = (m: Pick<Match, "clock" | "timer">) => /stumps|lunch|tea|break|rain|delay|drinks|bad light/i.test(m.clock ?? "") && !m.timer?.running;
 
 /** Hex status tab straddling a card's top edge (parent: `relative` with pt-3.5, the card below it):
  *  "● Live 38.2 ov" while play is on, "● Stumps" (amber) in a break, else Upcoming / Final. */
