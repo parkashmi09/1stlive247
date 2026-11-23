@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import type { CommentaryEntry, Match, MatchCentre } from "@/data/types";
-import { API_URL, BACKEND_URL } from "./config";
+import { API_URL, BACKEND_URL, SNAPSHOT } from "./config";
 
 type ServerToClient = {
   "match:update": (m: Match) => void;
@@ -20,8 +20,8 @@ let socket: Socket<ServerToClient, ClientToServer> | undefined;
 // Same-origin long-polling through the /sio rewrite (Vercel rewrites can't carry a websocket, and the backend is plain http).
 // On an http page (local dev) a direct websocket to the backend is fine and avoids a pending long-poll request.
 export const getSocket = () => (socket ??= location.protocol === "http:"
-  ? io(BACKEND_URL, { transports: ["websocket"] })
-  : io(API_URL, { path: "/sio", addTrailingSlash: false, transports: ["polling"] }));
+  ? io(BACKEND_URL, { transports: ["websocket"], autoConnect: !SNAPSHOT })
+  : io(API_URL, { path: "/sio", addTrailingSlash: false, transports: ["polling"], autoConnect: !SNAPSHOT })); // snapshot: no socket, hooks keep their initial data
 
 /** Keep a list of matches fresh from the `live` room. */
 export function useLiveMatches(initial: Match[]) {

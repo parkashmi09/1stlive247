@@ -76,3 +76,13 @@ test("status: a result line finishes the match even when complete is still false
   assert.equal(cbToMatch({ ...sb, complete: false, status: "England won by 92 runs" }).status, "finished");
   assert.equal(cbToMatch({ ...sb, complete: false, status: "Day 2: Stumps - Sri Lanka lead by 193 runs" }).status, "live");
 });
+
+test("news: Cricbuzz article -> NewsArticle (slug cb-<id>, paragraphs, cover image)", async () => {
+  const { cbToArticle } = await import("./cricbuzz.ts");
+  const a = cbToArticle({ id: 141026, title: "T", summary: "S", content_text: "One.\n\nTwo.", author: "", published_ts: 1795418788, image: { url: "https://cb/i.jpg" } });
+  assert.equal(a.slug, "cb-141026");
+  assert.deepEqual(a.body, ["One.", "Two."]);
+  assert.equal(a.author, "Cricbuzz");
+  assert.equal(a.image, "https://cb/i.jpg");
+  assert.equal(a.publishedAt, new Date(1795418788 * 1000).toISOString()); // published_ts is unix seconds
+});

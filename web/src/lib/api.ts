@@ -1,12 +1,18 @@
 // REST client for the 1stLive247 backend. Responses are uncached: live data is read at request time.
 import { cacheLife } from "next/cache";
-import { API_URL } from "./config";
+import { API_URL, SNAPSHOT } from "./config";
+import { snapshotGet } from "./snapshot";
 import type { Featured, Match, MatchCentre, MatchInsights, MatchStatus, NewsArticle, SportId } from "@/data/types";
 
 
 async function get<T>(path: string): Promise<T>;
 async function get<T>(path: string, opts: { allow404: true }): Promise<T | undefined>;
 async function get<T>(path: string, opts?: { allow404: true }) {
+  if (SNAPSHOT) {
+    const data = await snapshotGet(path);
+    if (data === undefined && !opts?.allow404) throw new Error(`snapshot 404 on ${path}`);
+    return data as T | undefined;
+  }
   const r = await fetch(`${API_URL}/api/v1${path}`, { cache: "no-store" });
   if (r.status === 404 && opts?.allow404) return undefined;
   if (!r.ok) throw new Error(`API ${r.status} on ${path}`);

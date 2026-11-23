@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "snapshot": "node scripts/snapshot.mjs",
     "test": "node --test src/lib/*.test.ts",
     "gen:icons": "python3 scripts/gen-icons.py"
   },

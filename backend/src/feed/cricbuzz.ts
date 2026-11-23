@@ -2,7 +2,7 @@
 // bootstrap /live/cricket, keep fresh from /stream, fetch heavy parts (scorecard, commentary) only for watched matches.
 import { config } from "../config.ts";
 import { logger } from "../logger.ts";
-import type { Ball, BallKind, CommentaryEntry, InningsCard, Match, MatchCentre, Side, Tone } from "../types.ts";
+import type { Ball, BallKind, CommentaryEntry, InningsCard, Match, MatchCentre, NewsArticle, Side, Tone } from "../types.ts";
 
 export const CB_PREFIX = "cb-";
 export const isCricbuzzId = (id: string) => id.startsWith(CB_PREFIX);
@@ -321,3 +321,40 @@ export function createCricketFeed(opts: {
   };
 }
 export type CricketFeed = ReturnType<typeof createCricketFeed>;
+
+// ---------- news (real Cricbuzz articles; replaces the seeded demo news) ----------
+type CbArticle = { id: number; title: string; summary?: string; content_text?: string; author?: string; published_ts: number; image?: { url?: string } | null };
+
+export function cbToArticle(a: CbArticle): NewsArticle {
+  const body = (a.content_text ?? "").split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  const words = body.join(" ").split(/\s+/).filter(Boolean).length;
+  return {
+    slug: `cb-${a.id}`, sport: "cricket", title: a.title, excerpt: a.summary || body[0] || "",
+    publishedAt: new Date(a.published_ts * 1000).toISOString(), author: a.author || "Cricbuzz",
+    readMins: Math.max(1, Math.round(words / 220)), body,
+    ...(a.image?.url && { image: a.image.url }),
+  };
+}
+
+/** Newest articles, cached 5 min (the feed adds articles every ~5-30 min); one article by slug "cb-<id>". */
+export function createCricketNews() {
+  let cache: { at: number; list: Promise<NewsArticle[]> } | undefined;
+  const list = () => {
+    if (!cache || Date.now() - cache.at > 5 * 60_000) {
+      const p = cb<{ articles: CbArticle[] }>("/news?limit=50&full=1").then((r) => r.articles.map(cbToArticle));
+      cache = { at: Date.now(), list: p };
+      p.catch(() => { cache = undefined; }); // don't keep a failed call
+    }
+    return cache.list;
+  };
+  return {
+    list: async (limit = 30) => (await list()).slice(0, limit),
+    get: async (slug: string) => {
+      const id = /^cb-(\d+)$/.exec(slug)?.[1];
+      if (!id) return undefined;
+      const hit = (await list().catch(() => [])).find((a) => a.slug === slug);
+      return hit ?? cb<CbArticle>(`/news/${id}`).then(cbToArticle, (err) => { if (err.status === 404) return undefined; throw err; });
+    },
+  };
+}
+export type CricketNews = ReturnType<typeof createCricketNews>;

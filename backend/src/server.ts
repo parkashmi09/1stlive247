@@ -3,7 +3,7 @@ import { config } from "./config.ts";
 import { migrate } from "./db/migrate.ts";
 import { pool } from "./db/pool.ts";
 import { isConfigured } from "./feed/sports-api.ts";
-import { createCricketFeed, type CricketFeed } from "./feed/cricbuzz.ts";
+import { createCricketFeed, createCricketNews, type CricketFeed } from "./feed/cricbuzz.ts";
 import { createFeedStore, type FeedStore } from "./feed/store.ts";
 import { fetchInsights } from "./feed/insights.ts";
 import { createApp } from "./http/app.ts";
@@ -44,7 +44,7 @@ export async function startServer(port = config.PORT) {
     source = feedSource(store, cricket);
   }
 
-  const server = createServer(createApp(source, store ? { insights: fetchInsights } : {}));
+  const server = createServer(createApp(source, { ...(store && { insights: fetchInsights }), ...(config.CRICBUZZ_API_KEY && { news: createCricketNews() }) }));
   io = createIo(server, config.CORS_ORIGINS, source);
   const handle = createEngine(io);
   const provider: LiveProvider | undefined = config.LIVE_PROVIDER === "mock" ? createMockProvider(config.MOCK_TICK_MS) : undefined;

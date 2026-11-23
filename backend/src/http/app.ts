@@ -8,7 +8,7 @@ import { logger } from "../logger.ts";
 import { getNews, listNews, listSports } from "../repo/read.ts";
 import { pickFeatured } from "../featured.ts";
 import type { MatchSource } from "../source.ts";
-import type { MatchInsights } from "../types.ts";
+import type { MatchInsights, NewsArticle } from "../types.ts";
 
 const Slug = z.string().regex(/^[a-z0-9-]{1,80}$/);
 // feed ids are mixed-case (e.g. "08oviIGO"); same charset the Sports API accepts
@@ -20,7 +20,9 @@ const NewsQuery = z.object({ sport: SportId.optional(), limit: z.coerce.number()
 class NotFound extends Error {}
 const found = <T>(v: T | undefined): T => { if (v === undefined) throw new NotFound(); return v; };
 
-export function createApp(source: MatchSource, opts: { insights?: (id: string) => Promise<MatchInsights> } = {}) {
+type NewsSource = { list: (limit?: number) => Promise<NewsArticle[]>; get: (slug: string) => Promise<NewsArticle | undefined> };
+
+export function createApp(source: MatchSource, opts: { insights?: (id: string) => Promise<MatchInsights>; news?: NewsSource } = {}) {
   // insights change slowly: cache each match's for 10s so many viewers cost one upstream call
   const insightsCache = new Map<string, { at: number; data: Promise<MatchInsights> }>();
   const app = express();
@@ -55,8 +57,16 @@ export function createApp(source: MatchSource, opts: { insights?: (id: string) =
   // older clients: just the full-match stat groups
   v1.get("/matches/:id/stats", async (req, res) => { res.json({ data: (await insights(EventId.parse(req.params.id))).periods[0]?.groups ?? [] }); });
   v1.get("/matches/:id/centre", async (req, res) => { res.json({ data: found(await source.centre(EventId.parse(req.params.id))) }); });
-  v1.get("/news", async (req, res) => { res.json({ data: await listNews(NewsQuery.parse(req.query)) }); });
-  v1.get("/news/:slug", async (req, res) => { res.json({ data: found(await getNews(Slug.parse(req.params.slug))) }); });
+  // real news (Cricbuzz, cricket only) when configured; the DB's seeded articles otherwise
+  v1.get("/news", async (req, res) => {
+    const q = NewsQuery.parse(req.query);
+    const news = opts.news;
+    res.json({ data: news ? (q.sport && q.sport !== "cricket" ? [] : await news.list(q.limit)) : await listNews(q) });
+  });
+  v1.get("/news/:slug", async (req, res) => {
+    const slug = Slug.parse(req.params.slug);
+    res.json({ data: found(opts.news ? await opts.news.get(slug) : await getNews(slug)) });
+  });
   app.use("/api/v1", (_req, res, next) => { res.set("Cache-Control", "no-store"); next(); }, v1);
 
   app.use((_req, res) => { res.status(404).json({ error: "not_found" }); });

@@ -132,4 +132,6 @@ export type NewsArticle = {
   body: string[];
   quote?: string;
   featured?: boolean;
+  /** cover photo URL (Cricbuzz news) */
+  image?: string;
 };
