@@ -29,9 +29,10 @@ export function TabPill({ m }: { m: Match }) {
 }
 
 /** Score plate: flat stretched hexagon, as in the reference. */
-export function HexPlate({ children }: { children: ReactNode }) {
+export function HexPlate({ children, compact }: { children: ReactNode; compact?: boolean }) {
   return (
-    <span className="hex flex h-14 min-w-[124px] items-center justify-center bg-white/80 px-6 text-[30px] font-semibold leading-none tabular-nums dark:bg-white/10">
+    <span className={cx("hex flex items-center justify-center bg-white/80 font-semibold leading-none tabular-nums dark:bg-white/10",
+      compact ? "h-10 min-w-[60px] px-4 text-[15px] [--hex:12px]" : "h-12 min-w-[100px] px-5 text-[26px] [--hex:15px]")}>
       {children}
     </span>
   );

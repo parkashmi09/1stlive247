@@ -75,26 +75,27 @@ function UpcomingCard({ m }: { m: Match }) {
 export function LiveGlassCard({ m }: { m: Match }) {
   const cricket = m.sport === "cricket";
   const team = (s: Side, right?: boolean) => (
-    <div className={cx("flex w-[96px] shrink-0 flex-col items-center gap-1 text-center", right && "order-3")}>
-      <TeamMark team={s.team} size={60} />
-      <span className="mt-1 flex max-w-full items-center gap-1 text-[14px] font-bold"><span className="truncate">{s.team.name}</span><CricketRole m={m} s={s} /></span>
+    // flexible columns: the plate keeps its width and the teams share the rest, so nothing overlaps
+    <div className={cx("flex min-w-0 flex-1 flex-col items-center gap-1 text-center", right && "order-3")}>
+      <TeamMark team={s.team} size={52} />
+      <span className="mt-1 flex max-w-full items-start justify-center gap-1 text-[13px] font-bold leading-tight"><span className="line-clamp-2 break-words">{s.team.name}</span><CricketRole m={m} s={s} /></span>
       {cricket
         ? <span className="text-[14px] font-bold tabular-nums">{s.score ?? <span className="text-[11px] font-normal text-text-2">Yet to bat</span>}{s.detail && <span className="ml-1 text-[11px] font-normal text-text-2">{s.detail}</span>}</span>
         : <span className="text-[11px] text-text-2">{right ? "Away" : "At Home"}</span>}
     </div>
   );
   return (
-    <Link href={`/match/${m.id}`} className="relative w-[300px] shrink-0 snap-center pt-3.5 transition active:scale-[0.99] md:w-[340px]">
+    <Link href={`/match/${m.id}`} className="relative w-[88%] max-w-[360px] shrink-0 snap-center pt-3.5 transition active:scale-[0.99] md:w-[360px]">
       <TabPill m={m} />
-      <div className="glass h-full rounded-3xl px-3 pb-3 pt-7">
-        <div className="flex items-start">
+      <div className="glass flex h-full flex-col rounded-3xl px-3 pb-3 pt-7">
+        <div className="mb-3 flex items-start gap-1.5">
           {team(m.home)}
-          <div className="order-2 flex min-w-0 flex-1 justify-center pt-3">
-            <HexPlate>{cricket ? <span className="text-[16px]">VS</span> : `${m.home.score ?? 0} - ${m.away.score ?? 0}`}</HexPlate>
+          <div className="order-2 flex shrink-0 justify-center pt-2.5">
+            {cricket ? <HexPlate compact>VS</HexPlate> : <HexPlate>{m.home.score ?? 0} - {m.away.score ?? 0}</HexPlate>}
           </div>
           {team(m.away, true)}
         </div>
-        <p className={cx("mt-3 truncate rounded-2xl bg-white/55 px-3.5 py-2.5 text-[12px] font-medium dark:bg-white/[0.06]", cricket && m.note ? "text-accent" : "text-text-2")}>
+        <p className={cx("mt-auto truncate rounded-2xl bg-white/55 px-3.5 py-2.5 text-[12px] font-medium dark:bg-white/[0.06]", cricket && m.note ? "text-accent" : "text-text-2")}>
           {/* cricket: "<match> · <series>" → series; others: "<league> · <country>" → league */}
           {cricket && m.note ? m.note : cricket ? m.competition.split(" · ").at(-1) : m.competition.split(" · ")[0]}
         </p>

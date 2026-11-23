@@ -17,6 +17,8 @@ test("football live scoreboard + timer -> Match", () => {
   assert.equal(m.clock, "50'");
   assert.deepEqual([m.home.team.code, m.home.score, m.away.score], ["BOT", "3", "0"]);
   assert.equal(m.home.team.logo, "https://static.flashscore.com/a.png");
+  // the large logo wins when the feed sends one
+  assert.equal(toMatch({ ...football, home_logo_large: "https://static.flashscore.com/a-large.png" })!.home.team.logo, "https://static.flashscore.com/a-large.png");
   assert.equal(m.timer?.anchorTs, 1793921647);
 });
 

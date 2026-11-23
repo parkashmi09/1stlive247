@@ -8,7 +8,7 @@ import type { Featured, SportId } from "@/data/types";
 import { API_URL } from "@/lib/config";
 import { formatBannerDate, formatTime } from "@/lib/format";
 import { SportIcon } from "../icons/SportIcon";
-import { TeamBadge, cx } from "../ui";
+import { TeamBadge } from "../ui";
 import type { Tone } from "@/data/types";
 
 // Player art per sport: the designer's framed cut-outs (Figma 69:213 / 69:214 / 69:215, each 153×180). A sport without art gets no slide.
@@ -49,12 +49,12 @@ function Mark({ code, tone, logo }: { code: string; tone: Tone; logo?: string })
   return logo ? <Flag src={logo} /> : <TeamBadge code={code} tone={tone} size={24} />;
 }
 
-/** Every flag in the same 24×16 box. Feed flags are 30×30 PNGs with the flag floating in the middle, so those get zoomed. */
+/** Every flag in the same 24×16 box. Feed flags are at most 48×32, so they are fitted (object-contain), never enlarged: zooming only blurs them. */
 function Flag({ src }: { src: string }) {
   const feed = src.startsWith("http");
   return (
     <span className="h-4 w-6 shrink-0 overflow-hidden rounded-[4px]">
-      <Image src={src} alt="" width={24} height={16} className={cx("size-full object-cover object-center", feed && "scale-[1.5]")} unoptimized={feed} />
+      <Image src={src} alt="" width={24} height={16} className="size-full object-contain object-center" unoptimized={feed} />
     </span>
   );
 }

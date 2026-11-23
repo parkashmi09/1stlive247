@@ -18,7 +18,7 @@ export type Scoreboard = {
   event_id: string; sport: string; status: string; start_ts: number;
   home: string; away: string; home_short?: string | string[]; away_short?: string | string[];
   home_score?: string; away_score?: string; minute?: string; info?: string; league?: string; country?: string;
-  home_logo?: string; away_logo?: string; league_logo?: string; country_flag?: string; home_flag?: string; away_flag?: string;
+  home_logo?: string; away_logo?: string; home_logo_large?: string; away_logo_large?: string; league_logo?: string; country_flag?: string; home_flag?: string; away_flag?: string;
 };
 export type ApiTimer = {
   mode: "clock" | "minute" | "none"; running: boolean; anchor_ts: number | null; base_s: number; period_len_s: number | null;
@@ -51,8 +51,8 @@ export function toMatch(sb: Scoreboard, timer?: ApiTimer): Match | undefined {
     team: { code: short(code, name), name, tone: toneOf(name), ...(sport === "tennis" ? flag && { logo: flag } : logo && { logo }) },
     ...(st !== "upcoming" && score !== undefined && score !== "" && { score }),
   });
-  const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo, sb.home_flag);
-  const away = side(sb.away, sb.away_short, sb.away_score, sb.away_logo, sb.away_flag);
+  const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo_large || sb.home_logo, sb.home_flag);
+  const away = side(sb.away, sb.away_short, sb.away_score, sb.away_logo_large || sb.away_logo, sb.away_flag);
   if (st === "finished" && home.score && away.score && Number(home.score) !== Number(away.score)) {
     (Number(home.score) < Number(away.score) ? home : away).lost = true;
   }
@@ -74,7 +74,7 @@ const titleCase = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpp
 
 type Entry = { sb: Scoreboard; timer?: ApiTimer; seenAt: number };
 
-export function createFeedStore(onChange: (m: Match) => void, onOther?: (sb: Scoreboard) => void) {
+export function createFeedStore(onChange: (m: Match) => void) {
   const events = new Map<string, Entry>();
   let abort: AbortController | undefined;
   let timers: NodeJS.Timeout[] = [];
@@ -144,7 +144,7 @@ export function createFeedStore(onChange: (m: Match) => void, onOther?: (sb: Sco
 
   function onUpdate(u: { id: string; scoreboard?: Scoreboard; timer?: ApiTimer }) {
     if (!u.scoreboard) return;
-    if (!OUR_SPORT[u.scoreboard.sport]) { onOther?.(u.scoreboard); return; } // e.g. cricket: only its logos are used
+    if (!OUR_SPORT[u.scoreboard.sport]) return; // e.g. cricket: Cricbuzz feeds it
     put(u.scoreboard, u.timer);
     const m = toMatch(u.scoreboard, events.get(u.id)?.timer);
     if (m) onChange(m);

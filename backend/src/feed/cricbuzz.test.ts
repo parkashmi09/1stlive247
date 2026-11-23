@@ -1,6 +1,5 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { nameKey } from "./logos.ts";
 import { ballKind, cbToMatch, commToBalls, mergeBalls, teamScore, toCommentary, type CbBall, type CbScoreboard } from "./cricbuzz.ts";
 
 // Shapes taken from real responses in samples/cb.
@@ -66,21 +65,11 @@ test("comm slice merges new balls and attaches the over separator", () => {
   assert.equal(merged[0]?.text, "Safi to Madhevere, 2 runs");
 });
 
-test("logos: Cricbuzz names find Flashscore logos after normalizing", () => {
-  const index = new Map([[nameKey("Sri Lanka"), "https://x/sl.png"], [nameKey("India W"), "https://x/inw.png"]]);
-  const m = cbToMatch({ ...sb, team1: "India Women", team1_short: "INDW" }, (n) => index.get(nameKey(n)));
-  assert.equal(m.away.team.logo, "https://x/sl.png");
-  assert.equal(m.home.team.logo, "https://x/inw.png");
-  assert.equal(cbToMatch(sb).home.team.logo, undefined); // unknown team keeps its initials badge
-});
-
-test("logos: h2h rows become name -> full Flashscore logo URL", async () => {
-  const { logosFromH2h } = await import("./logos.ts");
-  const pairs = logosFromH2h([{ FH: "New Zealand", EC: "llwpiGXg-zmDbXBOa.png", FK: "India", ED: "norj22Ea-2ur67bOJ.png" }, { KA: "Overall" }]);
-  assert.deepEqual(pairs, [
-    ["New Zealand", "https://static.flashscore.com/res/image/data/llwpiGXg-zmDbXBOa.png"],
-    ["India", "https://static.flashscore.com/res/image/data/norj22Ea-2ur67bOJ.png"],
-  ]);
+test("logos: Cricbuzz's own team1_logo/team2_logo, initials badge when missing", () => {
+  const m = cbToMatch({ ...sb, team1_logo: "https://cb/indw.png", team2_logo: "https://cb/sl.png" });
+  assert.equal(m.home.team.logo, "https://cb/indw.png");
+  assert.equal(m.away.team.logo, "https://cb/sl.png");
+  assert.equal(cbToMatch(sb).home.team.logo, undefined);
 });
 
 test("status: a result line finishes the match even when complete is still false", () => {

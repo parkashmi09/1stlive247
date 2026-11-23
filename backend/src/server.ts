@@ -4,7 +4,6 @@ import { migrate } from "./db/migrate.ts";
 import { pool } from "./db/pool.ts";
 import { isConfigured } from "./feed/sports-api.ts";
 import { createCricketFeed, type CricketFeed } from "./feed/cricbuzz.ts";
-import { createLogoIndex, type LogoIndex } from "./feed/logos.ts";
 import { createFeedStore, type FeedStore } from "./feed/store.ts";
 import { fetchInsights } from "./feed/insights.ts";
 import { createApp } from "./http/app.ts";
@@ -24,17 +23,14 @@ export async function startServer(port = config.PORT) {
   let io: Io | undefined;
   let store: FeedStore | undefined;
   let cricket: CricketFeed | undefined;
-  let logos: LogoIndex | undefined;
   let source: MatchSource = dbSource;
   const pushMatch = (m: Match) => io?.to([LIVE_ROOM, matchRoom(m.id)]).emit("match:update", m);
 
   if (config.LIVE_PROVIDER === "sportsapi") {
     if (!isConfigured()) throw new Error("LIVE_PROVIDER=sportsapi needs PROVIDER_BASE_URL and PROVIDER_API_KEY");
-    store = createFeedStore(pushMatch, (sb) => { if (sb.sport === "cricket") void logos?.ingest([sb]).catch(() => {}); });
+    store = createFeedStore(pushMatch);
     if (config.CRICBUZZ_API_KEY) {
-      logos = createLogoIndex("cricket"); // logos from Flashscore, scores from Cricbuzz
       cricket = createCricketFeed({
-        logoOf: (name) => logos?.lookup(name),
         onMatch: pushMatch,
         onCentre: (id, c, fresh) => {
           const { commentary: _, ...core } = c;
@@ -53,7 +49,6 @@ export async function startServer(port = config.PORT) {
   const handle = createEngine(io);
   const provider: LiveProvider | undefined = config.LIVE_PROVIDER === "mock" ? createMockProvider(config.MOCK_TICK_MS) : undefined;
 
-  await logos?.start(); // before cricket so the first list already has logos
   await Promise.all([store?.start(), cricket?.start()]);
   provider?.start(handle);
   await new Promise<void>((r) => server.listen(port, r));
@@ -63,7 +58,6 @@ export async function startServer(port = config.PORT) {
     provider?.stop();
     store?.stop();
     cricket?.stop();
-    logos?.stop();
     await io!.close(); // also closes the http server
     await pool.end();
   };

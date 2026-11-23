@@ -14,7 +14,7 @@ type Player = { name: string; runs: number; balls: number; fours: number; sixes:
 type Bowler = { name: string; overs: number; maidens: number; runs: number; wickets: number; economy: number };
 export type CbScoreboard = {
   match_id: number; series: string; match_desc: string; format: string; state: string; status: string; complete: boolean;
-  start_ts: number; team1: string; team1_short: string; team2: string; team2_short: string;
+  start_ts: number; team1: string; team1_short: string; team2: string; team2_short: string; team1_logo?: string | null; team2_logo?: string | null;
   innings: Innings[]; bat_score?: number; bat_wkts?: number; overs?: number; target?: number | null; crr?: number; rrr?: number;
   striker?: Player | null; non_striker?: Player | null; bowler?: Bowler | null; partnership?: { runs: number; balls: number } | null;
   recent_overs?: string; latest_ball?: { text: string; over: number | null } | null;
@@ -47,14 +47,14 @@ export function teamScore(innings: Innings[], short: string): string | undefined
   return mine.map((i) => `${i.runs}${i.wkts >= 10 ? "" : `/${i.wkts}`}${i.declared ? "d" : ""}`).join(" & ");
 }
 
-export function cbToMatch(sb: CbScoreboard, logoOf: (name: string) => string | undefined = () => undefined): Match {
+export function cbToMatch(sb: CbScoreboard): Match {
   // the feed sometimes keeps complete=false after the result is in ("India won by 5 wkts"), so the result text counts too
   const done = sb.complete || /\bwon by\b|\bwin by\b|match tied|no result|abandoned|match drawn/i.test(sb.status ?? "");
   const status = done ? "finished" : sb.innings.length || sb.state === "In Progress" ? "live" : "upcoming";
   const cur = sb.innings.at(-1);
-  const side = (name: string, short: string): Side => {
+  // Cricbuzz has its own team logos/flags (team1_logo/team2_logo), so women's, A teams and small leagues get one too
+  const side = (name: string, short: string, logo: string | null | undefined): Side => {
     const score = teamScore(sb.innings, short);
-    const logo = logoOf(name);
     return {
       team: { code: short, name, tone: toneOf(name), ...(logo && { logo }) },
       ...(score && { score }),
@@ -68,8 +68,8 @@ export function cbToMatch(sb: CbScoreboard, logoOf: (name: string) => string | u
     competition: `${sb.match_desc} · ${sb.series}`,
     status,
     start: new Date(sb.start_ts).toISOString(),
-    home: side(sb.team1, sb.team1_short),
-    away: side(sb.team2, sb.team2_short),
+    home: side(sb.team1, sb.team1_short, sb.team1_logo),
+    away: side(sb.team2, sb.team2_short, sb.team2_logo),
     clock: breakState ?? sb.format,
     ...(sb.status && { note: sb.status }),
     ...(status === "finished" && { stage: "Result" }),
@@ -231,10 +231,8 @@ export function createCricketFeed(opts: {
   onMatch: (m: Match) => void;
   onCentre: (id: string, c: MatchCentre, fresh: CommentaryEntry[]) => void;
   isWatched: (id: string) => boolean;
-  /** team logo by name (from the Flashscore logo index); Cricbuzz itself has none */
-  logoOf?: (name: string) => string | undefined;
 }) {
-  const toMatch = (sb: CbScoreboard) => cbToMatch(sb, opts.logoOf);
+  const toMatch = cbToMatch;
   const boards = new Map<string, CbScoreboard>();
   // per-match cache of the heavy parts, refreshed while someone is watching
   const parts = new Map<string, { innings: InningsCard[]; inningsAt: number; balls: CbBall[] }>();

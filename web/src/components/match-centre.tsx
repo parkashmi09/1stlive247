@@ -10,11 +10,11 @@ import { BallChip, Card, CricketRole, HexPlate, TabPill, TeamBadge, cx } from ".
 export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   const cricket = m.sport === "cricket";
   const side = (s: Match["home"], right: boolean) => (
-    <div className={cx("flex w-[100px] shrink-0 flex-col items-center gap-1 text-center", right && "order-3")}>
+    <div className={cx("flex min-w-0 flex-1 flex-col items-center gap-1 text-center", right && "order-3")}>
       {s.team.logo
         ? <Image src={s.team.logo} alt="" width={64} height={64} unoptimized className="size-16 object-contain" />
         : <TeamBadge code={s.team.code} tone={s.team.tone} size={64} />}
-      <span className="mt-1 flex max-w-full items-center gap-1 text-[14px] font-bold"><span className="truncate">{s.team.name}</span><CricketRole m={m} s={s} /></span>
+      <span className="mt-1 flex max-w-full items-start justify-center gap-1 text-[14px] font-bold leading-tight"><span className="line-clamp-2 break-words">{s.team.name}</span><CricketRole m={m} s={s} /></span>
       {cricket
         ? s.score
           ? /\/|^\d/.test(s.score)
@@ -32,8 +32,8 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
       <div className="glass flex flex-col gap-3 rounded-3xl px-3 pb-3 pt-7">
         <div className="flex items-start">
           {side(m.home, false)}
-          <div className="order-2 flex min-w-0 flex-1 justify-center pt-3">
-            <HexPlate>{!cricket && m.status !== "upcoming" ? `${m.home.score ?? 0} - ${m.away.score ?? 0}` : <span className="text-[16px]">VS</span>}</HexPlate>
+          <div className="order-2 flex shrink-0 justify-center pt-3">
+            {!cricket && m.status !== "upcoming" ? <HexPlate>{m.home.score ?? 0} - {m.away.score ?? 0}</HexPlate> : <HexPlate compact>VS</HexPlate>}
           </div>
           {side(m.away, true)}
         </div>
