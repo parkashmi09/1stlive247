@@ -1,12 +1,15 @@
 import type { IconName } from "@/components/icons/Icon";
 
-export type SportId = "cricket" | "football" | "tennis" | "kabaddi" | "basketball" | "racing" | "f1";
+// same list as backend/src/types.ts
+export const SPORT_IDS = ["cricket", "football", "tennis", "kabaddi", "basketball", "racing", "f1", "hockey", "volleyball", "handball", "baseball", "american-football", "rugby", "rugby-league", "aussie-rules", "darts", "snooker", "table-tennis", "badminton", "futsal", "beach-volleyball", "beach-soccer", "floorball", "bandy", "water-polo", "field-hockey", "netball", "esports", "mma", "boxing"] as const;
+export type SportId = (typeof SPORT_IDS)[number];
 export type Tone = "navy" | "gold" | "red" | "green" | "sky";
 export type MatchStatus = "live" | "upcoming" | "finished";
 
-export type Sport = { id: SportId; label: string; icon: IconName };
+export type Sport = { id: SportId; label: string; icon?: IconName };
 
-export type Team = { code: string; name: string; tone: Tone; logo?: string };
+/** logo = crest, or the nationality flag for player sports; photo = the player (player sports only) */
+export type Team = { code: string; name: string; tone: Tone; logo?: string; photo?: string };
 
 export type Side = {
   team: Team;

@@ -1,4 +1,6 @@
 "use client";
+
+import { T } from "@/lib/i18n";
 // Home banner slider: the designer's banner frame (Figma 60:1085, 370×155 card inside a 180-tall frame) with real fixtures.
 import Image from "next/image";
 import Link from "next/link";
@@ -71,7 +73,7 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
         </div>
       )}
       <div className="absolute left-4 right-[140px] top-4">
-        <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white">{sportOf(f.sport).label}</p>
+        <p className="text-[30px] font-black italic uppercase leading-[0.9] tracking-[-0.8px] text-white"><T>{sportOf(f.sport).label}</T></p>
         <p className="mt-1 line-clamp-2 text-[14px] font-extrabold italic uppercase leading-[1.1] tracking-[0.2px] text-[var(--gold-light)] drop-shadow-[0_1px_1px_rgb(0_43_119/0.5)]">{f.league}</p>
       </div>
       <div className="absolute left-4 top-[104px] flex items-center gap-[6px] whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.3px] text-white">
@@ -83,7 +85,7 @@ function Slide({ f, priority }: { f: Featured; priority: boolean }) {
       </div>
       <p className="absolute left-4 top-[134px] flex gap-[9px] whitespace-nowrap text-[9px] text-[#06121C]">
         {f.live
-          ? <span className="flex items-center gap-1 font-bold uppercase tracking-wide text-live"><span className="size-1.5 rounded-full bg-live" />Live now</span>
+          ? <span className="flex items-center gap-1 font-bold uppercase tracking-wide text-live"><span className="size-1.5 rounded-full bg-live" /><T>Live now</T></span>
           : <><span className="font-semibold">{formatBannerDate(f.start)}</span><span className="font-medium opacity-60">Starts at {formatTime(f.start)}</span></>}
       </p>
     </Link>

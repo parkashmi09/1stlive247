@@ -10,7 +10,9 @@ const nextConfig: NextConfig = {
   // snapshot mode reads these JSON files at runtime; make sure Vercel ships them
   outputFileTracingIncludes: { "/**": ["./snapshot/**/*"] },
   // browser → same origin → backend (see lib/config.ts): REST, and Socket.IO polling on /sio
+  // snapshot mode (Vercel): browser calls are answered from the JSON dump by app/api/snapshot, never the backend
   async rewrites() {
+    if (process.env.NEXT_PUBLIC_DATA_SOURCE === "snapshot") return [{ source: "/api/v1/:path*", destination: "/api/snapshot/:path*" }];
     const backend = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4247";
     return [
       { source: "/api/v1/:path*", destination: `${backend}/api/v1/:path*` },

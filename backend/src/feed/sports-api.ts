@@ -39,6 +39,8 @@ export async function sportsApi<T = unknown>(path: string, { timeoutMs = 8000 } 
     try {
       const r = await fetch(url, { headers: { "X-API-Key": config.PROVIDER_API_KEY!, accept: "application/json" }, signal: AbortSignal.timeout(timeoutMs) });
       const body = await r.json().catch(() => null) as { error?: string; detail?: string; ok?: boolean } | null;
+      // a 200 whose body didn't parse means the read was cut off (timeout on a big list): retry, never hand back null
+      if (r.ok && body === null) { if (attempt === 0) continue; throw new Error(`incomplete response on ${path}`); }
       if (r.ok && body?.ok !== false) return body as T;
       const detail = body?.error ?? body?.detail ?? r.statusText;
       if (r.status >= 500 && attempt === 0) continue;

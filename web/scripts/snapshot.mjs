@@ -34,7 +34,13 @@ async function pool(items, n, fn) {
 }
 
 const enc = encodeURIComponent;
-const [sports, matches, featured, news] = await Promise.all([get("/sports"), get("/matches"), get("/featured"), get("/news")]);
+// a frozen dump must not keep ticking live clocks from an old anchor: stop every timer at its last display
+const freeze = (o) => {
+  if (Array.isArray(o)) o.forEach(freeze);
+  else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) { if (k === "timer" && v && typeof v === "object") v.running = false; else freeze(v); }
+  return o;
+};
+const [sports, matches, featured, news] = (await Promise.all([get("/sports"), get("/matches"), get("/featured"), get("/news")])).map(freeze);
 if (!matches?.length) throw new Error(`no matches from ${BASE}; is the backend up and the feed IP allowed?`);
 console.log(`${matches.length} matches, ${news?.length ?? 0} articles from ${BASE}`);
 
@@ -45,7 +51,7 @@ await mkdir(join(TMP, "news"), { recursive: true });
 
 await pool(matches, 8, async (m) => {
   const [centre, insights] = await Promise.all([get(`/matches/${enc(m.id)}/centre`), get(`/matches/${enc(m.id)}/insights`)]);
-  await writeFile(join(TMP, "matches", `${m.id}.json`), JSON.stringify({ match: m, centre, insights }));
+  await writeFile(join(TMP, "matches", `${m.id}.json`), JSON.stringify(freeze({ match: m, centre, insights })));
 });
 await pool(news ?? [], 4, async (n) => {
   await writeFile(join(TMP, "news", `${n.slug}.json`), JSON.stringify(await get(`/news/${enc(n.slug)}`)));

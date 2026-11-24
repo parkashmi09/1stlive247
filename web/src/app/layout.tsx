@@ -1,3 +1,4 @@
+import { Onboarding } from "@/components/Onboarding";
 import type { Metadata, Viewport } from "next";
 import { Inter, Onest } from "next/font/google";
 import { Suspense } from "react";
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#EFF5FB" };
 
 // Apply a saved theme before first paint so there is no light/dark flash.
-const themeScript = `try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+// Same for the saved UI language (lib/i18n reads <html lang>).
+const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("theme"),l=localStorage.getItem("lang");if(t==="dark"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches))d.dataset.theme="dark";if(l)d.lang=l}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -37,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div aria-hidden className="pointer-events-none fixed bottom-0 left-1/2 h-24 w-72 -translate-x-1/2 translate-y-1/2 rounded-full bg-cyan opacity-25 blur-[100px]" />
           <Suspense fallback={children}><PageIn>{children}</PageIn></Suspense>
         </div>
+        <Onboarding />
         <Suspense fallback={<NavBar />}>
           <BottomNav />
         </Suspense>

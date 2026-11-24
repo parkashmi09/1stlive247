@@ -1,4 +1,6 @@
 "use client";
+
+import { T } from "@/lib/i18n";
 // Live page, broadcast-scoreboard style: compact hero with per-sport live counts (filter), navy competition strips, rows with a red live bar and large tabular scores.
 
 import Image from "next/image";
@@ -85,8 +87,8 @@ export function LiveList({ initial }: { initial: Match[] }) {
         <Image src="/banners/live-hero.webp" alt="" fill sizes="(min-width: 1024px) 860px, 100vw" priority className="object-cover object-left" />
         <div className="relative flex items-baseline gap-2">
           <span className="relative mb-[3px] flex size-2.5 self-center"><span className="absolute inline-flex size-full animate-ping rounded-full bg-[#ff4d57] opacity-70" /><span className="relative inline-flex size-2.5 rounded-full bg-[#ff3341]" /></span>
-          <h2 className="text-[17px] font-extrabold tracking-tight">Live now</h2>
-          <span className="text-gold ml-auto text-[28px] font-black leading-none tabular-nums">{live.length}</span>
+          <h2 className="text-[17px] font-extrabold tracking-tight"><T>Live now</T></h2>
+          <span className="text-accent ml-auto text-[28px] font-black leading-none tabular-nums">{live.length}</span>
           <span className="text-[11px] font-semibold uppercase tracking-wide text-white/70">matches</span>
         </div>
         <div role="tablist" aria-label="Filter by sport" className="no-scrollbar relative -mx-4 mt-3 flex gap-3 overflow-x-auto px-4">
@@ -100,7 +102,7 @@ export function LiveList({ initial }: { initial: Match[] }) {
                 className={cx("flex h-9 shrink-0 items-center gap-2 rounded-full border pl-3 pr-1.5 text-[12px] font-bold transition",
                   on ? "border-white bg-white text-deep" : "border-white/25 bg-white/12 text-white hover:bg-white/20")}>
                 {c.id === "all" ? <ChipIcon id="all" /> : <SportIcon sport={c.id} size={17} />}
-                {c.label}
+                <T>{c.label}</T>
                 <span className={cx("flex h-[22px] min-w-[27px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold tabular-nums", on ? "bg-deep text-white" : "bg-white/20 text-white")}>{c.n}</span>
               </button>
             );
@@ -108,13 +110,13 @@ export function LiveList({ initial }: { initial: Match[] }) {
         </div>
       </div>
 
-      {!live.length && <p className="py-10 text-center text-sm text-text-2">No live matches right now.</p>}
+      {!live.length && <p className="py-10 text-center text-sm text-text-2"><T>No live matches right now.</T></p>}
 
       {shown.map(({ s, n }) => (
         <section key={s.id} aria-labelledby={`h-${s.id}`} className="flex flex-col gap-3 pt-2">
           <h2 id={`h-${s.id}`} className="flex items-center gap-2 px-1">
             <SportIcon sport={s.id} size={18} className="text-deep dark:text-cyan" />
-            <span className="text-[15px] font-extrabold uppercase tracking-wide">{s.label}</span>
+            <span className="text-[15px] font-extrabold uppercase tracking-wide"><T>{s.label}</T></span>
             <span className="rounded-full bg-live/10 px-2 py-0.5 text-[11px] font-bold text-live">{n} live</span>
           </h2>
           <div className="md:columns-2 md:gap-3">

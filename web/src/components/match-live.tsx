@@ -1,4 +1,6 @@
 "use client";
+
+import { T } from "@/lib/i18n";
 // Match Centre live state: one socket subscription in the layout, shared by the header and every tab.
 import { createContext, use, type ReactNode } from "react";
 import type { Match, MatchCentre, MatchInsights } from "@/data/types";
@@ -23,7 +25,7 @@ export function LiveScoreHeader() {
   return <ScoreHeader m={match} stats={centre?.stats} />;
 }
 
-const NoCoverage = () => <p className="py-8 text-center text-sm text-text-2">Detailed coverage for this match is coming soon.</p>;
+const NoCoverage = () => <p className="py-8 text-center text-sm text-text-2"><T>Detailed coverage for this match is coming soon.</T></p>;
 
 export function OverviewTab() {
   const { match, centre: c, insights } = useFeed();

@@ -1,3 +1,4 @@
+import { T } from "@/lib/i18n";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AdSlot } from "@/components/AdSlot";
@@ -16,8 +17,8 @@ async function Board() {
       {news.length > 0 && (
         <section aria-labelledby="h-news" className="hidden rounded-2xl glass px-4 pt-3 lg:block">
           <h2 id="h-news" className="flex items-center text-sm font-bold">
-            <span className="flex-1">Latest News</span>
-            <Link href="/news" className="text-xs font-semibold text-accent">See all</Link>
+            <span className="flex-1"><T>Latest News</T></span>
+            <Link href="/news" className="text-xs font-semibold text-accent"><T>See all</T></Link>
           </h2>
           {news.slice(0, 5).map((a) => <NewsRow key={a.slug} a={a} />)}
         </section>

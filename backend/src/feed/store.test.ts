@@ -35,6 +35,15 @@ test("upcoming hides scores; finished marks the loser; unsupported sports are dr
   const fin = toMatch({ ...football, status: "finished" })!;
   assert.equal(fin.away.lost, true);
   assert.equal(fin.stage, "Final");
-  assert.equal(toMatch({ ...football, sport: "hockey" }), undefined);
+  assert.equal(toMatch({ ...football, sport: "pesapallo" }), undefined);
   assert.equal(toMatch({ ...football, sport: "motorsport", home: undefined as unknown as string }), undefined);
+});
+
+test("player sports: card shows the flag, the photo is kept for the match screen; team sports keep the crest", () => {
+  const snooker = toMatch({ ...football, sport: "snooker", home_logo: "https://x/photo.png", home_flag: "https://x/gb.png" })!;
+  assert.equal(snooker.home.team.logo, "https://x/gb.png");
+  assert.equal(snooker.home.team.photo, "https://x/photo.png");
+  const team = toMatch({ ...football, home_logo: "https://x/crest.png" })!;
+  assert.equal(team.home.team.logo, "https://x/crest.png");
+  assert.equal(team.home.team.photo, undefined);
 });

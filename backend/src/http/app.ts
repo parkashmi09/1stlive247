@@ -9,11 +9,12 @@ import { getNews, listNews, listSports } from "../repo/read.ts";
 import { pickFeatured } from "../featured.ts";
 import type { MatchSource } from "../source.ts";
 import type { MatchInsights, NewsArticle } from "../types.ts";
+import { SPORT_IDS } from "../types.ts";
 
 const Slug = z.string().regex(/^[a-z0-9-]{1,80}$/);
 // feed ids are mixed-case (e.g. "08oviIGO"); same charset the Sports API accepts
 const EventId = z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
-const SportId = z.enum(["cricket", "football", "tennis", "kabaddi", "basketball", "racing", "f1"]);
+const SportId = z.enum(SPORT_IDS);
 const MatchQuery = z.object({ status: z.enum(["live", "upcoming", "finished"]).optional(), sport: SportId.optional() });
 const NewsQuery = z.object({ sport: SportId.optional(), limit: z.coerce.number().int().min(1).max(100).optional() });
 

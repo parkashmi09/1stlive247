@@ -1,3 +1,4 @@
+import { T } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -32,7 +33,7 @@ async function Article({ params }: { params: PageProps<"/news/[slug]">["params"]
         <ImagePlaceholder sport={a.sport} slug={a.slug} src={a.image} className="h-56 w-full" iconSize={110} />
         <article className="flex flex-col gap-3.5 px-4 pt-4">
           <span className="bg-gold w-fit rounded-md px-2 py-0.5 text-xs font-bold uppercase text-[#06121C]">
-            {sportOf(a.sport).label}
+            <T>{sportOf(a.sport).label}</T>
           </span>
           <h1 className="text-2xl font-bold leading-tight">{a.title}</h1>
           <p className="text-xs text-text-2">{a.author} · <TimeAgo iso={a.publishedAt} /> · {a.readMins} min read</p>
@@ -44,7 +45,7 @@ async function Article({ params }: { params: PageProps<"/news/[slug]">["params"]
               )}
             </div>
           ))}
-          <h2 className="pt-3 text-lg font-bold">Related</h2>
+          <h2 className="pt-3 text-lg font-bold"><T>Related</T></h2>
           <div>{related.map((r) => <NewsRow key={r.slug} a={r} />)}</div>
         </article>
       </main>

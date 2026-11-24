@@ -1,3 +1,4 @@
+import { T } from "@/lib/i18n";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "./brand";
@@ -20,12 +21,12 @@ export function SiteFooter() {
     <footer className="-mx-4 -mb-32 mt-2 border-t glass px-5 pb-40 pt-6 text-text md:-mx-10 lg:mx-0 lg:mb-0 lg:rounded-[20px] lg:border lg:pb-8">
       <nav aria-label="Footer" className="flex flex-col border-b border-line pb-4">
         {NAV.map((n) => (
-          <Link key={n.href} href={n.href} className="py-2.5 text-sm font-bold uppercase tracking-wide text-text">{n.label}</Link>
+          <Link key={n.href} href={n.href} className="py-2.5 text-sm font-bold uppercase tracking-wide text-text"><T>{n.label}</T></Link>
         ))}
       </nav>
       <div className="flex flex-col gap-5 border-b border-line py-6">
         <Logo className="h-11 w-auto self-start" />
-        <p className="text-sm text-text-2">Live scores, results and sports news. Always on for sports.</p>
+        <p className="text-sm text-text-2"><T>Live scores, results and sports news. Always on for sports.</T></p>
         <ul className="flex items-center gap-6" aria-label="Social media">
           {SOCIAL.map((s) => (
             <li key={s.label} aria-label={s.label} title={s.label}>

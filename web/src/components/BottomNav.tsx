@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BellGold, Logo } from "./brand";
@@ -16,7 +17,7 @@ const TAB_ICON: Record<IconName, ReactNode> = {
   more: <g fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"><circle cx="12" cy="12" r="9.1" /><circle cx="12" cy="10" r="3.1" /><path d="M6.4 18.3c1.3-2 3.3-3 5.6-3s4.3 1 5.6 3" /></g>,
 } as Record<string, ReactNode>;
 const TabIcon = ({ name }: { name: IconName }) => (
-  <svg width={24} height={24} viewBox="0 0 24 24" fill="currentColor" aria-hidden className="motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out">{TAB_ICON[name]}</svg>
+  <svg width={30} height={30} viewBox="0 0 24 24" fill="currentColor" aria-hidden className="motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-in-out">{TAB_ICON[name]}</svg>
 );
 
 const TABS: { href: string; label: string; icon: IconName; match: (p: string) => boolean }[] = [
@@ -41,8 +42,8 @@ export function NavBar({ path }: { path?: string }) {
       {/* 62px circles spread edge to edge with a 5px inset all round, so the end circles sit concentric with the bar's rounded ends */}
       <div className="glass pointer-events-auto relative mx-auto flex h-[72px] w-full max-w-[360px] items-center justify-between rounded-full p-[5px] backdrop-blur-[20px]">
         {active >= 0 && (
-          // glass reference: the 62px brand circle slides to the active slot
-          <div aria-hidden className="bg-brand pointer-events-none absolute top-[5px] size-[62px] rounded-full shadow-[0_6px_16px_rgb(52_196_238/0.45)] motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
+          // client: flat light blue, no gradient; the 62px circle slides to the active slot
+          <div aria-hidden className="pointer-events-none absolute top-[5px] size-[62px] rounded-full bg-[#1060a0] shadow-[0_6px_16px_rgb(16_96_160/0.45)] dark:bg-cyan motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(.4,0,.2,1)]"
             style={{ left: `calc(5px + (100% - 10px - 62px) * ${active} / ${TABS.length - 1})` }} />
         )}
         {TABS.map((t, i) => {
@@ -79,7 +80,7 @@ function DesktopBar({ path }: { path?: string }) {
               <Link key={t.href} href={t.href} aria-current={on ? "page" : undefined}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${on ? "bg-brand text-white" : "text-text-2 hover:bg-surface-2 hover:text-text"}`}>
                 <Icon name={t.icon} size={20} active={on && t.icon !== "more"} />
-                {t.label}
+                <T>{t.label}</T>
               </Link>
             );
           })}

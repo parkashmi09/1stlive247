@@ -10,6 +10,30 @@ import { ENDPOINTS, sportsApi } from "./sports-api.ts";
 export const API_SPORT: Partial<Record<SportId, string>> = {
   football: "football", tennis: "tennis", basketball: "basketball",
   kabaddi: "kabaddi", racing: "horse-racing", f1: "motorsport",
+  // the Sofascore-style "more" sports: all head-to-head, so toMatch maps them like football
+  hockey: "hockey",
+  volleyball: "volleyball",
+  handball: "handball",
+  baseball: "baseball",
+  "american-football": "american-football",
+  rugby: "rugby-union",
+  "rugby-league": "rugby-league",
+  "aussie-rules": "aussie-rules",
+  darts: "darts",
+  snooker: "snooker",
+  "table-tennis": "table-tennis",
+  badminton: "badminton",
+  futsal: "futsal",
+  "beach-volleyball": "beach-volleyball",
+  "beach-soccer": "beach-soccer",
+  floorball: "floorball",
+  bandy: "bandy",
+  "water-polo": "water-polo",
+  "field-hockey": "field-hockey",
+  netball: "netball",
+  esports: "esports",
+  mma: "mma",
+  boxing: "boxing",
   // cricket comes from the Cricbuzz feed (feed/cricbuzz.ts), not from here
 };
 const OUR_SPORT = Object.fromEntries(Object.entries(API_SPORT).map(([ours, theirs]) => [theirs, ours])) as Record<string, SportId | undefined>;
@@ -47,8 +71,10 @@ export function toMatch(sb: Scoreboard, timer?: ApiTimer): Match | undefined {
     : timer ? (timer.mode === "none" ? timer.display : timer.minute_label || timer.display) || minute
     : minute;
   const side = (name: string, code: string | string[] | undefined, score: string | undefined, logo: string | undefined, flag: string | undefined): Side => ({
-    // tennis "logos" are all Flashscore's blank player placeholder; the player's nationality flag stands in
-    team: { code: short(code, name), name, tone: toneOf(name), ...(sport === "tennis" ? flag && { logo: flag } : logo && { logo }) },
+    // player sports (tennis, snooker, darts, badminton…) send a nationality flag: cards show the flag, the player's photo
+    // goes in `photo` for the match screen. Team sports have no flag and keep their crest.
+    // tennis "logos" are Flashscore's blank player placeholder, so tennis never uses them (flag only)
+    team: { code: short(code, name), name, tone: toneOf(name), ...(flag ? { logo: flag, ...(logo && sport !== "tennis" && { photo: logo }) } : sport !== "tennis" && logo && { logo }) },
     ...(st !== "upcoming" && score !== undefined && score !== "" && { score }),
   });
   const home = side(sb.home, sb.home_short, sb.home_score, sb.home_logo_large || sb.home_logo, sb.home_flag);
@@ -86,8 +112,9 @@ export function createFeedStore(onChange: (m: Match) => void) {
 
   async function loadSport(api: string) {
     const [live, upcoming] = await Promise.all([
-      sportsApi<{ events: { scoreboard: Scoreboard }[] }>(ENDPOINTS.live(api)),
-      sportsApi<{ events: { scoreboard: Scoreboard }[] }>(ENDPOINTS.upcoming(api)),
+      // upcoming football is ~2,000 events (several MB): give list reads time to finish
+      sportsApi<{ events: { scoreboard: Scoreboard }[] }>(ENDPOINTS.live(api), { timeoutMs: 30_000 }),
+      sportsApi<{ events: { scoreboard: Scoreboard }[] }>(ENDPOINTS.upcoming(api), { timeoutMs: 45_000 }),
     ]);
     for (const e of live.events) put(e.scoreboard);
     // a match that dropped off /live has ended (the stream doesn't always send the final update)
@@ -107,8 +134,16 @@ export function createFeedStore(onChange: (m: Match) => void) {
     return live.events.length;
   }
 
+  /** Load every sport, 4 at a time: ~30 sports in parallel overloads the upstream and big lists time out. */
+  async function loadAll() {
+    const apis = Object.values(API_SPORT) as string[];
+    const results: PromiseSettledResult<number>[] = [];
+    for (let i = 0; i < apis.length; i += 4) results.push(...await Promise.allSettled(apis.slice(i, i + 4).map(loadSport)));
+    return results;
+  }
+
   async function bootstrap() {
-    const results = await Promise.allSettled((Object.values(API_SPORT) as string[]).map(loadSport));
+    const results = await loadAll();
     results.forEach((r, i) => { if (r.status === "rejected") logger.warn({ sport: (Object.values(API_SPORT) as string[])[i], err: String(r.reason) }, "feed bootstrap failed"); });
     logger.info({ events: events.size }, "feed bootstrapped");
   }
@@ -162,7 +197,7 @@ export function createFeedStore(onChange: (m: Match) => void) {
       void stream();
       timers = [
         setInterval(prune, 10 * 60_000),
-        setInterval(() => { void Promise.allSettled((Object.values(API_SPORT) as string[]).map(loadSport)); }, 10 * 60_000), // pick up new fixtures
+        setInterval(() => { void loadAll(); }, 10 * 60_000), // pick up new fixtures
       ];
     },
     stop() { abort?.abort(); timers.forEach(clearInterval); },

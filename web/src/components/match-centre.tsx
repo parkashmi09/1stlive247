@@ -1,3 +1,5 @@
+import { T } from "@/lib/i18n";
+import { Tilt3D } from "./Tilt3D";
 import Image from "next/image";
 import type { BallKind, CommentaryEntry, Match, MatchCentre } from "@/data/types";
 import { econ, sr } from "@/lib/cricket";
@@ -11,16 +13,22 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   const cricket = m.sport === "cricket";
   const side = (s: Match["home"], right: boolean) => (
     <div className={cx("flex min-w-0 flex-1 flex-col items-center gap-1 text-center", right && "order-3")}>
-      {s.team.logo
-        ? <Image src={s.team.logo} alt="" width={64} height={64} unoptimized className="size-16 object-contain" />
-        : <TeamBadge code={s.team.code} tone={s.team.tone} size={64} />}
+      {s.team.photo
+        // player sports: the player's photo here (cards elsewhere show the flag), with the flag as a corner badge
+        ? <span className="relative">
+            <Tilt3D size={64}><Image src={s.team.photo} alt="" width={64} height={64} unoptimized className="size-16 rounded-full bg-white object-cover object-top ring-2 ring-white dark:bg-white/10" /></Tilt3D>
+            {s.team.logo && <Image src={s.team.logo} alt="" width={24} height={16} unoptimized className="absolute -bottom-0.5 -right-1.5 z-[1] h-4 w-6 rounded-[3px] object-cover shadow ring-2 ring-white dark:ring-[#1a2a40]" />}
+          </span>
+        : s.team.logo
+          ? <Tilt3D size={64}><Image src={s.team.logo} alt="" width={64} height={64} unoptimized className="size-16 object-contain" /></Tilt3D>
+          : <TeamBadge code={s.team.code} tone={s.team.tone} size={64} />}
       <span className="mt-1 flex max-w-full items-start justify-center gap-1 text-[14px] font-bold leading-tight"><span className="line-clamp-2 break-words">{s.team.name}</span><CricketRole m={m} s={s} /></span>
       {cricket
         ? s.score
           ? /\/|^\d/.test(s.score)
             ? <ScorePop value={s.score} className="text-[20px] font-black leading-tight tabular-nums" />
             : <span className="text-sm font-bold text-accent">{s.score}</span>
-          : <span className="text-xs font-semibold text-text-2">{m.status === "upcoming" ? "—" : "Yet to bat"}</span>
+          : <span className="text-xs font-semibold text-text-2">{m.status === "upcoming" ? "—" : <T>Yet to bat</T>}</span>
         : <span className="text-[11px] text-text-2">{right ? "Away" : "At Home"}</span>}
       {s.detail && <span className="text-[11px] font-semibold text-text-2 tabular-nums">{s.detail}</span>}
     </div>
@@ -29,7 +37,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
   return (
     <section className="relative mx-4 pt-3.5">
       <TabPill m={m} />
-      <div className="glass flex flex-col gap-3 rounded-3xl px-3 pb-3 pt-7">
+      <div className="glass score-3d flex flex-col gap-3 rounded-3xl px-3 pb-3 pt-7">
         <div className="flex items-start">
           {side(m.home, false)}
           <div className="order-2 flex shrink-0 justify-center pt-3">
@@ -37,7 +45,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
           </div>
           {side(m.away, true)}
         </div>
-        <p className="flex min-w-0 items-center gap-2 rounded-2xl bg-white/55 px-3.5 py-2.5 text-[11px] font-bold dark:bg-white/[0.06]">
+        <p className="well-3d flex min-w-0 items-center gap-2 rounded-2xl bg-white/55 px-3.5 py-2.5 text-[11px] font-bold dark:bg-white/[0.06]">
           {m.note && cricket ? <span className="truncate text-accent">{m.note}</span> : <span className="truncate font-medium text-text-2">{competition}</span>}
           {stats && <span className="ml-auto shrink-0 text-text-2">{stats.join("  ·  ")}</span>}
         </p>
@@ -49,7 +57,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
 export function RecentBalls({ c }: { c: MatchCentre }) {
   return (
     <Card className="flex items-center gap-2 px-3.5 py-3">
-      <span className="flex-1 text-xs font-bold text-text-2">This over</span>
+      <span className="flex-1 text-xs font-bold text-text-2"><T>This over</T></span>
       {c.thisOver.map((b, i) => <BallChip key={i} ball={b} />)}
     </Card>
   );

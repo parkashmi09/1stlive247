@@ -1,4 +1,6 @@
 "use client";
+
+import { T } from "@/lib/i18n";
 // Football Match Centre (Sofascore-style tabs): Details (momentum, win probability, events, info),
 // Statistics (possession donut + key duels, period stats) and H2H (head-to-head summary, form, last matches).
 import Image from "next/image";
@@ -41,7 +43,7 @@ export function FootballInsights({ match, insights }: { match: Match; insights: 
   ] as const).filter((t) => t[2]);
   const [tab, setTab] = useState<TabId | undefined>();
   const active = tabs.find((t) => t[0] === tab)?.[0] ?? tabs[0]?.[0];
-  if (!active) return <p className="py-8 text-center text-sm text-text-2">Detailed coverage for this match is coming soon.</p>;
+  if (!active) return <p className="py-8 text-center text-sm text-text-2"><T>Detailed coverage for this match is coming soon.</T></p>;
   return (
     <>
       {tabs.length > 1 && (
@@ -111,7 +113,7 @@ function PeriodScores({ match, scores }: { match: Match; scores: NonNullable<Mat
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead><tr className="text-[11px] font-semibold uppercase text-text-2">
-            <th className="pb-1.5 text-left font-semibold">Team</th>
+            <th className="pb-1.5 text-left font-semibold"><T>Team</T></th>
             {scores.map((_, i) => <th key={i} className="pb-1.5 text-center font-semibold">{periodLabel(match.sport, i)}</th>)}
             <th className="pb-1.5 text-center font-semibold">{match.sport === "tennis" ? "Sets" : "T"}</th>
           </tr></thead>
@@ -133,7 +135,7 @@ function Momentum({ match, points, timeline }: { match: Match; points: MatchInsi
   const homeShare = Math.round((points.filter((p) => p.value > 0).length / points.length) * 100);
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle right={<span className="text-[11px] font-semibold tabular-nums"><span className="text-[#2F80ED]">{match.home.team.code} {homeShare}%</span><span className="text-text-2"> · </span><span className="text-[#14B8A6]">{100 - homeShare}% {match.away.team.code}</span></span>}>Match momentum</SectionTitle>
+      <SectionTitle right={<span className="text-[11px] font-semibold tabular-nums"><span className="text-[#2F80ED]">{match.home.team.code} {homeShare}%</span><span className="text-text-2"> · </span><span className="text-[#14B8A6]">{100 - homeShare}% {match.away.team.code}</span></span>}><T>Match momentum</T></SectionTitle>
       <TeamTag s={match.home} color="bg-[#2F80ED]" />
       <div className="relative my-1.5">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="block h-[132px] w-full" aria-label="Match momentum graph" role="img">
@@ -185,13 +187,13 @@ function KeyStats({ match, groups }: { match: Match; groups: StatGroup[] }) {
     .map((n) => findStat(groups, n)).filter((s): s is NonNullable<typeof s> => Boolean(s));
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle>Key stats</SectionTitle>
+      <SectionTitle><T>Key stats</T></SectionTitle>
       <div className="flex items-center gap-4">
         <div className="relative">
           <Donut home={poss} />
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-lg font-bold leading-none tabular-nums">{poss}%</span>
-            <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-2">Possession</span>
+            <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-2"><T>Possession</T></span>
             <span className="text-[#14B8A6] text-[11px] font-bold tabular-nums">{100 - poss}%</span>
           </div>
         </div>
@@ -262,7 +264,7 @@ function Timeline({ match, items }: { match: Match; items: Incident[] }) {
   }
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle right={<span className="flex gap-3"><TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#14B8A6]" /></span>}>Key events</SectionTitle>
+      <SectionTitle right={<span className="flex gap-3"><TeamTag s={match.home} color="bg-[#2F80ED]" /><TeamTag s={match.away} color="bg-[#14B8A6]" /></span>}><T>Key events</T></SectionTitle>
       <div className="relative">
         <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-line" aria-hidden />
         {[...periods].reverse().map((p, i) => (
@@ -300,7 +302,7 @@ function PeriodStats({ periods }: { periods: MatchInsights["periods"] }) {
   const g = groups[Math.min(gi, groups.length - 1)]!;
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle>Statistics</SectionTitle>
+      <SectionTitle><T>Statistics</T></SectionTitle>
       {periods.length > 1 && (
         <div className="mb-3 flex rounded-full bg-surface-2 p-1" role="tablist">
           {periods.map((p, i) => (
@@ -350,7 +352,7 @@ function PeriodStats({ periods }: { periods: MatchInsights["periods"] }) {
 function MatchInfo({ info }: { info: MatchInsights["info"] }) {
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle>Match info</SectionTitle>
+      <SectionTitle><T>Match info</T></SectionTitle>
       <dl className="flex flex-col divide-y divide-line">
         {info.map((r) => (
           <div key={r.label} className="flex gap-3 py-2 text-[13px]">
@@ -376,12 +378,12 @@ function WinProbability({ match, odds }: { match: Match; odds: NonNullable<Match
   ];
   return (
     <Card className="px-4 py-3.5">
-      <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">from live odds</span>}>Win probability</SectionTitle>
+      <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">from live odds</span>}><T>Win probability</T></SectionTitle>
       <div className="flex justify-between">
         {cols.map((c, i) => (
           <div key={c.k} className={cx("flex flex-col", i === 1 ? "items-center" : i === 2 ? "items-end" : "items-start")}>
             <span className={cx("text-2xl font-bold tabular-nums", c.text)}>{pct[i]}%</span>
-            <span className="text-xs font-semibold text-text-2">{c.label}</span>
+            <span className="text-xs font-semibold text-text-2"><T>{c.label}</T></span>
           </div>
         ))}
       </div>
@@ -470,7 +472,7 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
       )}
       {h2h && (
         <Card className="px-4 py-3.5">
-          <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">last {h2h.matches.length}</span>}>Head-to-head</SectionTitle>
+          <SectionTitle right={<span className="text-[11px] font-semibold text-text-2">last {h2h.matches.length}</span>}><T>Head-to-head</T></SectionTitle>
           <div className="flex items-end justify-between">
             <div className="flex flex-col items-start gap-1">
               <TeamBadge code={match.home.team.code} tone={match.home.team.tone} logo={match.home.team.logo} size={40} />
@@ -479,7 +481,7 @@ function HeadToHead({ match, tabs }: { match: Match; tabs: MatchInsights["h2h"] 
             </div>
             <div className="flex flex-col items-center gap-1 pb-0.5">
               <span className="text-3xl font-bold leading-none text-text-2 tabular-nums">{tally.draw}</span>
-              <span className="text-[11px] font-semibold text-text-2">Draws</span>
+              <span className="text-[11px] font-semibold text-text-2"><T>Draws</T></span>
             </div>
             <div className="flex flex-col items-end gap-1">
               <TeamBadge code={match.away.team.code} tone={match.away.team.tone} logo={match.away.team.logo} size={40} />

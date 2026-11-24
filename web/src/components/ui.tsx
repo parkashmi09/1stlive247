@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Tilt3D } from "./Tilt3D";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Ball, Match, Side, Tone } from "@/data/types";
@@ -18,22 +19,26 @@ export function TabPill({ m }: { m: Match }) {
   // only a real clock ("38.2 ov", "67'", "45:10"); the feed sometimes puts the format ("T20") there
   const clock = m.timer || /ov|'|:/.test(m.clock ?? "");
   return (
-    <span className="hex absolute left-1/2 top-0 z-[1] flex h-7 min-w-[124px] -translate-x-1/2 items-center justify-center gap-1.5 bg-white/90 px-6 text-[11px] font-semibold text-text [--hex:12px] dark:bg-[#1b2a3d] dark:text-white">
+    <span className="lift-3d absolute left-1/2 top-0 z-[1] -translate-x-1/2">
+    <span className="hex plate-3d flex h-7 min-w-[124px] items-center justify-center gap-1.5 px-6 text-[11px] font-semibold text-text [--hex:12px] dark:text-white">
       {m.status !== "live"
         ? <span className="uppercase text-text-2">{m.status === "upcoming" ? "Upcoming" : "Final"}</span>
         : paused
           ? <><span className="size-1.5 shrink-0 rounded-full bg-[var(--gold-mid)]" /><span className="truncate">{m.clock}</span></>
           : <><span className="size-1.5 shrink-0 animate-pulse rounded-full bg-live" />Live{clock && <span className="truncate text-text-2"><LiveClock timer={m.timer} fallback={m.clock} /></span>}</>}
     </span>
+    </span>
   );
 }
 
-/** Score plate: flat stretched hexagon, as in the reference. */
+/** Score plate: stretched hexagon from the reference, raised in 3D (plate-3d + lift-3d). */
 export function HexPlate({ children, compact }: { children: ReactNode; compact?: boolean }) {
   return (
-    <span className={cx("hex flex items-center justify-center bg-white/80 font-semibold leading-none tabular-nums dark:bg-white/10",
-      compact ? "h-10 min-w-[60px] px-4 text-[15px] [--hex:12px]" : "h-12 min-w-[100px] px-5 text-[26px] [--hex:15px]")}>
-      {children}
+    <span className="lift-3d inline-flex">
+      <span className={cx("hex plate-3d emboss-3d flex items-center justify-center font-semibold leading-none tabular-nums",
+        compact ? "h-10 min-w-[60px] px-4 text-[15px] [--hex:12px]" : "h-12 min-w-[100px] px-5 text-[26px] font-bold [--hex:15px]")}>
+        {children}
+      </span>
     </span>
   );
 }
@@ -53,7 +58,13 @@ const TONES: Record<Tone, string> = {
 };
 
 /** Initials badge — stands in for team crests (no licensed logos yet). */
-export function TeamBadge({ code, tone, size = 28, logo }: { code: string; tone: Tone; size?: number; logo?: string }) {
+type BadgeProps = { code: string; tone: Tone; size?: number; logo?: string };
+/** Team logo (or a coloured disc with the team code), shown in 3D with the interactive tilt. */
+export function TeamBadge(p: BadgeProps) {
+  return <Tilt3D size={p.size ?? 28}><Badge {...p} /></Tilt3D>;
+}
+
+function Badge({ code, tone, size = 28, logo }: BadgeProps) {
   if (logo) {
     return (
       <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-line" style={{ width: size, height: size }}>

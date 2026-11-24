@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cx } from "./ui";
@@ -20,7 +21,7 @@ export function MatchTabs({ id }: { id: string }) {
         return (
           <Link key={t.label} href={href} replace scroll={false} aria-current={on ? "page" : undefined}
             className={cx("flex-1 shrink-0 rounded-full px-3.5 py-2 text-center text-[13px] font-semibold", on ? "bg-brand text-white" : "text-text-2")}>
-            {t.label}
+            <T>{t.label}</T>
           </Link>
         );
       })}

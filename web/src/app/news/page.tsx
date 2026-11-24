@@ -1,3 +1,4 @@
+import { T } from "@/lib/i18n";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AdSlot } from "@/components/AdSlot";
@@ -10,7 +11,7 @@ export const metadata: Metadata = { title: "News" };
 
 async function Feed() {
   const [hero, ...rest] = await api.news();
-  if (!hero) return <p className="py-10 text-center text-sm text-text-2">No stories yet.</p>;
+  if (!hero) return <p className="py-10 text-center text-sm text-text-2"><T>No stories yet.</T></p>;
   return (<div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-6"><div className="lg:sticky lg:top-36"><NewsHero a={hero} /></div><div>{rest.map((a) => <NewsRow key={a.slug} a={a} />)}</div></div>);
 }
 
