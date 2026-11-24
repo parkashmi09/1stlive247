@@ -46,7 +46,7 @@ export function ScoreHeader({ m, stats }: { m: Match; stats?: string[] }) {
           {side(m.away, true)}
         </div>
         <p className="well-3d flex min-w-0 items-center gap-2 rounded-2xl bg-white/55 px-3.5 py-2.5 text-[11px] font-bold dark:bg-white/[0.06]">
-          {m.note && cricket ? <span className="truncate text-accent">{m.note}</span> : <span className="truncate font-medium text-text-2">{competition}</span>}
+          {m.note && cricket ? <span className="text-note truncate">{m.note}</span> : <span className="truncate font-medium text-text-2">{competition}</span>}
           {stats && <span className="ml-auto shrink-0 text-text-2">{stats.join("  ·  ")}</span>}
         </p>
       </div>

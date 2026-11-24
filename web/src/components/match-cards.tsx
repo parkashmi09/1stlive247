@@ -89,7 +89,7 @@ export function LiveGlassCard({ m }: { m: Match }) {
           </div>
           {team(m.away, true)}
         </div>
-        <p className={cx("well-3d mt-auto truncate rounded-2xl bg-white/55 px-3.5 py-2.5 text-[12px] font-medium dark:bg-white/[0.06]", cricket && m.note ? "text-accent" : "text-text-2")}>
+        <p className={cx("well-3d mt-auto truncate rounded-2xl bg-white/55 px-3.5 py-2.5 text-[12px] font-medium dark:bg-white/[0.06]", cricket && m.note ? "text-note font-semibold" : "text-text-2")}>
           {/* cricket: "<match> · <series>" → series; others: "<league> · <country>" → league */}
           {cricket && m.note ? m.note : cricket ? m.competition.split(" · ").at(-1) : m.competition.split(" · ")[0]}
         </p>
