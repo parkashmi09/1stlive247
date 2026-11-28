@@ -131,7 +131,7 @@ export function HomeBoard({ sports: allSports, initial, featured, children }: { 
 
       <section className="flex min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
 
-      <div role="tablist" aria-label="Sport" className="no-scrollbar -mx-4 -my-2 flex gap-2 overflow-x-auto px-4 py-2 md:mx-0 md:px-0">
+      <div role="tablist" aria-label="Sport" className="no-scrollbar -mx-4 -my-5 flex gap-2 overflow-x-auto px-4 py-5 md:mx-0 md:px-0">
         {rowSports.map((s) => {
           const on = s.id === sport;
           return (

@@ -91,7 +91,7 @@ export function LiveList({ initial }: { initial: Match[] }) {
           <span className="text-accent ml-auto text-[28px] font-black leading-none tabular-nums">{live.length}</span>
           <span className="text-[11px] font-semibold uppercase tracking-wide text-white/70">matches</span>
         </div>
-        <div role="tablist" aria-label="Filter by sport" className="no-scrollbar relative -mx-4 mt-3 flex gap-3 overflow-x-auto px-4">
+        <div role="tablist" aria-label="Filter by sport" className="no-scrollbar relative -mx-4 -mb-5 -mt-2 flex gap-3 overflow-x-auto px-4 py-5">
           {[{ id: "all" as const, label: "All", n: live.length }, ...counts.map(({ s, n }) => ({ id: s.id, label: s.label, n }))].map((c) => {
             const on = only === c.id;
             return (
