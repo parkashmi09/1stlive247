@@ -13,11 +13,12 @@ import { FeaturedSlider } from "./FeaturedSlider";
 import { cx } from "../ui";
 import { useSportPrefs } from "@/lib/prefs";
 
-// Status tabs: equal-width pills, active = the More-page gold tile gradient. Icons stay full-colour (star + flame are the designer's vectors, Figma 68:193 / 68:204).
+// Status tabs (prototype pick "M5"): Live gets the wide slot with its count; picked Top/Upcoming go brand gold, picked Live goes red.
+// Icons: MingCute live-fill + fire-fill (Apache-2.0), Phosphor clock-fill (MIT).
 const TABS = [
-  { id: "top", label: "Top Events", viewBox: "0 0 25.8867 24.6818", icon: <path d="M12.7366 0.01411C13.0577 -0.0326744 13.268 0.0320975 13.4823 0.280551C13.8093 0.659516 13.96 1.2825 14.1625 1.74248C14.413 2.31169 16.8724 8.08707 16.9092 8.1101C17.0252 8.18272 18.6334 8.27701 18.8863 8.29594C20.0458 8.38285 21.2038 8.53069 22.3625 8.63091C22.8697 8.67476 23.3764 8.73498 23.8829 8.77616C24.3045 8.81044 24.73 8.81669 25.1482 8.88707C25.3014 8.91285 25.4463 8.95832 25.578 9.04232C25.7261 9.13673 25.832 9.26822 25.8701 9.44135C25.901 9.58176 25.8922 9.73044 25.8133 9.85335C25.5117 10.323 24.6804 10.9278 24.2453 11.3127L20.5285 14.5823C20.219 14.8551 19.6616 15.2946 19.4096 15.6174C19.309 15.7463 19.5717 16.6208 19.6223 16.8277C19.7034 17.1587 19.7876 17.5288 19.8652 17.8721L20.9412 22.6423C21.1388 23.5131 21.5783 24.4212 20.4378 24.6731C18.9353 23.8917 17.1077 22.7315 15.6214 21.8497L14.0616 20.9279C13.769 20.7563 13.348 20.5344 13.0936 20.3301C13.0447 20.3046 12.9746 20.2608 12.9196 20.2904C12.4304 20.5542 11.954 20.8586 11.4772 21.1443L7.68661 23.3919C7.15508 23.7093 5.91108 24.5077 5.41014 24.6818C5.01148 24.5788 4.63798 24.3984 4.71636 23.9015C4.86858 22.9365 5.11105 21.9719 5.32608 21.0169L6.54961 15.6246L2.83201 12.3543C1.99195 11.6256 1.14626 10.9018 0.327046 10.149C-0.0136135 9.83591 -0.146717 9.49154 0.216046 9.12357C0.300483 9.03794 0.386015 8.95638 0.508983 8.92735C1.13839 8.80385 1.80411 8.77726 2.44539 8.71888L6.7088 8.32069C7.2208 8.27404 8.44011 8.20223 8.91836 8.10654C9.17217 7.76276 9.5202 6.87513 9.70339 6.44919L11.467 2.34316C11.7425 1.70002 12.0472 0.894369 12.3974 0.29581C12.4792 0.155954 12.5962 0.0890256 12.7366 0.01411Z" fill="#FFD65F" stroke="#5a3a05" strokeWidth="1.1" /> },
-  { id: "live", label: "Live", viewBox: "0 0 24 24", icon: <><circle cx="12" cy="12" r="10" fill="#22c55e" /><path d="M10 8.5v7l5.5-3.5z" fill="#fff" /></> },
-  { id: "upcoming", label: "Upcoming", viewBox: "0 0 20.6006 31.2508", icon: <><path d="M6.44148 16.8298C5.26601 12.6055 5.80636 8.08794 7.94495 4.26013C8.93329 2.50739 9.92482 1.39314 11.3336 0C11.4003 1.00147 11.3847 2.01139 11.4689 3.01257C11.6685 5.38813 12.0885 7.65019 13.2813 9.74304C15.2677 13.2281 19.2664 15.2018 20.3117 19.2513C21.6424 24.2641 18.1732 28.4638 14.0576 30.8033C13.8347 30.9295 13.5211 31.1417 13.2909 31.2251L13.2393 31.1939C13.2406 31.1008 13.2982 31.032 13.3468 30.9554C14.8072 28.653 14.7262 26.1089 13.6179 23.7063C13.3927 24.6124 12.9878 25.5779 12.1569 26.0898C12.0242 26.1715 11.8827 26.2231 11.7435 26.2973L11.6826 26.2793C11.6339 26.1286 11.7655 25.8217 11.8034 25.6574C12.384 23.1379 11.3387 20.7304 9.87411 18.7264C9.72132 18.5173 9.53323 18.279 9.38717 18.0655C9.42761 18.4326 9.39354 18.9592 9.36198 19.3334C9.21801 21.0415 8.76789 22.8889 7.67298 24.2453C7.37132 24.619 7.05076 24.9324 6.74029 25.2938C6.58304 25.4769 6.3977 25.78 6.26439 25.99C5.18767 28.0251 6.07211 29.5841 7.28782 31.2508C4.79607 29.9404 2.40436 28.2487 0.975731 25.7415C0.0697934 24.1516 -0.272738 21.8373 0.237106 20.0724C0.268356 19.9315 0.300262 19.7617 0.350856 19.6289L0.384012 19.4491C0.98845 17.5958 1.90454 15.8593 3.09292 14.3141C3.19992 14.1722 3.62814 13.6222 3.7597 13.5682C3.86514 13.7446 3.97392 14.2876 4.0712 14.5162C4.44726 15.4001 4.87792 16.0014 5.7297 16.4828C5.98923 16.6295 6.21445 16.7088 6.44148 16.8298Z" fill="url(#tab-flame)" /><defs><linearGradient id="tab-flame" x1="14.1476" y1="-2.26438" x2="1.98758" y2="26.5356" gradientUnits="userSpaceOnUse"><stop stopColor="#F0483B" /><stop offset="1" stopColor="#FCA82E" /></linearGradient></defs></> },
+  { id: "live", label: "Live", tint: "#ef4444", viewBox: "0 0 24 24", d: "M13.95 7H19c1.146.046 1.954.853 2 2v10c-.034.856-.535 1.621-1.368 1.898A2 2 0 0 1 19 21H5a2.1 2.1 0 0 1-.919-.223C3.403 20.426 3.03 19.747 3 19V9c.046-1.147.854-1.954 2-2h3.636L7.05 5.414c-.295-.338-.394-.795-.163-1.201c.133-.233.357-.405.616-.474c.359-.094.691.024.962.261l2.475 2.474a.51.51 0 0 0 .429.141a.5.5 0 0 0 .277-.141l3.889-3.888c.338-.295.795-.395 1.201-.163c.594.339.637 1.092.213 1.577Zm-3.678 4.015c-.276.062-.523.24-.668.484c-.35.588-.35 4.44 0 5.029c.183.307.523.504.88.509c.49.008 1.473-.579 1.897-.812a21 21 0 0 0 1.762-1.081c.2-.137.435-.276.592-.464a1.054 1.054 0 0 0 0-1.333c-.223-.267-.582-.461-.867-.65a21 21 0 0 0-2.195-1.267c-.301-.15-.636-.355-.97-.421a1 1 0 0 0-.431.006" },
+  { id: "top", label: "Top", tint: "#F97316", viewBox: "0 0 24 24", d: "m14.995 6.287l.731-1.475c.588.588 1.189 1.161 1.727 1.796a18.4 18.4 0 0 1 1.98 2.837c1.378 2.435 2.018 4.997 1.224 7.753a6.23 6.23 0 0 1-3.4 3.974c-1.305.608-2.709.774-4.123.93c.966-.606 1.47-1.253 1.866-2.329c.386-1.05.293-2.043-.217-3.039c-.408-.797-1.069-1.428-1.484-2.222c-.333-.637-.527-1.359-.752-2.033c-1.001.626-2.021 1.226-2.881 2.046c-1.495 1.426-2.321 3.237-1.51 5.248c.174.429.417.823.712 1.18c.38.458.83.81 1.327 1.13c-1.376-.152-2.445-.334-3.675-1.019c-3.214-1.79-4.599-5.347-3.014-8.739c.528-1.13 1.311-2.125 2.2-2.993l1.139-1.051q.67-.662 1.243-1.407c.78-1.013 1.448-2.152 1.784-3.394c.157-.58.307-1.635.383-2.093c.439.263 1.391.81 1.897 1.177c1.36.988 2.199 2.191 2.843 3.723" },
+  { id: "upcoming", label: "Upcoming", tint: "#2563eb", viewBox: "0 0 256 256", d: "M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m56 112h-56a8 8 0 0 1-8-8V72a8 8 0 0 1 16 0v48h48a8 8 0 0 1 0 16" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"] | "finished"; // "finished" is reached from the filter sheet
 
@@ -138,7 +139,6 @@ export function HomeBoard({ sports: allSports, initial, featured, children }: { 
               className={cx("relative flex h-10 shrink-0 items-center justify-center gap-2 rounded-full pl-3.5 pr-4 transition-all active:translate-y-px",
                 on ? "gel-pill-on" : "gel-pill")}>
               {/* wet highlight across the top half */}
-              <span aria-hidden className="gel-shine pointer-events-none absolute inset-x-[10%] top-[3px] h-[42%] rounded-full bg-[linear-gradient(180deg,rgb(255_255_255/0.7),rgb(255_255_255/0))]" />
               <span className={cx("relative flex", on ? "gel-icon-on" : "gel-icon")}>
                 <SportIcon sport={s.id} size={19} />
               </span>
@@ -149,7 +149,6 @@ export function HomeBoard({ sports: allSports, initial, featured, children }: { 
         {(hidden > 0 || showAll) && (
           <button type="button" aria-expanded={showAll} onClick={() => setShowAll(!showAll)}
             className="gel-pill relative flex h-10 shrink-0 items-center justify-center gap-2 rounded-full pl-3.5 pr-4 transition-all active:translate-y-px">
-            <span aria-hidden className="gel-shine pointer-events-none absolute inset-x-[10%] top-[3px] h-[42%] rounded-full bg-[linear-gradient(180deg,rgb(255_255_255/0.7),rgb(255_255_255/0))]" />
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden className="gel-icon relative">
               {showAll
                 ? <path d="M7 12a1.6 1.6 0 0 1 1.6-1.6h6.8a1.6 1.6 0 0 1 0 3.2H8.6A1.6 1.6 0 0 1 7 12Z" />
@@ -161,15 +160,24 @@ export function HomeBoard({ sports: allSports, initial, featured, children }: { 
         )}
       </div>
 
-      <div role="tablist" aria-label="Events" className="grid grid-cols-3 gap-2">
+      <div role="tablist" aria-label="Events" className="grid grid-cols-[1.5fr_1fr_1fr] gap-2">
         {TABS.map((t) => {
-          const on = tab === t.id;
+          const on = tab === t.id, live = t.id === "live";
+          const n = live ? ofSport.filter((m) => m.status === "live").length : 0;
           return (
             <button key={t.id} role="tab" aria-selected={on} onClick={() => setTab(t.id)}
-              className={cx("flex h-9 min-w-0 items-center justify-center gap-1 rounded-full border px-1 text-[12px] font-bold whitespace-nowrap transition md:gap-1.5 md:text-[13px]",
-                on ? "bg-gold bg-origin-border border-transparent text-[#5a3a05]" : "glass text-text-2")}>
-              <svg viewBox={t.viewBox} className="h-4 w-auto shrink-0" aria-hidden>{t.icon}</svg>
-              <T>{t.label}</T>
+              className={cx("flex h-12 min-w-0 items-center justify-center gap-2 rounded-2xl px-1 text-[12px] font-bold whitespace-nowrap transition md:text-[13px]",
+                !on ? "glass text-text-2" : live ? "bg-[linear-gradient(135deg,#ef4444,#b91c1c)] text-white shadow-[0_8px_18px_rgb(239_68_68/0.33)]" : "bg-gold text-[#5a3a05] shadow-[0_8px_18px_rgb(180_130_30/0.35)]")}>
+              <span className="relative flex shrink-0" style={{ color: on ? undefined : t.tint }}>
+                {live && n > 0 && <span aria-hidden className="absolute inset-0 animate-ping rounded-full border-2 border-current opacity-40" />}
+                <svg viewBox={t.viewBox} className={live ? "size-5" : "size-4"} aria-hidden><path fill="currentColor" d={t.d} /></svg>
+              </span>
+              {live ? (
+                <span className="flex min-w-0 flex-col items-start leading-tight">
+                  <span className="tabular-nums">{n} <T>{n === 1 ? "match" : "matches"}</T></span>
+                  <span className="text-[10px] uppercase opacity-80"><T>Live now</T></span>
+                </span>
+              ) : <T>{t.label}</T>}
             </button>
           );
         })}
